@@ -10,6 +10,7 @@ todo list
 #. uart
 #. stepper
 #. spi flash w25qxx
+#. spi sd card reader
 #. touch screen xpt2042
 #. fsmc lcd display.
 #. dma 

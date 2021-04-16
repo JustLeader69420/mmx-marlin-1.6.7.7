@@ -34,10 +34,10 @@
 #endif
 
 #ifndef BOARD_INFO_NAME
-  #define BOARD_INFO_NAME "langgo STM32F4XXVE"
+  #define BOARD_INFO_NAME "MD langgo STM32F4XX"
 #endif
 
-#define DEFAULT_MACHINE_NAME "STM32F407VET6"
+#define DEFAULT_MACHINE_NAME "MD D301 STM32F407ZG"
 
 //#define I2C_EEPROM
 #define SRAM_EEPROM_EMULATION
@@ -46,48 +46,102 @@
 //
 // Servos
 //
-#define SERVO0_PIN                          PC6
-#define SERVO1_PIN                          PC7
+// #define SERVO0_PIN                          PC6
+// #define SERVO1_PIN                          PC7
+#define CALIB_PIN          PB1
+
+//
+// Z Probe must be this pins
+//
+#define Z_MIN_PROBE_PIN    PB0
 
 //
 // Limit Switches
 //
-#define X_MIN_PIN                           PC13
-#define X_MAX_PIN                           PA15
-#define Y_MIN_PIN                           PA5
-#define Y_MAX_PIN                           PD12
-#define Z_MIN_PIN                           PD14
-#define Z_MAX_PIN                           PD15
+#define X_MIN_PIN                           PF12
+// #define X_MAX_PIN                           PA15
+
+#define Y_MIN_PIN                           PF14
+// #define Y_MAX_PIN                           PD12
+
+#ifdef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+  #define Z_MIN_PIN          PB1
+#else
+  #define Z_MIN_PIN          PG0
+#endif
+// #define Z_MIN_PIN                           PG0
+// #define Z_MAX_PIN                           PD15
+
+#define LED_RED_PIN               PG9
 
 //
 // Steppers
 //
-#define X_STEP_PIN                          PC4
-#define X_DIR_PIN                           PA4
-#define X_ENABLE_PIN                        PE7
+#define X_ENABLE_PIN       PD3
+#define X_STEP_PIN         PD2
+#define X_DIR_PIN          PC10
 
-#define Y_STEP_PIN                          PE5
-#define Y_DIR_PIN                           PE2
-#define Y_ENABLE_PIN                        PE6
+#define Y_ENABLE_PIN       PC12
+#define Y_STEP_PIN         PA10
+#define Y_DIR_PIN          PA9
 
-#define Z_STEP_PIN                          PD5
-#define Z_DIR_PIN                           PD3
-#define Z_ENABLE_PIN                        PD6
+#define Z_ENABLE_PIN       PC9
+#define Z_STEP_PIN         PG8
+#define Z_DIR_PIN          PG7
 
-#define E0_STEP_PIN                         PD7
-#define E0_DIR_PIN                          PD0
-#define E0_ENABLE_PIN                       PB9
+#define E0_ENABLE_PIN      PD13
+#define E0_STEP_PIN        PD12
+#define E0_DIR_PIN         PD11
 
-#define E1_STEP_PIN                         PE0
-#define E1_DIR_PIN                          PE1
-#define E1_ENABLE_PIN                       PB8
+#define Z2_ENABLE_PIN      PG5
+#define Z2_STEP_PIN        PG4
+#define Z2_DIR_PIN         PG3
+
+/**
+ * TMC2208/TMC2209 stepper drivers
+ */
+#if HAS_TMC220x
+  //
+  // Software serial ASYNC half duplex?
+  //
+  #define X_SERIAL_TX_PIN  PD6
+  #define X_SERIAL_RX_PIN  PD6
+
+  #define Y_SERIAL_TX_PIN  PC11
+  #define Y_SERIAL_RX_PIN  PC11
+
+  #define Z_SERIAL_TX_PIN  PA8
+  #define Z_SERIAL_RX_PIN  PA8
+
+  #define E0_SERIAL_TX_PIN PG2
+  #define E0_SERIAL_RX_PIN PG2
+
+  #define Z2_SERIAL_TX_PIN PG6
+  #define Z2_SERIAL_RX_PIN PG6
+
+  // Reduce baud rate to improve software serial reliability
+  #define TMC_BAUD_RATE 19200
+#endif
+
+//
+// Filament Sensor
+//
+#ifndef FIL_RUNOUT_PIN
+  #define FIL_RUNOUT_PIN   PG1
+#endif
+
+//
+// Power Supply Control
+//
+#ifndef PS_ON_PIN
+  #define PS_ON_PIN        PA1
+#endif
 
 //
 // Temperature Sensors
 //
-#define TEMP_0_PIN                          PC0   // T0
-#define TEMP_1_PIN                          PC1   // T1
-#define TEMP_BED_PIN                        PC2   // TB
+#define TEMP_0_PIN                          PC4   // T0
+#define TEMP_BED_PIN                        PC5   // TB
 
 #ifndef TEMP_CHAMBER_PIN
   #define TEMP_CHAMBER_PIN                  PC3   // TC
@@ -96,21 +150,29 @@
 //
 // Heaters / Fans
 //
-#define HEATER_0_PIN                        PA2   // Heater0
-#define HEATER_1_PIN                        PA3   // Heater1
-#define HEATER_BED_PIN                      PA1   // Hotbed
+#define HEATER_0_PIN       PC6
+#define HEATER_BED_PIN     PC8
 
-#define FAN_PIN                             PE9   // Fan0
-#define FAN1_PIN                            PE11  // Fan1
-#define FAN2_PIN                            PE13  // Fan2
-#define FAN3_PIN                            PE14  // Fan3
+#define FAN_PIN            PC7
+
+
+//
+// USB connect control
+//
+#define USB_CONNECT_PIN    PA15
+#define USB_CONNECT_INVERTING false
+
+#define SD_DETECT_PIN      PE3
+#define BEEPER_PIN         PG11
+#define LED_PIN            PG9
+
+#define NEOPIXEL_PIN       PB9
 
 //
 // Misc. Functions
 //
-#define LED_PIN                             PG1
-//#define LED_PIN                           PA7
-#define KILL_PIN                            PB1
+#define LED_PIN                             PG9
+// #define KILL_PIN                            PB1
 
 //
 // LCD / Controller
@@ -118,36 +180,61 @@
 //#define SD_DETECT_PIN                     PC5
 //#define SD_DETECT_PIN                     PA8   // SDIO SD_DETECT_PIN, external SDIO card reader only
 
-#define BEEPER_PIN                          PD10
-#define LCD_PINS_RS                         PE15
-#define LCD_PINS_ENABLE                     PD8
-#define LCD_PINS_D4                         PE10
-#define LCD_PINS_D5                         PE12
-#define LCD_PINS_D6                         PD1
-#define LCD_PINS_D7                         PE8
-#define BTN_ENC                             PD9
-#define BTN_EN1                             PD4
-#define BTN_EN2                             PD13
 
-#define DOGLCD_CS                    LCD_PINS_D5
-#define DOGLCD_A0                    LCD_PINS_D6
+/**
+ * Note: Alfawise screens use various TFT controllers. Supported screens
+ * are based on the ILI9341, ILI9328 and ST7798V. Define init sequences for
+ * other screens in u8g_dev_tft_320x240_upscale_from_128x64.cpp
+ *
+ * If the screen stays white, disable 'LCD_RESET_PIN' to let the bootloader
+ * init the screen.
+ *
+ * Setting an 'LCD_RESET_PIN' may cause a flicker when entering the LCD menu
+ * because Marlin uses the reset as a failsafe to revive a glitchy LCD.
+ */
+
+#define LCD_BACKLIGHT_PIN  PG10
+#define FSMC_CS_PIN        PD7   // FSMC_NE1
+#define FSMC_RS_PIN        PE2   // A23 Register. Only one address needed
+
+#define LCD_USE_DMA_FSMC   // Use DMA transfers to send data to the TFT
+#define FSMC_DMA_DEV       DMA1
+#define FSMC_DMA_CHANNEL   DMA_CH4  //fixme in F4
+
+#define DOGLCD_MOSI        -1  // Prevent auto-define by Conditionals_post.h
+#define DOGLCD_SCK         -1
+
+// #define LCD_PINS_RS                         PE15
+// #define LCD_PINS_ENABLE                     PD8
+// #define LCD_PINS_D4                         PE10
+// #define LCD_PINS_D5                         PE12
+// #define LCD_PINS_D6                         PD1
+// #define LCD_PINS_D7                         PE8
+// #define BTN_ENC                             PD9
+// #define BTN_EN1                             PD4
+// #define BTN_EN2                             PD13
+
+
 
 //
 // Onboard SD support
 //
-#define SDIO_D0_PIN                         PC8
+
+#define HAS_ONBOARD_SD
+
+#define SDIO_D0_PIN                         PA6
 #define SDIO_D1_PIN                         PC9
 #define SDIO_D2_PIN                         PC10
-#define SDIO_D3_PIN                         PC11
-#define SDIO_CK_PIN                         PC12
-#define SDIO_CMD_PIN                        PD2
+#define SDIO_D3_PIN                         PA4
+#define SDIO_CK_PIN                         PA5
+#define SDIO_CMD_PIN                        PA7
 
 #ifndef SDCARD_CONNECTION
   #define SDCARD_CONNECTION              ONBOARD
 #endif
 
 #if SD_CONNECTION_IS(ONBOARD)
-  #define SDIO_SUPPORT                            // Use SDIO for onboard SD
+  // #define SDIO_SUPPORT                            // Use SDIO for onboard SD
 
   #ifndef SDIO_SUPPORT
     #define SOFTWARE_SPI                          // Use soft SPI for onboard SD
