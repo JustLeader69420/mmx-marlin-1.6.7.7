@@ -276,13 +276,13 @@ extern "C" {
 
 #endif // ARDUINO_BLACK_F407ZE || ARDUINO_BLACK_F407ZG
 
-#define LED_BUILTIN             LED_D2
-#define LED_GREEN               LED_D2
+// #define LED_BUILTIN             LED_D2
+// #define LED_GREEN               LED_D2
 
 // On-board user button
-#define BTN_K0                  PE4
-#define BTN_K1                  PE3
-#define USER_BTN                BTN_K0
+// #define BTN_K0                  PE4
+// #define BTN_K1                  PE3
+// #define USER_BTN                BTN_K0
 
 // Below SPI and I2C definitions already done in the core
 // Could be redefined here if differs from the default one
@@ -294,12 +294,12 @@ extern "C" {
 //#define PIN_SPI_SS1             PB0 // W25Q16 (on board flash)
 
 // I2C Definitions
-#define PIN_WIRE_SDA            PB7
-#define PIN_WIRE_SCL            PB6
+// #define PIN_WIRE_SDA            PB7
+// #define PIN_WIRE_SCL            PB6
 
 // Timer Definitions
 //Do not use timer used by PWM pins when possible. See PinMap_PWM in PeripheralPins.c
-#define TIMER_TONE              TIM6
+#define TIMER_TONE              TIM3
 
 // Do not use basic timer: OC is required
 #define TIMER_SERVO             TIM2  //TODO: advanced-control timers don't work
@@ -316,8 +316,8 @@ extern "C" {
 
 // Default pin used for 'Serial' instance (ex: ST-Link)
 // Mandatory for Firmata
-#define PIN_SERIAL_RX           PA10
-#define PIN_SERIAL_TX           PA9
+// #define PIN_SERIAL_RX           PA10
+// #define PIN_SERIAL_TX           PA9
 
 /* Extra HAL modules */
 #define HAL_DAC_MODULE_ENABLED

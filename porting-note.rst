@@ -2,8 +2,9 @@
 porting note.
 #####################
 
+
 todo list
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. gpio led
 #. gpio key xmin ymin zmin
@@ -20,4 +21,16 @@ todo list
 
 
 gpio. f4
-======================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+compatible with st parts:
+    verified: gpio R/W
+
+
+use EXTUI-example so far
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+123123
+---------------------------
+
