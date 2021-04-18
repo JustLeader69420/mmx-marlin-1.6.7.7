@@ -355,6 +355,8 @@
 #define BOARD_FLYF407ZG               4219  // FLYF407ZG board (STM32F407ZG)
 #define BOARD_MKS_ROBIN2              4220  // MKS_ROBIN2 (STM32F407ZE)
 #define BOARD_LANGGO407               4333
+#define BOARD_HP407VE                 4334  //浩普电子407开发板
+
 //
 // ARM Cortex M7
 //

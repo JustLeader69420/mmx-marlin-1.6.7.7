@@ -37,7 +37,7 @@
   #define BOARD_INFO_NAME "MD langgo STM32F4XX"
 #endif
 
-#define DEFAULT_MACHINE_NAME "HP STM32F407VE"
+#define DEFAULT_MACHINE_NAME "MD D301 STM32F407ZG"
 
 //#define I2C_EEPROM
 #define SRAM_EEPROM_EMULATION
@@ -58,21 +58,21 @@
 //
 // Limit Switches
 //
-#define X_MIN_PIN                           PF12
+#define X_MIN_PIN                           PE10
 // #define X_MAX_PIN                           PA15
 
-#define Y_MIN_PIN                           PF14
+#define Y_MIN_PIN                           PE11
 // #define Y_MAX_PIN                           PD12
 
 #ifdef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
-  #define Z_MIN_PIN          PB1
+  #define Z_MIN_PIN          PE12
 #else
-  #define Z_MIN_PIN          PG0
+  #define Z_MIN_PIN          PE12
 #endif
 // #define Z_MIN_PIN                           PG0
 // #define Z_MAX_PIN                           PD15
 
-#define LED_RED_PIN               PG9
+#define LED_RED_PIN               PE13
 
 //
 // Steppers
@@ -163,15 +163,16 @@
 #define USB_CONNECT_INVERTING false
 
 #define SD_DETECT_PIN      PE3
-#define BEEPER_PIN         PG11
-#define LED_PIN            PG9
+#define BEEPER_PIN         PE15
 
 #define NEOPIXEL_PIN       PB9
 
 //
 // Misc. Functions
 //
-#define LED_PIN                             PG9
+#define LED_PIN                             PE13
+#define LED1_PIN                             PE14
+#define LED2_PIN                             PE15
 // #define KILL_PIN                            PB1
 
 //
@@ -222,12 +223,12 @@
 
 #define HAS_ONBOARD_SD
 
-#define SDIO_D0_PIN                         PA6
+#define SDIO_D0_PIN                         PC8
 #define SDIO_D1_PIN                         PC9
 #define SDIO_D2_PIN                         PC10
-#define SDIO_D3_PIN                         PA4
-#define SDIO_CK_PIN                         PA5
-#define SDIO_CMD_PIN                        PA7
+#define SDIO_D3_PIN                         PC11
+#define SDIO_CK_PIN                         PC12
+#define SDIO_CMD_PIN                        PD2
 
 #ifndef SDCARD_CONNECTION
   #define SDCARD_CONNECTION              ONBOARD

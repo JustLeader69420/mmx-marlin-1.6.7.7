@@ -145,7 +145,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_LANGGO407
+  #define MOTHERBOARD BOARD_HP407VE //BOARD_LANGGO407
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
