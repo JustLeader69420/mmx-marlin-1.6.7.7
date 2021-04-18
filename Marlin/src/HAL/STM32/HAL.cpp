@@ -68,7 +68,7 @@ void HAL_init() {
   #endif
 
   #if PIN_EXISTS(LED)
-    OUT_WRITE(LED_PIN, LOW);
+    OUT_WRITE(LED_PIN, HIGH); //test pass
   #endif
 
   #if ENABLED(SRAM_EEPROM_EMULATION)
