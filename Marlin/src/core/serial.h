@@ -69,7 +69,7 @@ extern uint8_t marlin_debug_flags;
   #define _PORT_REDIRECT(n,p)   NOOP
   #define _PORT_RESTORE(n)      NOOP
   #if RTT_AS_SERIAL_OUT
-    #define SERIAL_OUT(WHAT, V...) rtt.WHAT(V) //MYSERIAL0.WHAT(V)
+    #define SERIAL_OUT(WHAT, V...) do { rtt.WHAT(V); MYSERIAL0.WHAT(V); } while (0)
   #else
     #define SERIAL_OUT(WHAT, V...) (void)MYSERIAL0.WHAT(V)
   #endif

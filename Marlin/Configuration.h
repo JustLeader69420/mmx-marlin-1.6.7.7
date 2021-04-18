@@ -145,7 +145,8 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_HP407VE //BOARD_LANGGO407
+  #define MOTHERBOARD BOARD_LANGGO407
+  // #define MOTHERBOARD BOARD_HP407VE
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -470,8 +471,8 @@
 
 // Below this temperature the heater will be switched off
 // because it probably indicates a broken thermistor wire.
-#define HEATER_0_MINTEMP   5
 #define HEATER_1_MINTEMP   5
+#define HEATER_0_MINTEMP   5
 #define HEATER_2_MINTEMP   5
 #define HEATER_3_MINTEMP   5
 #define HEATER_4_MINTEMP   5

@@ -408,6 +408,8 @@ void disable_all_steppers() {
   constexpr bool did_pause_print = false;
 #endif
 
+#include "rtt.h"
+
 /**
  * A Print Job exists when the timer is running or SD printing
  */
@@ -965,6 +967,8 @@ void setup() {
     #endif
   #endif
 
+  rtt.print("marlin start...");
+
   MYSERIAL0.begin(BAUDRATE);
   uint32_t serial_connect_timeout = millis() + 1000UL;
   while (!MYSERIAL0 && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
@@ -1098,7 +1102,7 @@ void setup() {
 
   sync_plan_position();               // Vital to init stepper/planner equivalent for current_position
 
-  SETUP_RUN(thermalManager.init());   // Initialize temperature loop
+  // SETUP_RUN(thermalManager.init());   // Initialize temperature loop
 
   SETUP_RUN(print_job_timer.init());  // Initial setup of print job timer
 
@@ -1309,6 +1313,8 @@ void setup() {
 void loop() {
   do {
     idle();
+
+    TERN_(USE_WATCHDOG, HAL_watchdog_refresh());
 
     #if ENABLED(SDSUPPORT)
       card.checkautostart();

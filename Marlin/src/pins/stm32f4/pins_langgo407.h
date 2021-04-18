@@ -155,6 +155,8 @@
 
 #define FAN_PIN            PC7
 
+#define STEP_TIMER_NUM        5  // Timer Index for Stepper
+#define TEMP_TIMER_NUM        14  // Timer Index for Temperature
 
 //
 // USB connect control
@@ -171,7 +173,6 @@
 //
 // Misc. Functions
 //
-#define LED_PIN                             PG9
 // #define KILL_PIN                            PB1
 
 //

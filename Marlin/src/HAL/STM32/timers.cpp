@@ -27,7 +27,7 @@
 // Local defines
 // ------------------------
 
-#define NUM_HARDWARE_TIMERS 4
+#define NUM_HARDWARE_TIMERS 2
 
 // Default timer priorities. Override by specifying alternate priorities in the board pins file.
 // The TONE timer is not present here, as it currently cannot be set programmatically. It is set
@@ -81,7 +81,7 @@
   #define MCU_TEMP_TIMER 10
 #elif defined(STM32F4xx) || defined(STM32F7xx)
   #define MCU_TIMER_RATE (F_CPU / 2)
-  #define MCU_STEP_TIMER  6           // STM32F401 has no TIM6, TIM7, or TIM8
+  #define MCU_STEP_TIMER  5           // STM32F401 has no TIM6, TIM7, or TIM8
   #define MCU_TEMP_TIMER 14           // TIM7 is consumed by Software Serial if used.
 #endif
 
