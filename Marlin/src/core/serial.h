@@ -24,7 +24,7 @@
 #include "../inc/MarlinConfig.h"
 
 #define RTT_AS_SERIAL_OUT 1
-#include "../../lib/segger_rtt/log.h"
+#include "rtt.h"
 
 /**
  * Define debug bit-masks
@@ -69,7 +69,7 @@ extern uint8_t marlin_debug_flags;
   #define _PORT_REDIRECT(n,p)   NOOP
   #define _PORT_RESTORE(n)      NOOP
   #if RTT_AS_SERIAL_OUT
-    #define SERIAL_OUT(WHAT, V...) LOG_STR( V ) //MYSERIAL0.WHAT(V)
+    #define SERIAL_OUT(WHAT, V...) rtt.WHAT(V) //MYSERIAL0.WHAT(V)
   #else
     #define SERIAL_OUT(WHAT, V...) (void)MYSERIAL0.WHAT(V)
   #endif
