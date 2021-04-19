@@ -1,7 +1,7 @@
 
 
 
-import math
+
 
 #use kelvin temperature algo.
 
@@ -22,9 +22,21 @@ import math
 #     tn = a - 1 / T25
 #     return 1/tn
 
+import math
+
 T25 = 298.15
 R25 = 100
 B = 3950    
+
+def ADC2temp(adc):
+    v = adc / 4096
+    # v = r/(r+4.7)
+    # rv + 4.7v = r
+    # r = 4.7v / (1-v)
+    r = 4.7 * v / (1-v)
+    ln = math.log(r) - math.log(R25)
+    t1 = ln / B + 1 / T25
+    return 1/t1
 
 def RntcAtTemp(temp):
 
@@ -51,6 +63,7 @@ print('Rntc value = %f' % Rntc)
 raw = ADCAtTemp(temp)
 print("raw = %f" % raw)
 
-
+temp = ADC2temp(3.13/3.3*4096)
+print('3.13v = temp = %fK' % temp)
 
 

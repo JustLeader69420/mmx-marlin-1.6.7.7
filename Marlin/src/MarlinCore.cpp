@@ -1102,7 +1102,7 @@ void setup() {
 
   sync_plan_position();               // Vital to init stepper/planner equivalent for current_position
 
-  // SETUP_RUN(thermalManager.init());   // Initialize temperature loop
+  SETUP_RUN(thermalManager.init());   // Initialize temperature loop
 
   SETUP_RUN(print_job_timer.init());  // Initial setup of print job timer
 
@@ -1314,7 +1314,7 @@ void loop() {
   do {
     idle();
 
-    TERN_(USE_WATCHDOG, HAL_watchdog_refresh());
+    // TERN_(USE_WATCHDOG, HAL_watchdog_refresh());// thermalmanager will feed dog if normal.
 
     #if ENABLED(SDSUPPORT)
       card.checkautostart();

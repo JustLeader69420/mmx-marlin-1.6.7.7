@@ -129,7 +129,7 @@ extern "C" {
 // Below ADC, DAC and PWM definitions already done in the core
 // Could be redefined here if needed
 // ADC resolution is 12bits
-//#define ADC_RESOLUTION          12
+#define ADC_RESOLUTION          12
 //#define DACC_RESOLUTION         12
 
 // PWM resolution
@@ -266,6 +266,9 @@ extern "C" {
 // This must be a literal with a value less than or equal to MAX_ANALOG_INPUTS
 #define NUM_ANALOG_INPUTS       19
 #define NUM_ANALOG_FIRST        75
+
+// ADC resolution is 12bits
+#define ADC_RESOLUTION          12
 
 // On-board LED pin number
 #define LED_D2                  PF10
