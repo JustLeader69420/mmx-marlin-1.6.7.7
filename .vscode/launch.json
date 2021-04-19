@@ -4,10 +4,16 @@
 //
 // Documentation: https://docs.platformio.org/page/plus/debugging.html
 // Configuration: https://docs.platformio.org/page/projectconf/section_env_debug.html
-
 {
     "version": "0.2.0",
     "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
         {
             "cwd": "${workspaceRoot}",
             "executable": "./.pio/build/langgo407ve/firmware.elf",
