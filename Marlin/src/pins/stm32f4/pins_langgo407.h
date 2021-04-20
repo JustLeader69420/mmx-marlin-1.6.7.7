@@ -170,6 +170,7 @@
 
 #define NEOPIXEL_PIN       PB9
 
+
 //
 // Misc. Functions
 //
@@ -178,6 +179,7 @@
 //
 // LCD / Controller
 //
+// #define FSMC_GRAPHICAL_TFT           //use offical tft lcd controller.?
 //#define SD_DETECT_PIN                     PC5
 //#define SD_DETECT_PIN                     PA8   // SDIO SD_DETECT_PIN, external SDIO card reader only
 

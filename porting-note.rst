@@ -6,17 +6,17 @@ porting note.
 todo list
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. gpio led
-#. gpio key xmin ymin zmin
-#. uart
-#. stepper
-#. spi flash w25qxx
-#. spi sd card reader
-#. touch screen xpt2042
-#. fsmc lcd display.
+1. gpio led                 pass
+#. gpio key xmin ymin zmin  pass
+#. uart                     pass
+#. stepper                  big_step!
+#. spi flash w25qxx         
+#. spi sd card reader       pass
+#. touch screen xpt2042     todo
+#. fsmc lcd display.        todo
 #. dma 
 #. timer pwm buzzer
-#. temp sensor
+#. temp sensor              pass
 #. runout sensor
 
 
@@ -51,3 +51,9 @@ uart_init -- C:\Users\langgo\.platformio\packages\framework-arduinoststm32\libra
 HAL_Init setTimerIntPrio -- C:\Users\langgo\.platformio\packages\framework-arduinoststm32\libraries\SoftwareSerial\src\SoftwareSerial.cpp
 tmc_stepper_swserial -- .pio\libdeps\langgo407ve\TMCStepper\src\source\TMC2208Stepper.cpp   setup param for init purpose.
 sw_serial -- C:\Users\langgo\.platformio\packages\framework-arduinoststm32\libraries\SoftwareSerial\src\SoftwareSerial.cpp
+
+
+stepper timer tim5
+-------------------------------
+tim cfg ARR = 2000. psc = 42,  timck = 84mhz
+it freq = 84mhz / 42  = 2mhz  / 2k = 1khz

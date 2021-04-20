@@ -36,7 +36,8 @@
   //#define BLTOUCH                             //davi 2021.1.21
   //#define Z_SAFE_HOMING                       //davi 2021.1.21
   #define AUTO_BED_LEVELING_BILINEAR
-  
+  #define MARLIN_DEV_MODE
+  #define BTT_FSMC_LCD
 #endif
 
 /**
