@@ -37,6 +37,7 @@
   //#define Z_SAFE_HOMING                       //davi 2021.1.21
   #define AUTO_BED_LEVELING_BILINEAR
   #define MARLIN_DEV_MODE
+  #define HAS_FSMC_TFT  1
   #define BTT_FSMC_LCD
 #endif
 
@@ -2214,7 +2215,7 @@
 // Third-party or vendor-customized controller interfaces.
 // Sources should be installed in 'src/lcd/extensible_ui'.
 //
-#define EXTENSIBLE_UI
+// #define EXTENSIBLE_UI
 
 #if ENABLED(EXTENSIBLE_UI)
   #define EXTUI_EXAMPLE
@@ -2241,7 +2242,11 @@
  *   Resolution: TFT_WIDTH and TFT_HEIGHT
  *   Interface:  TFT_INTERFACE_FSMC or TFT_INTERFACE_SPI
  */
-//#define TFT_GENERIC
+#define TFT_GENERIC
+#define TFT_DRIVER  ST7796
+#define TFT_WIDTH   480
+#define TFT_HEIGHT  320
+#define TFT_INTERFACE_FSMC
 
 /**
  * TFT UI - User Interface Selection. Enable one of the following options:
@@ -2254,7 +2259,7 @@
  *   root of your SD card, together with the compiled firmware.
  */
 //#define TFT_CLASSIC_UI
-//#define TFT_COLOR_UI
+#define TFT_COLOR_UI
 //#define TFT_LVGL_UI
 
 /**
@@ -2279,17 +2284,17 @@
 //
 // ADS7843/XPT2046 ADC Touchscreen such as ILI9341 2.8
 //
-//#define TOUCH_SCREEN
+#define TOUCH_SCREEN
 #if ENABLED(TOUCH_SCREEN)
   #define BUTTON_DELAY_EDIT  50 // (ms) Button repeat delay for edit screens
   #define BUTTON_DELAY_MENU 250 // (ms) Button repeat delay for menus
 
   #define TOUCH_SCREEN_CALIBRATION
 
-  //#define XPT2046_X_CALIBRATION 12316
-  //#define XPT2046_Y_CALIBRATION -8981
-  //#define XPT2046_X_OFFSET        -43
-  //#define XPT2046_Y_OFFSET        257
+  #define XPT2046_X_CALIBRATION 12316
+  #define XPT2046_Y_CALIBRATION -8981
+  #define XPT2046_X_OFFSET        -43
+  #define XPT2046_Y_OFFSET        257
 #endif
 
 //

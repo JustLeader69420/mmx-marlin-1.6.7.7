@@ -179,7 +179,41 @@
 //
 // LCD / Controller
 //
-// #define FSMC_GRAPHICAL_TFT           //use offical tft lcd controller.?
+#define FSMC_GRAPHICAL_TFT           //use offical tft lcd controller.?
+
+// #if HAS_FSMC_TFT
+//   /**
+//    * Note: MKS Robin TFT screens use various TFT controllers
+//    * Supported screens are based on the ILI9341, ST7789V and ILI9328 (320x240)
+//    * ILI9488 is not supported
+//    * Define init sequences for other screens in u8g_dev_tft_320x240_upscale_from_128x64.cpp
+//    *
+//    * If the screen stays white, disable 'LCD_RESET_PIN'
+//    * to let the bootloader init the screen.
+//    *
+//    * Setting an 'LCD_RESET_PIN' may cause a flicker when entering the LCD menu
+//    * because Marlin uses the reset as a failsafe to revive a glitchy LCD.
+//    */
+//   //#define LCD_RESET_PIN                   PF6
+//   #define LCD_BACKLIGHT_PIN                 PG10
+//   #define FSMC_CS_PIN                       PD7  // NE1
+//   #define FSMC_RS_PIN                       PE2  // A23
+//   #define TFT_CS_PIN                 FSMC_CS_PIN
+//   #define TFT_RS_PIN                 FSMC_RS_PIN
+
+//   #define LCD_USE_DMA_FSMC                        // Use DMA transfers to send data to the TFT
+//   #define FSMC_DMA_DEV                      DMA2
+//   #define FSMC_DMA_CHANNEL               DMA_CH5
+// #endif
+
+// #if NEED_TOUCH_PINS
+//   #define TOUCH_CS_PIN                      PB1   // SPI2_NSS
+//   #define TOUCH_SCK_PIN                     PB13  // SPI2_SCK
+//   #define TOUCH_MISO_PIN                    PB14  // SPI2_MISO
+//   #define TOUCH_MOSI_PIN                    PB15  // SPI2_MOSI
+//   #define TOUCH_INT_PIN                     -1
+// #endif
+
 //#define SD_DETECT_PIN                     PC5
 //#define SD_DETECT_PIN                     PA8   // SDIO SD_DETECT_PIN, external SDIO card reader only
 
@@ -196,13 +230,24 @@
  * because Marlin uses the reset as a failsafe to revive a glitchy LCD.
  */
 
-#define LCD_BACKLIGHT_PIN  PG10
-#define FSMC_CS_PIN        PD7   // FSMC_NE1
-#define FSMC_RS_PIN        PE2   // A23 Register. Only one address needed
+#define LCD_BACKLIGHT_PIN   PG10
+#define FSMC_CS_PIN         PD7   // FSMC_NE1
+#define FSMC_RS_PIN         PE2   // A23 Register. Only one address needed
+#define TFT_CS_PIN          FSMC_CS_PIN
+#define TFT_RS_PIN          FSMC_RS_PIN
+#define TFT_BACKLIGHT_PIN   LCD_BACKLIGHT_PIN
 
 #define LCD_USE_DMA_FSMC   // Use DMA transfers to send data to the TFT
 #define FSMC_DMA_DEV       DMA1
 #define FSMC_DMA_CHANNEL   DMA_CH4  //fixme in F4
+
+#if ENABLED(TOUCH_SCREEN)
+  #define TOUCH_CS_PIN     PB6
+  #define TOUCH_SCK_PIN    PB3
+  #define TOUCH_MOSI_PIN   PB5
+  #define TOUCH_MISO_PIN   PB4 
+  #define TOUCH_INT_PIN    PB7 // PenIRQ coming from XPT2046
+#endif
 
 #define DOGLCD_MOSI        -1  // Prevent auto-define by Conditionals_post.h
 #define DOGLCD_SCK         -1

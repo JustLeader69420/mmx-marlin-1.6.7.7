@@ -946,7 +946,7 @@ void setup() {
 
   tmc_standby_setup();  // TMC Low Power Standby pins must be set early or they're not usable
 
-  LCD_Setup();
+  // LCD_Setup();
 
   #if ENABLED(MARLIN_DEV_MODE)
     auto log_current_ms = [&](PGM_P const msg) {
@@ -959,7 +959,8 @@ void setup() {
   #else
     #define SETUP_LOG(...) NOOP
   #endif
-  #define SETUP_RUN(C) do{ SETUP_LOG(STRINGIFY(C)); C; }while(0)
+  // #define SETUP_RUN(C) do{ SETUP_LOG(STRINGIFY(C)); C; }while(0)
+  #define SETUP_RUN(C) do{ C; }while(0)
 
   #if EITHER(DISABLE_DEBUG, DISABLE_JTAG)
     // Disable any hardware debug to free up pins for IO

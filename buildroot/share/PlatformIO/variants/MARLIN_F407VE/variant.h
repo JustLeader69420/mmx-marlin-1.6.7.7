@@ -296,9 +296,6 @@ extern "C" {
 #define PIN_SPI_SS              PB12
 //#define PIN_SPI_SS1             PB0 // W25Q16 (on board flash)
 
-// I2C Definitions
-// #define PIN_WIRE_SDA            PB7
-// #define PIN_WIRE_SCL            PB6
 
 // Timer Definitions
 //Do not use timer used by PWM pins when possible. See PinMap_PWM in PeripheralPins.c

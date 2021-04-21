@@ -4,7 +4,7 @@ porting note.
 
 
 todo list
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 1. gpio led                 pass
 #. gpio key xmin ymin zmin  pass
@@ -21,7 +21,7 @@ todo list
 
 
 gpio. f4
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 
 compatible with st parts:
@@ -29,14 +29,14 @@ compatible with st parts:
 
 
 use EXTUI-example so far
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 123123
----------------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 
 如何通过串口打印debug信息？？
----------------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 也许是通过serial == host 之间这个来输出？
 
@@ -57,3 +57,10 @@ stepper timer tim5
 -------------------------------
 tim cfg ARR = 2000. psc = 42,  timck = 84mhz
 it freq = 84mhz / 42  = 2mhz  / 2k = 1khz
+
+
+fsmc tft driver 
+-------------------------------
+1. fsmc rs cs backlight other data pins define & init.
+#. fsmc clock init.
+#. lcd rw via fsmc like lcd->ram = xxxx;
