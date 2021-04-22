@@ -1108,7 +1108,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
-#define INVERT_Y_DIR false
+#define INVERT_Y_DIR true
 #define INVERT_Z_DIR true
 
 // @section extruder
@@ -2291,10 +2291,10 @@
 
   #define TOUCH_SCREEN_CALIBRATION
 
-  #define XPT2046_X_CALIBRATION 12316
-  #define XPT2046_Y_CALIBRATION -8981
-  #define XPT2046_X_OFFSET        -43
-  #define XPT2046_Y_OFFSET        257
+  #define XPT2046_X_CALIBRATION  -17548 // 12316
+  #define XPT2046_Y_CALIBRATION  11532  //-8981
+  #define XPT2046_X_OFFSET       509    //-43
+  #define XPT2046_Y_OFFSET       -21    //257
 #endif
 
 //

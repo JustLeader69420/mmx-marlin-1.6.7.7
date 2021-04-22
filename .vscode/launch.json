@@ -4,6 +4,7 @@
 //
 // Documentation: https://docs.platformio.org/page/plus/debugging.html
 // Configuration: https://docs.platformio.org/page/projectconf/section_env_debug.html
+
 {
     "version": "0.2.0",
     "configurations": [
@@ -23,6 +24,7 @@
             "servertype": "jlink",
             "device": "STM32F407ZE",
             "svdFile": "STM32F40x.svd",
+            "serialNumber": "137526290"
         },
         {
             "type": "platformio-debug",
@@ -32,7 +34,7 @@
             "projectEnvName": "langgo407ve",
             "toolchainBinDir": "C:/Users/langgo/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart",
-            "svdPath": "C:/Users/langgo/.platformio/platforms/ststm32/misc/svd/STM32F40x.svd",
+            "svdPath": "STM32F40x.svd",
             "preLaunchTask": {
                 "type": "PlatformIO",
                 "task": "Pre-Debug (langgo407ve)"
@@ -46,7 +48,7 @@
             "projectEnvName": "langgo407ve",
             "toolchainBinDir": "C:/Users/langgo/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart",
-            "svdPath": "C:/Users/langgo/.platformio/platforms/ststm32/misc/svd/STM32F40x.svd"
+            "svdPath": "STM32F40x.svd"
         }
     ]
 }
