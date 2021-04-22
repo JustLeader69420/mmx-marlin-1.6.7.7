@@ -9,14 +9,14 @@ todo list
 1. gpio led                 pass
 #. gpio key xmin ymin zmin  pass
 #. uart                     pass
-#. stepper                  big_step!
+#. stepper                  pass @ 1mm 10mm move test.
 #. spi flash w25qxx         
 #. spi sd card reader       pass
-#. touch screen xpt2042     todo
-#. fsmc lcd display.        todo
+#. touch screen xpt2042     pass
+#. fsmc lcd display.        pass. use other ui so far.
 #. dma 
 #. timer pwm buzzer
-#. temp sensor              pass
+#. temp sensor              fix max/min temp bug.
 #. runout sensor
 
 
@@ -64,3 +64,4 @@ fsmc tft driver
 1. fsmc rs cs backlight other data pins define & init.
 #. fsmc clock init.
 #. lcd rw via fsmc like lcd->ram = xxxx;
+#. 今天调试时  相同代码情况下断点调试有部分内存会忽然变0的问题 断电重启后不复现  国产MCU 有时真坑。。。
