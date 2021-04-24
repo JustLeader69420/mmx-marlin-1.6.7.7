@@ -29,7 +29,7 @@ R25 = 100
 B = 3950    
 
 def ADC2temp(adc):
-    v = adc / 4096
+    v = adc / 1024
     # v = r/(r+4.7)
     # rv + 4.7v = r
     # r = 4.7v / (1-v)
@@ -63,7 +63,17 @@ print('Rntc value = %f' % Rntc)
 raw = ADCAtTemp(temp)
 print("raw = %f" % raw)
 
-temp = ADC2temp(3.13/3.3*4096)
+temp = ADC2temp(3.13/3.3*1024)
 print('3.13v = temp = %fK' % temp)
 
+# target: we want a table from raw -- temp celsuis [20 ~ 1023]
+raw = [x*10 for x in range(2, 103)]
+ces = [ADC2temp(a) - temp_zero_k for a in raw]
+raw2ces = dict(zip(raw, ces))
+print(raw2ces)
+
+# format = { OV(  23), 300 },
+for i in raw2ces:
+    line = '{ OV( ' +  str(i)  + ' ),  %d  },' % int(raw2ces[i])
+    print(line)
 

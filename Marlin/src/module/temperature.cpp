@@ -1913,9 +1913,28 @@ void Temperature::init() {
 
     #if _MINMAX_TEST(0, MIN)
       _TEMP_MIN_E(0);
+      //for debug use only.
+      // do {
+      //   const int16_t tmin = _MAX(HEATER_0_MINTEMP, \
+      //     TERN(HEATER_0_USER_THERMISTOR, 0, (int16_t)pgm_read_word(&HEATER_0_TEMPTABLE[HEATER_0_SENSOR_MINTEMP_IND].celsius)));
+      //   temp_range[0].mintemp = tmin;
+      //   while (analog_to_celsius_hotend(temp_range[0].raw_min, 0) < tmin) {
+      //     temp_range[0].raw_min += TEMPDIR(0) * (OVERSAMPLENR); 
+      //   }
+      // } while(0);
+      
     #endif
     #if _MINMAX_TEST(0, MAX)
       _TEMP_MAX_E(0);
+      
+      //for debug use only.
+      // do{ \
+      //   const int16_t tmax = _MIN(HEATER_0_MAXTEMP, \
+      //     TERN(HEATER_0_USER_THERMISTOR, 2000, (int16_t)pgm_read_word(&HEATER_0_TEMPTABLE[HEATER_0_SENSOR_MAXTEMP_IND].celsius) - 1));
+      //   temp_range[0].maxtemp = tmax; \
+      //   while (analog_to_celsius_hotend(temp_range[0].raw_max, 0) > tmax) \
+      //     temp_range[0].raw_max -= TEMPDIR(0) * (OVERSAMPLENR); \
+      // }while(0);
     #endif
     #if _MINMAX_TEST(1, MIN)
       _TEMP_MIN_E(1);
@@ -2357,6 +2376,14 @@ void Temperature::update_raw_temperatures() {
   TERN_(HAS_JOY_ADC_Z, joystick.z.update());
 
   raw_temps_ready = true;
+  // SERIAL_PRINTF("[ADC] temp extrutor \t%d %d %d", 
+  //                 temp_hotend[0].raw, 
+  //                 temp_hotend[0].acc, 
+  //                 (int)temp_hotend[0].celsius);
+  // SERIAL_PRINTF("[ADC] temp bed \t%d %d %d", 
+  //                 temp_bed.raw, 
+  //                 temp_bed.acc, 
+  //                 (int)temp_bed.celsius);
 }
 
 void Temperature::readings_ready() {
@@ -2400,7 +2427,12 @@ void Temperature::readings_ready() {
         const bool heater_on = (temp_hotend[e].target > 0
           || TERN0(PIDTEMP, temp_hotend[e].soft_pwm_amount) > 0
         );
-        if (rawtemp > temp_range[e].raw_max * tdir) max_temp_error((heater_id_t)e);
+        if (rawtemp > temp_range[e].raw_max * tdir) 
+        {
+          SERIAL_PRINTF("capture: rawtemp %d, temp_range.raw_max %d\n", 
+                                  rawtemp,    temp_range[e].raw_max);
+          max_temp_error((heater_id_t)e);
+        }
         if (heater_on && rawtemp < temp_range[e].raw_min * tdir && !is_preheating(e)) {
           #ifdef MAX_CONSECUTIVE_LOW_TEMPERATURE_ERROR_ALLOWED
             if (++consecutive_low_temperature_error[e] >= MAX_CONSECUTIVE_LOW_TEMPERATURE_ERROR_ALLOWED)

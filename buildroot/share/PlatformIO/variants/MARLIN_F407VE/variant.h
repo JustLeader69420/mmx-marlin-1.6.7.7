@@ -268,7 +268,7 @@ extern "C" {
 #define NUM_ANALOG_FIRST        75
 
 // ADC resolution is 12bits
-#define ADC_RESOLUTION          12
+#define ADC_RESOLUTION          10
 
 // On-board LED pin number
 #define LED_D2                  PF10

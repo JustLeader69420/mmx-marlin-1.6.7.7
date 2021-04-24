@@ -28,7 +28,7 @@
 #if ENABLED(HAL_ADC_FILTERED)
   #define OVERSAMPLENR 1
 #else
-  #define OVERSAMPLENR 4
+  #define OVERSAMPLENR 16
 #endif
 #define MAX_RAW_THERMISTOR_VALUE (HAL_ADC_RANGE * (OVERSAMPLENR) - 1)
 
@@ -170,6 +170,9 @@ typedef struct { int16_t value, celsius; } temp_entry_t;
 #endif
 #if ANY_THERMISTOR_IS(331) // Like table 1, but with 3V3 as input voltage for MEGA
   #include "thermistor_331.h"
+#endif
+#if ANY_THERMISTOR_IS(301) // MD-D301 100K B3950 4.7k 3V3 as input voltage
+  #include "thermistor_301.h"
 #endif
 #if ANY_THERMISTOR_IS(332) // Like table 1, but with 3V3 as input voltage for DUE
   #include "thermistor_332.h"
