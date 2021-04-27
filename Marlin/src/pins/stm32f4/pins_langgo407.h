@@ -179,7 +179,7 @@
 //
 // LCD / Controller
 //
-#define FSMC_GRAPHICAL_TFT           //use offical tft lcd controller.?
+// #define FSMC_GRAPHICAL_TFT           //use offical tft lcd controller.?
 
 // #if HAS_FSMC_TFT
 //   /**

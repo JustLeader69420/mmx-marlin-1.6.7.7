@@ -77,6 +77,7 @@ public:
   CardReader();
 
   static SdFile getroot() { return root; }
+  static SdFile* getrootp() { return &root; }
 
   static void mount();
   static void release();
