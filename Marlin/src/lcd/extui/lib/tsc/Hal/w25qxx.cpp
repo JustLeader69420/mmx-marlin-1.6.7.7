@@ -235,6 +235,31 @@ void W25Qxx_EraseBulk(void)
   W25Qxx_WaitForWriteEnd();
 }
 
+SPI_HandleTypeDef hspi2;
+DMA_HandleTypeDef hdma_spi;
+void w25qxx_spi_transferDMA(uint8_t *txbuf, uint8_t *rxbuf, uint16_t cnt)
+{
+  const uint16_t dummy = 0xffff;
+  if (txbuf == NULL) {
+    txbuf = (uint8_t*)&dummy;
+  }
 
+  //cfg dma.
+  HAL_DMA_DeInit(&hdma_spi);
+  hdma_spi.Instance = DMA2_Stream0; //should check spi rx available
+  hdma_spi.Init.Channel = DMA_CHANNEL_0;
+  hdma_spi.Init.Direction = DMA_PERIPH_TO_MEMORY;
+  hdma_spi.Init.Mode = DMA_NORMAL;
+  hdma_spi.Init.MemInc = DMA_MINC_DISABLE;
+  hdma_spi.Init.PeriphInc = DMA_PINC_DISABLE;
+  hdma_spi.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+  hdma_spi.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+  hdma_spi.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+  HAL_DMA_Init(&hdma_spi);
+  HAL_DMA_Start(&hdma_spi, (uint32_t)&hspi2.Instance->DR, (uint32_t)&(TFT_FSMC::LCD->RAM), cnt);
+
+  //start dma
+  HAL_SPI_TransmitReceive_DMA(&hspi2, txbuf, rxbuf, cnt);
+}
 
 
