@@ -3,9 +3,10 @@
 #include <stdint.h>
 #include "pinmap.h"
 #include "../../../src/HAL/STM32/tft/tft_fsmc.h"
+#include "../../../../tft_io/tft_io.h"
 
 
-extern LCD_CONTROLLER_TypeDef *TFT_FSMC::LCD;
+// extern LCD_CONTROLLER_TypeDef *TFT_FSMC::LCD;
 
 
 // typedef struct {

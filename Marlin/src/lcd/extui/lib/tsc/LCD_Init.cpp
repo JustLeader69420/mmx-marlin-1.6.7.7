@@ -466,7 +466,7 @@ void LCD_Init(void)
   // dma_set_priority(FSMC_DMA_DEV, FSMC_DMA_CHANNEL, DMA_PRIORITY_MEDIUM);
   LCD_FSMCInit(FSMC_CS_PIN, FSMC_RS_PIN);
 
-  LCD_init_RGB();
+  // LCD_init_RGB();
   LCD_RefreshDirection();
   //GUI_Clear(BLACK);
  // Delay_ms(20);

@@ -27,6 +27,7 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs) {
   fsmcInit = 1;
 
   TFT_FSMC::Init();
+  TFT_IO::InitTFT();
 
 #if 0
   uint32_t controllerAddress;

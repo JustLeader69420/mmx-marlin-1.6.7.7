@@ -1,16 +1,22 @@
 #include "../../../../../inc/MarlinConfig.h"
 #include "w25qxx.h"
+#include "rtt.h"
 
 /*************************** W25Qxx SPI ģʽ�ײ���ֲ�Ľӿ� ***************************/
 //#define W25Qxx_SPI     _SPI3
 //#define W25Qxx_SPEED   0
-#define W25Qxx_CS_PIN PB12
-SPIClass W25qxxSPI;  //when assign _spi instance?
+
+// mosi, uint8_t miso, uint8_t sclk, uint8_t ssel SPI2 in F4
+#define W25QXX_MOSI_PIN PC3
+#define W25QXX_MISO_PIN PC2
+#define W25QXX_SCLK_PIN PB13
+#define W25QXX_CS_PIN   PB12
+SPIClass W25qxxSPI(W25QXX_MOSI_PIN, W25QXX_MISO_PIN, W25QXX_SCLK_PIN, W25QXX_CS_PIN);  //when assign _spi instance?
 
 
 void W25Qxx_SPI_CS_Set(uint8_t level)
 {
-  WRITE(W25Qxx_CS_PIN, level);
+  WRITE(W25QXX_CS_PIN, level);
 }
 
 uint8_t W25Qxx_SPI_Read_Write_Byte(uint8_t data)
@@ -21,20 +27,25 @@ uint8_t W25Qxx_SPI_Read_Write_Byte(uint8_t data)
 void W25Qxx_SPI_Read_Buf(uint8_t* buf, uint16_t nbyte) 
 {
   // W25qxxSPI.dmaTransfer(0, const_cast<uint8_t*>(buf), nbyte);
-  // W25qxxSPI.transfer(0, const_cast<uint8_t*>(buf), nbyte);
+  uint8_t *dummy = (uint8_t*)0x08000000;
+  W25qxxSPI.transfer(dummy, buf, nbyte);
 }
 
 void W25Qxx_SPI_Write_Buf(uint8_t* pBuffer, uint32_t len)
 {
-  // W25qxxSPI.send(pBuffer, len);
+  W25qxxSPI.transfer(pBuffer, len);
 }
 
+volatile uint32_t w25qid;
 void W25Qxx_Init(void)
 {
-  // W25qxxSPI.setClockDivider(SPI_BAUD_PCLK_DIV_2);
-  // W25qxxSPI.begin();
-  // SET_OUTPUT(W25Qxx_CS_PIN);
-  // W25Qxx_SPI_CS_Set(1);
+  W25qxxSPI.setClockDivider(4);
+  W25qxxSPI.begin();
+  SET_OUTPUT(W25QXX_CS_PIN);
+  W25Qxx_SPI_CS_Set(1);
+
+  w25qid = W25Qxx_ReadID();
+  rtt.printf("w25qxx id = %6x" , w25qid);
 }
 /*************************************************************************************/
 
