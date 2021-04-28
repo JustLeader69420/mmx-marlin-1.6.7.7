@@ -2,15 +2,11 @@
 
 #if defined(BTT_FSMC_LCD) // FSMC on 100/144 pins SoCs
 
-#include "stm32f1_fsmc.h"
+#include "stm32f4_fsmc.h"
 // #include <libmaple/fsmc.h>
 // #include <libmaple/gpio.h>
 // #include <libmaple/dma.h>
 // #include <boards.h>
-
-/* Timing configuration */
-#define FSMC_ADDRESS_SETUP_TIME   3  // AddressSetupTime
-#define FSMC_DATA_SETUP_TIME      3  // DataSetupTime
 
 /**
  * FSMC LCD IO
@@ -22,52 +18,18 @@
 //   __ASM volatile ("dsb 0xF":::"memory");
 // }
 
-#define FSMC_CS_NE1   PD7
-
-#if ENABLED(STM32_XL_DENSITY)
-  #define FSMC_CS_NE2 PG9
-  #define FSMC_CS_NE3 PG10
-  #define FSMC_CS_NE4 PG12
-
-  #define FSMC_RS_A0  PF0
-  #define FSMC_RS_A1  PF1
-  #define FSMC_RS_A2  PF2
-  #define FSMC_RS_A3  PF3
-  #define FSMC_RS_A4  PF4
-  #define FSMC_RS_A5  PF5
-  #define FSMC_RS_A6  PF12
-  #define FSMC_RS_A7  PF13
-  #define FSMC_RS_A8  PF14
-  #define FSMC_RS_A9  PF15
-  #define FSMC_RS_A10 PG0
-  #define FSMC_RS_A11 PG1
-  #define FSMC_RS_A12 PG2
-  #define FSMC_RS_A13 PG3
-  #define FSMC_RS_A14 PG4
-  #define FSMC_RS_A15 PG5
-#endif
-
-#define FSMC_RS_A16   PD11
-#define FSMC_RS_A17   PD12
-#define FSMC_RS_A18   PD13
-#define FSMC_RS_A19   PE3
-#define FSMC_RS_A20   PE4
-#define FSMC_RS_A21   PE5
-#define FSMC_RS_A22   PE6
-#define FSMC_RS_A23   PE2
-
-#if ENABLED(STM32_XL_DENSITY)
-  #define FSMC_RS_A24 PG13
-  #define FSMC_RS_A25 PG14
-#endif
-
-TFTLCD_TypeDef *TFTLCD;  // LCD FSMC Control Address
+// TFTLCD_TypeDef *TFTLCD;  // LCD FSMC Control Address
 
 static uint8_t fsmcInit = 0;
 
 void LCD_FSMCInit(uint8_t cs, uint8_t rs) {
-  uint32_t controllerAddress;
+  if (fsmcInit) return;
+  fsmcInit = 1;
+
+  TFT_FSMC::Init();
+
 #if 0
+  uint32_t controllerAddress;
   if (fsmcInit) return;
   fsmcInit = 1;
 
@@ -151,25 +113,32 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs) {
   #endif
 
   afio_remap(AFIO_REMAP_FSMC_NADV);
-#endif
   TFTLCD = (TFTLCD_TypeDef*)controllerAddress;
+#endif
 }
 
 void LCD_WriteData(uint16_t data) {
-  TFTLCD->RAM = data;
+  // TFT_FSMC::LCD->RAM = data;
+  TFT_FSMC::WriteData(data);
   __DSB();
 }
 
 void LCD_WriteReg(uint16_t Reg) {
-  TFTLCD->REG = Reg;
+  // TFT_FSMC::LCD->REG = Reg;
+  TFT_FSMC::WriteReg(Reg);
   __DSB();
 }
 
 uint16_t LCD_ReadData(void)
-{										    	   
-  volatile uint16_t ram;
-  ram = TFTLCD->RAM;	
-  return ram;	 		 
-}		
+{
+  // volatile uint16_t ram;
+  // ram = TFT_FSMC::LCD->RAM;	
+  // return ram;
+}
+
+void LCD_WriteMultiple(uint16_t color, uint32_t cnt)
+{
+  TFT_FSMC::WriteMultiple(color, cnt);
+}
 
 #endif // BTT_FSMC_LCD

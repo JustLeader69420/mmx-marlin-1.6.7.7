@@ -1,6 +1,6 @@
 #include "GUI.h"
 #include "LCD_Init.h"
-#include "Hal/stm32f1_fsmc.h"
+#include "Hal/stm32f4_fsmc.h"
 #include "Hal/w25qxx.h"
 
 uint16_t foreGroundColor = FK_COLOR;

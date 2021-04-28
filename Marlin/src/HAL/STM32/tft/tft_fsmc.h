@@ -21,6 +21,7 @@
  */
 #pragma once
 
+// #include "pinmap.h"
 #ifdef STM32F1xx
   #include "stm32f1xx_hal.h"
 #elif defined(STM32F4xx)

@@ -13,7 +13,7 @@
 #include "../../../../libs/duration_t.h"
 #include "../../../../module/printcounter.h"
 // Hardware
-#include "Hal/stm32f1_fsmc.h"
+#include "Hal/stm32f4_fsmc.h"
 #include "Hal/sw_spi.h"
 #include "Hal/w25qxx.h"
 #include "Hal/xpt2046.h"
