@@ -150,6 +150,11 @@
   #include "../lcd/tft/touch.h"
 #endif
 
+#if ENABLED(BTT_FSMC_LCD)
+  // #include "../lcd/extui/lib/tsc/TSC_Menu.h"
+  #include "../lcd/extui/lib/tsc/Menu/Settings.h"
+#endif
+
 #pragma pack(push, 1) // No padding between variables
 
 typedef struct { uint16_t X, Y, Z, X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_stepper_current_t;
@@ -429,6 +434,11 @@ typedef struct SettingsDataStruct {
   //
   #if ENABLED(TOUCH_SCREEN_CALIBRATION)
     touch_calibration_t touch_calibration;
+  #endif
+
+  #if 0 //add by langgo
+    SETTINGS custom_settings;
+    uint32_t TSC_Para[7];
   #endif
 
 } SettingsData;

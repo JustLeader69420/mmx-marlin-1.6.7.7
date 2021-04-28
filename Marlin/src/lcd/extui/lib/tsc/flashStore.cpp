@@ -1,5 +1,8 @@
 #include "Hal/STM32_Flash.h"
 #include "Menu/Settings.h"
+#include "Hal/w25qxx.h"
+
+#define SAVE_DEVICE_EXT_FLASH 1
 
 #define PARA_SIZE 256  //bytes
 #define TSC_SIGN  0x20200707 // DO NOT MODIFY
@@ -7,6 +10,22 @@
 
 extern uint32_t TSC_Para[7];        //
 extern SETTINGS infoSettings;  //
+
+
+// W25Q64_SETTING_ADDR  
+// W25Q64_TSC_PARA_ADDR
+void w25qxx_write_saved(uint8_t *data, uint16_t size)
+{
+  uint32_t save_addr = W25Q64_SETTING_ADDR;
+  W25Qxx_EraseSector(save_addr);
+  W25Qxx_WriteBuffer(data, save_addr, size);
+}
+
+void w25qxx_read_saved(uint8_t *data, uint16_t size)
+{
+  uint32_t save_addr = W25Q64_SETTING_ADDR;
+  W25Qxx_ReadBuffer(data, save_addr, size);
+}
 
 void wordToByte(uint32_t word, uint8_t *bytes)  //
 {
@@ -39,8 +58,11 @@ bool readStoredPara(void)
   uint8_t data[PARA_SIZE];
   uint32_t index = 0;
   uint32_t sign = 0;
+#if SAVE_DEVICE_EXT_FLASH
+  w25qxx_read_saved(data, PARA_SIZE);
+#else
   STM32_FlashRead(data, PARA_SIZE);
-  
+#endif
   sign = byteToWord(data + (index += 4), 4);
   if(sign != TSC_SIGN) paraExist = false;    // If the touch screen calibration parameter does not exist
   else
@@ -93,5 +115,11 @@ void storePara(void)
   wordToByte(infoSettings.silent,     data + (index += 4));
   wordToByte(infoSettings.auto_off,   data + (index += 4));
   
+#if SAVE_DEVICE_EXT_FLASH
+  w25qxx_write_saved(data, PARA_SIZE);
+#else
   STM32_FlashWrite(data, PARA_SIZE);
+#endif
 }
+
+

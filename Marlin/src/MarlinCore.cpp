@@ -994,7 +994,7 @@ void setup() {
 
   SETUP_RUN(HAL_init());
   LCD_Setup();
-  
+
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
   #endif
@@ -1257,6 +1257,7 @@ void setup() {
   #endif
 
   #if HAS_TRINAMIC_CONFIG && DISABLED(PSU_DEFAULT_OFF)
+    delay(200);
     SETUP_RUN(test_tmc_connection(true, true, true, true));
   #endif
 

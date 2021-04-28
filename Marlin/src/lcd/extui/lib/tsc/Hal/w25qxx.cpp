@@ -6,13 +6,13 @@
 //#define W25Qxx_SPI     _SPI3
 //#define W25Qxx_SPEED   0
 
+
 // mosi, uint8_t miso, uint8_t sclk, uint8_t ssel SPI2 in F4
 #define W25QXX_MOSI_PIN PC3
 #define W25QXX_MISO_PIN PC2
 #define W25QXX_SCLK_PIN PB13
 #define W25QXX_CS_PIN   PB12
 SPIClass W25qxxSPI(W25QXX_MOSI_PIN, W25QXX_MISO_PIN, W25QXX_SCLK_PIN, W25QXX_CS_PIN);  //when assign _spi instance?
-
 
 void W25Qxx_SPI_CS_Set(uint8_t level)
 {
@@ -39,7 +39,7 @@ void W25Qxx_SPI_Write_Buf(uint8_t* pBuffer, uint32_t len)
 volatile uint32_t w25qid;
 void W25Qxx_Init(void)
 {
-  W25qxxSPI.setClockDivider(4);
+  W25qxxSPI.setClockDivider(2);
   W25qxxSPI.begin();
   SET_OUTPUT(W25QXX_CS_PIN);
   W25Qxx_SPI_CS_Set(1);
@@ -234,5 +234,7 @@ void W25Qxx_EraseBulk(void)
 
   W25Qxx_WaitForWriteEnd();
 }
+
+
 
 

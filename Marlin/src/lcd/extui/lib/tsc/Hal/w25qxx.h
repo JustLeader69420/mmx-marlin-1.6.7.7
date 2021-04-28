@@ -18,6 +18,12 @@
 #define W25QXX_DUMMY_BYTE  0xFF
 #define W25QXX_SPI_PAGESIZE 0x100
 
+#define W25QXX_PAGE_SIZE    (256)
+#define W25QXX_SECTOR_SIZE  (4*1024)  //min erase unit
+#define W25QXX_BLOCK_SIZE   (64*1024)
+#define W25Q64_SETTING_ADDR  /*8MB*/ (8*1024*1024 - (2*W25QXX_SECTOR_SIZE) )
+#define W25Q64_TSC_PARA_ADDR  /*8MB*/ (8*1024*1024 - W25QXX_SECTOR_SIZE)
+
 extern SPIClass W25qxxSPI;
 
 uint8_t W25Qxx_SPI_Read_Write_Byte(uint8_t data);

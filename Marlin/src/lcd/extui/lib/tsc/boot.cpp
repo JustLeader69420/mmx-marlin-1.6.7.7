@@ -22,8 +22,10 @@ const char iconBmpName[][32]={
 };
 
 #define LCD_DMA_MAX_TRANS	65535		// DMA 65535 bytes one frame
+uint8_t bmp_buffer[65536];  //65kb buffer for ui bmp data
 void lcd_frame_segment_display(uint16_t size, uint32_t addr)
 {
+#if 0
   W25Qxx_SPI_CS_Set(0);
   W25Qxx_SPI_Read_Write_Byte(CMD_FAST_READ_DATA);
   W25Qxx_SPI_Read_Write_Byte((uint8_t)((addr)>>16));
@@ -36,6 +38,26 @@ void lcd_frame_segment_display(uint16_t size, uint32_t addr)
   // W25qxxSPI.begin();
   #warning "FIXME here...."
   W25Qxx_SPI_CS_Set(1);
+#else //use slow read
+  W25Qxx_SPI_CS_Set(0);
+  W25Qxx_SPI_Read_Write_Byte(CMD_FAST_READ_DATA);
+  W25Qxx_SPI_Read_Write_Byte((uint8_t)((addr)>>16));
+  W25Qxx_SPI_Read_Write_Byte((uint8_t)((addr)>>8));
+  W25Qxx_SPI_Read_Write_Byte((uint8_t)addr);
+  W25Qxx_SPI_Read_Write_Byte(0XFF);  //8 dummy clock
+  for (int i=0; i<size; ++i) {
+    // bmp_buffer[i] = W25Qxx_SPI_Read_Write_Byte(0XFF);
+    if (i%2) {
+      // LCD_WriteData((bmp_buffer[i] << 8) | bmp_buffer[i-1]);
+      // TFT_FSMC::LCD->RAM = *(uint16*)bmp_buffer[i-1];
+      // LCD_WriteData(*(uint16_t*)bmp_buffer[i-1]);
+    } 
+  }
+  // for (int i=0; i<size; i+=2) {
+  //   LCD_WriteData((bmp_buffer[i+1] << 8) | bmp_buffer[i]);
+  // }
+
+#endif
 }
 
 void lcd_frame_display(uint16_t sx, uint16_t sy, uint16_t w, uint16_t h, uint32_t addr)
