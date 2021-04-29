@@ -66,6 +66,7 @@ class TFT_FSMC {
   public:
     static void Init();
     static uint32_t GetID();
+    static uint32_t GetLCD_RAM_ADDR() { return (uint32_t)&LCD->RAM; }
     static bool isBusy();
     static void Abort() { __HAL_DMA_DISABLE(&DMAtx); }
 

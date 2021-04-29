@@ -9,10 +9,10 @@
 // extern LCD_CONTROLLER_TypeDef *TFT_FSMC::LCD;
 
 
-// typedef struct {
-//   volatile uint16_t REG;
-//   volatile uint16_t RAM;
-// } TFTLCD_TypeDef;
+typedef struct {
+  volatile uint16_t REG;
+  volatile uint16_t RAM;
+} TFTLCD_TypeDef;
 
 // extern TFTLCD_TypeDef *TFTLCD;  // LCD FSMC Control Address
 

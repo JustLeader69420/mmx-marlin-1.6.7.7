@@ -45,18 +45,23 @@ void lcd_frame_segment_display(uint16_t size, uint32_t addr)
   W25Qxx_SPI_Read_Write_Byte((uint8_t)((addr)>>8));
   W25Qxx_SPI_Read_Write_Byte((uint8_t)addr);
   W25Qxx_SPI_Read_Write_Byte(0XFF);  //8 dummy clock
-  for (int i=0; i<size; ++i) {
-    // bmp_buffer[i] = W25Qxx_SPI_Read_Write_Byte(0XFF);
-    if (i%2) {
-      // LCD_WriteData((bmp_buffer[i] << 8) | bmp_buffer[i-1]);
-      // TFT_FSMC::LCD->RAM = *(uint16*)bmp_buffer[i-1];
-      // LCD_WriteData(*(uint16_t*)bmp_buffer[i-1]);
-    } 
-  }
+  w25qxx_spi_set_data_width_8_16(16);
+  w25qxx_spi_transferDMA(NULL, (uint8_t*)TFT_FSMC::GetLCD_RAM_ADDR(), size);
+  w25qxx_spi_set_data_width_8_16(8);
+  // W25Qxx_SPI_CS_Set(1);
+
+  // for (int i=0; i<size; ++i) {
+  //   bmp_buffer[i] = W25Qxx_SPI_Read_Write_Byte(0XFF);
+  //   if (i%2) {
+  //     // LCD_WriteData((bmp_buffer[i] << 8) | bmp_buffer[i-1]);
+  //     // TFT_FSMC::LCD->RAM = *(uint16_t*)bmp_buffer[i-1];
+  //     LCD_WriteData(*(uint16_t*)bmp_buffer[i-1]);
+  //   } 
+  // }
   // for (int i=0; i<size; i+=2) {
   //   LCD_WriteData((bmp_buffer[i+1] << 8) | bmp_buffer[i]);
   // }
-
+  W25Qxx_SPI_CS_Set(1);
 #endif
 }
 
