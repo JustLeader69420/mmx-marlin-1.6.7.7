@@ -117,12 +117,13 @@ void LCD_Setup() {
   LCD_Init();
   LOGO_ReadDisplay();
   boot.scanUpdates();
-  // if(readStoredPara() == false) // Read settings parameter
-  // {
-  //   TSC_Calibration();
-  //   storePara();
-  //   LOGO_ReadDisplay();
-  // }
+  // while(1);
+  if(readStoredPara() == false) // Read settings parameter
+  {
+    TSC_Calibration();
+    storePara();
+    LOGO_ReadDisplay();
+  }
  
   memcpy(&lastSettings, &infoSettings, sizeof(SETTINGS));
   memcpy(lastTSC_Para, TSC_Para, sizeof(TSC_Para));

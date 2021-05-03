@@ -42,7 +42,7 @@ uint32_t W25Qxx_ReadID(void);
 
 void w25qxx_spi_dma_init();
 void w25qxx_spi_set_data_width_8_16(uint8_t data_size);
-void w25qxx_spi_transferDMA(uint8_t *txbuf, uint8_t *rxbuf, uint16_t cnt);
+void w25qxx_spi_transferDMA(void *txbuf, void *rxbuf, uint16_t cnt);
 
 
 #endif 

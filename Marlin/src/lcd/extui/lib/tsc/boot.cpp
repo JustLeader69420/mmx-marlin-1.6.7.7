@@ -1,6 +1,7 @@
 #include "TSC_Menu.h"
 #include "boot.h"
 #include "../../../../core/macros.h"
+#include "HAL/stm32f4_fsmc.h"
 
 const GUI_RECT iconUpdateRect = {(LCD_WIDTH_PIXEL - ICON_WIDTH)/2,              (LCD_HEIGHT_PIXEL - ICON_HEIGHT)/2, 
                                  (LCD_WIDTH_PIXEL - ICON_WIDTH)/2 + ICON_WIDTH, (LCD_HEIGHT_PIXEL - ICON_HEIGHT)/2 + ICON_HEIGHT};
@@ -21,8 +22,8 @@ const char iconBmpName[][32]={
 "ManualLevel", "CoolDown", "Silent~1","Status~3","Status~1","Status~2","MainMenu","Status~4","StatusFlow","InfoBox_part1", "InfoBox_part2", "EM_Stop",
 };
 
-#define LCD_DMA_MAX_TRANS	65535		// DMA 65535 bytes one frame
-uint8_t bmp_buffer[65536];  //65kb buffer for ui bmp data
+#define LCD_DMA_MAX_TRANS	(65535)		// DMA 65535 bytes one frame
+// uint16_t bmp_buffer[LCD_DMA_MAX_TRANS];  //65kb buffer for ui bmp data
 void lcd_frame_segment_display(uint16_t size, uint32_t addr)
 {
 #if 0
@@ -46,21 +47,10 @@ void lcd_frame_segment_display(uint16_t size, uint32_t addr)
   W25Qxx_SPI_Read_Write_Byte((uint8_t)addr);
   W25Qxx_SPI_Read_Write_Byte(0XFF);  //8 dummy clock
   w25qxx_spi_set_data_width_8_16(16);
-  w25qxx_spi_transferDMA(NULL, (uint8_t*)TFT_FSMC::GetLCD_RAM_ADDR(), size);
-  w25qxx_spi_set_data_width_8_16(8);
-  // W25Qxx_SPI_CS_Set(1);
-
-  // for (int i=0; i<size; ++i) {
-  //   bmp_buffer[i] = W25Qxx_SPI_Read_Write_Byte(0XFF);
-  //   if (i%2) {
-  //     // LCD_WriteData((bmp_buffer[i] << 8) | bmp_buffer[i-1]);
-  //     // TFT_FSMC::LCD->RAM = *(uint16_t*)bmp_buffer[i-1];
-  //     LCD_WriteData(*(uint16_t*)bmp_buffer[i-1]);
-  //   } 
-  // }
-  // for (int i=0; i<size; i+=2) {
-  //   LCD_WriteData((bmp_buffer[i+1] << 8) | bmp_buffer[i]);
-  // }
+  w25qxx_spi_transferDMA(NULL, (void*)&LCD->RAM, size);
+  // w25qxx_spi_transferDMA(NULL, bmp_buffer, size);
+  // LCD_WriteSequence(bmp_buffer, size);
+  w25qxx_spi_set_data_width_8_16(8); 
   W25Qxx_SPI_CS_Set(1);
 #endif
 }
@@ -268,11 +258,12 @@ void TSCBoot::scanUpdates(void) {
   volatile uint8_t result = 0;   //must volatile
 
   result = scanUpdateFile();
-
+#if 1 //temp disable 2021年5月2日
   if (result & FONT) {
     updateFont((char *)FONT_ROOT_DIR "/byte_a~1.fon", BYTE_ASCII_ADDR);
     updateFont((char *)FONT_ROOT_DIR "/word_u~1.fon", WORD_UNICODE);
   }
+#endif
   if (result & BMP) {
     updateIcon();
   }

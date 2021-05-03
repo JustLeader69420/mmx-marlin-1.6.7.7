@@ -245,12 +245,14 @@ DMA_HandleTypeDef hdma_spi2_rx;
 
 void w25qxx_spi_set_data_width_8_16(uint8_t data_size)
 {
+  W25QXX_SPIX->CR1 &= ~SPI_CR1_SPE;
   if (data_size == 16) {
     W25QXX_SPIX->CR1 |= SPI_CR1_DFF;
   }
   else {
     W25QXX_SPIX->CR1 &= ~SPI_CR1_DFF;
   }
+  W25QXX_SPIX->CR1 |= SPI_CR1_SPE;
 }
 
 void w25qxx_spi_dma_init()
@@ -268,6 +270,9 @@ void w25qxx_spi_dma_init()
     hdma_spi2_tx.Init.Mode = DMA_NORMAL;
     hdma_spi2_tx.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_spi2_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_spi2_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+    hdma_spi2_tx.Init.MemBurst = DMA_MBURST_SINGLE;
+    hdma_spi2_tx.Init.PeriphBurst = DMA_PBURST_SINGLE;
     if (HAL_DMA_Init(&hdma_spi2_tx) != HAL_OK)
     {
       Error_Handler();
@@ -280,12 +285,16 @@ void w25qxx_spi_dma_init()
     hdma_spi2_rx.Init.Channel = DMA_CHANNEL_0;
     hdma_spi2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_spi2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_spi2_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_spi2_rx.Init.MemInc = DMA_MINC_DISABLE;
     hdma_spi2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
     hdma_spi2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_spi2_rx.Init.Mode = DMA_NORMAL;
     hdma_spi2_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
     hdma_spi2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_spi2_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+    hdma_spi2_rx.Init.MemBurst = DMA_MBURST_SINGLE;
+    hdma_spi2_rx.Init.PeriphBurst = DMA_PBURST_SINGLE;
+    
     if (HAL_DMA_Init(&hdma_spi2_rx) != HAL_OK)
     {
       Error_Handler();
@@ -294,51 +303,49 @@ void w25qxx_spi_dma_init()
     __HAL_LINKDMA(&hspi2, hdmarx, hdma_spi2_rx);
 }
 
-void w25qxx_spi_transferDMA(uint8_t *txbuf, uint8_t *rxbuf, uint16_t cnt)
+void w25qxx_spi_transferDMA(void *txbuf, void *rxbuf, uint16_t cnt)
 {
   const uint16_t dummy = 0xffff;
   if (txbuf == NULL) {
     txbuf = (uint8_t*)&dummy;
   }
 
-  // w25qxx_spi_set_data_width_8_16(16);
-  // SET_BIT(W25QXX_SPIX->CR1, SPI_DATASIZE_16BIT);
-
-  __HAL_DMA_DISABLE(&hdma_spi2_rx);
-  __HAL_DMA_DISABLE(&hdma_spi2_tx); //must disable before cfg src/dst
-
-  //cfg dma. before
-  HAL_DMA_Start(&hdma_spi2_rx, (uint32_t)&(W25QXX_SPIX->DR), (uint32_t)rxbuf, cnt); //use rx
-  HAL_DMA_Start(&hdma_spi2_tx,  (uint32_t)txbuf, (uint32_t)&(W25QXX_SPIX->DR), cnt);
-
   /* Enable Rx DMA Request */
   SET_BIT(W25QXX_SPIX->CR2, SPI_CR2_RXDMAEN);
-
-  /* Enable Tx DMA Request */
   SET_BIT(W25QXX_SPIX->CR2, SPI_CR2_TXDMAEN);
 
-  auto dma_tcif = __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi2_tx);
-  uint32_t m = millis();
-  while ( !__HAL_DMA_GET_FLAG(&hdma_spi2_tx, dma_tcif) ) {
-    if ((millis() - m) > 100) { 
-      break; 
-    }
-  }
+  __HAL_DMA_CLEAR_FLAG(&hdma_spi2_tx, __HAL_DMA_GET_FE_FLAG_INDEX(&hdma_spi2_tx));
+  __HAL_DMA_CLEAR_FLAG(&hdma_spi2_rx, __HAL_DMA_GET_FE_FLAG_INDEX(&hdma_spi2_rx));
 
-  while(!(W25QXX_SPIX->SR & SPI_SR_TXE));
+  __HAL_DMA_CLEAR_FLAG(&hdma_spi2_tx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi2_tx));
+  __HAL_DMA_CLEAR_FLAG(&hdma_spi2_rx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi2_rx));
+
+  //cfg dma. before
+  // HAL_DMA_Start(&hdma_spi2_rx, (uint32_t)&(W25QXX_SPIX->DR), (uint32_t)rxbuf, cnt); //use rx
+  // HAL_DMA_Start(&hdma_spi2_tx,  (uint32_t)txbuf, (uint32_t)&(W25QXX_SPIX->DR), cnt);
+
+  // __HAL_DMA_DISABLE(&hdma_spi2_rx);
+  // __HAL_DMA_DISABLE(&hdma_spi2_tx);
+
+  hdma_spi2_rx.Instance->NDTR = cnt;  //periph to mem DR->LCD.RAM
+  hdma_spi2_rx.Instance->PAR = (uint32_t)&(W25QXX_SPIX->DR);
+  hdma_spi2_rx.Instance->M0AR = (uint32_t)rxbuf;
+
+  hdma_spi2_tx.Instance->NDTR = cnt;  //mem to periph, tx dummy clocks
+  hdma_spi2_tx.Instance->PAR = (uint32_t)&(W25QXX_SPIX->DR);
+  hdma_spi2_tx.Instance->M0AR = (uint32_t)txbuf;
+
+  __HAL_DMA_ENABLE(&hdma_spi2_rx);
+  __HAL_DMA_ENABLE(&hdma_spi2_tx);
+
+  while ( !__HAL_DMA_GET_FLAG(&hdma_spi2_rx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi2_rx) ));
+  while ( !__HAL_DMA_GET_FLAG(&hdma_spi2_tx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi2_tx) ));
 
   CLEAR_BIT(W25QXX_SPIX->CR2, SPI_CR2_TXDMAEN);
   CLEAR_BIT(W25QXX_SPIX->CR2, SPI_CR2_RXDMAEN);
 
   __HAL_DMA_DISABLE(&hdma_spi2_tx);
   __HAL_DMA_DISABLE(&hdma_spi2_rx);
-
-  __HAL_DMA_CLEAR_FLAG(&hdma_spi2_tx, dma_tcif);
-  __HAL_DMA_CLEAR_FLAG(&hdma_spi2_rx, dma_tcif);
-
-  w25qxx_spi_set_data_width_8_16(8);
-
-  // HAL_SPI_TransmitReceive_DMA(&hspi2, txbuf, rxbuf, cnt);
 }
 
 

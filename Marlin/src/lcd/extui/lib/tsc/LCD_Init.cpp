@@ -458,7 +458,7 @@ void LCD_RefreshDirection(void)
   LCD_WR_REG(0X36);
   LCD_WR_DATA(infoSettings.rotate_ui ? 0x28 : 0xE8);
 }
-
+uint16_t gcolor = WHITE;
 void LCD_Init(void)
 {
   // dma_init(FSMC_DMA_DEV);
@@ -466,9 +466,13 @@ void LCD_Init(void)
   // dma_set_priority(FSMC_DMA_DEV, FSMC_DMA_CHANNEL, DMA_PRIORITY_MEDIUM);
   LCD_FSMCInit(FSMC_CS_PIN, FSMC_RS_PIN);
 
-  // LCD_init_RGB();
+  LCD_init_RGB();
   LCD_RefreshDirection();
-  //GUI_Clear(BLACK);
+  // while(1) {
+  //   GUI_Clear(gcolor);
+  //   delay(200);
+  // }
+  
  // Delay_ms(20);
   
 #ifdef LCD_BACKLIGHT_PIN
