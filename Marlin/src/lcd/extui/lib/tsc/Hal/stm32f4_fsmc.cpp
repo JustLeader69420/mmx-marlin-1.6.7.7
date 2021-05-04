@@ -55,12 +55,12 @@ void MX_FSMC_Init(void)
   hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
   hsram1.Init.PageSize = FSMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 5;
-  Timing.AddressHoldTime = 5;
-  Timing.DataSetupTime = 5;
-  Timing.BusTurnAroundDuration = 5;
-  Timing.CLKDivision = 4;
-  Timing.DataLatency = 5;
+  Timing.AddressSetupTime = 1;
+  Timing.AddressHoldTime = 1;
+  Timing.DataSetupTime = 1;
+  Timing.BusTurnAroundDuration = 1;
+  Timing.CLKDivision = 1;
+  Timing.DataLatency = 1;
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
 
@@ -219,14 +219,14 @@ void LCD_WriteData(uint16_t data)
 {
     LCD->RAM = data;
     // TFT_FSMC::WriteData(data);
-    __DSB();
+    // __DSB();
 }
 
 void LCD_WriteReg(uint16_t Reg)
 {
     LCD->REG = Reg;
     // TFT_FSMC::WriteReg(Reg);
-    __DSB();
+    // __DSB();
 }
 
 uint16_t LCD_ReadData(void)

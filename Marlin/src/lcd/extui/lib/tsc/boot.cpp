@@ -258,15 +258,42 @@ void TSCBoot::scanUpdates(void) {
   volatile uint8_t result = 0;   //must volatile
 
   result = scanUpdateFile();
-#if 1 //temp disable 2021年5月2日
+#if 0 //temp disable 2021年5月2日
   if (result & FONT) {
     updateFont((char *)FONT_ROOT_DIR "/byte_a~1.fon", BYTE_ASCII_ADDR);
     updateFont((char *)FONT_ROOT_DIR "/word_u~1.fon", WORD_UNICODE);
   }
-#endif
+
   if (result & BMP) {
     updateIcon();
   }
+#endif
  // if (result) f_rename(ROOT_DIR, ROOT_DIR".CUR");
  // scanResetDir();
+}
+extern "C" {
+
+  void SPI2_IRQHandler() {while(1);}
+  void SPI3_IRQHandler() { rtt.printf("fuck spi3 irq"); while(1);}
+  void  HardFault_Handler() { while(1); }
+  void  MemManage_Handler() { while(1); }
+  void  BusFault_Handler() { while(1); }
+  void  UsageFault_Handler() { while(1); }
+  void  SVC_Handler() { while(1); }
+  void  DebugMon_Handler() { while(1); }
+
+  void  DMA1_Stream0_IRQHandler() { while(1); }
+  void  DMA1_Stream1_IRQHandler() { while(1); }
+  void  DMA1_Stream2_IRQHandler() { while(1); }
+  void  DMA1_Stream3_IRQHandler() { while(1); }
+  void  DMA2_Stream2_IRQHandler() { while(1); }
+  void  DMA2_Stream3_IRQHandler() { while(1); }
+  void  DMA2_Stream5_IRQHandler() { while(1); }
+  void  DMA2_Stream6_IRQHandler() { while(1); }
+
+  void  OTG_HS_EP1_OUT_IRQHandler() { while(1); }
+  void  OTG_HS_EP1_IN_IRQHandler () { while(1); }
+  void  OTG_HS_WKUP_IRQHandler   () { while(1); }
+  void  OTG_HS_IRQHandler        () { while(1); }
+
 }

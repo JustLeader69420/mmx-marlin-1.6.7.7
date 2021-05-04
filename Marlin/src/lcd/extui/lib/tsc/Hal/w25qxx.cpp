@@ -42,8 +42,8 @@ volatile uint32_t w25qid;
 void W25Qxx_Init(void)
 {
   w25qxx_spi_dma_init();
-  W25qxxSPI.setClockDivider(2);
   W25qxxSPI.begin();
+  W25qxxSPI.setClockDivider(2);
   SET_OUTPUT(W25QXX_CS_PIN);
   W25Qxx_SPI_CS_Set(1);
   w25qid = W25Qxx_ReadID();
