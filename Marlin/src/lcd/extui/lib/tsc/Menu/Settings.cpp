@@ -98,16 +98,30 @@ MENUITEMS settingsItems = {
 // title
 LABEL_SETTINGS,
 // icon                       label
- {{ICON_SCREEN_SETTINGS,      LABEL_SCREEN_SETTINGS},
+ {
+  // {ICON_SCREEN_SETTINGS,      LABEL_SCREEN_SETTINGS},
+  {ICON_LANGUAGE,             LABEL_LANGUAGE}, 
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_SCREEN_INFO,          LABEL_SCREEN_INFO},
-  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  // {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACK,                 LABEL_BACK},}
 };
+#ifdef BEEPER_PIN // Speaker
+  #define BUZZER_KEY_INDEX KEY_ICON_1
 
+  #define ITEM_SILENT_NUM 2
+  const ITEM itemSilent[ITEM_SILENT_NUM] = {
+  // icon                       label
+    {ICON_SILENT_OFF,           LABEL_SILENT_OFF},
+    {ICON_SILENT_ON,            LABEL_SILENT_ON},
+  };
+  const  uint8_t item_silent[ITEM_SILENT_NUM] = {0, 1};
+  static uint8_t item_silent_i = 0;
+#endif
 
 
 void menuCallBackSettings(void)
@@ -115,10 +129,23 @@ void menuCallBackSettings(void)
   KEY_VALUES key_num = menuKeyGetValue();
   switch(key_num)
   {
-    case KEY_ICON_0:
-      infoMenu.menu[++infoMenu.cur] = menuScreenSettings;
+    case KEY_ICON_0: 
+      infoSettings.language = (infoSettings.language + 1) % LANGUAGE_NUM;
+      menuDrawPage(&settingsItems);
       break;
+
+    #ifdef BEEPER_PIN
+    case BUZZER_KEY_INDEX:
+      item_silent_i = (item_silent_i + 1) % ITEM_SILENT_NUM;                
+      settingsItems.items[key_num] = itemSilent[item_silent_i];
+      menuDrawItem(&settingsItems.items[key_num], key_num);
+      infoSettings.silent = item_silent[item_silent_i];
+      break;
+    #endif
     
+    // case KEY_ICON_0:
+    //   infoMenu.menu[++infoMenu.cur] = menuScreenSettings;
+    //   break;    
     // case KEY_ICON_1: 
     //   infoMenu.menu[++infoMenu.cur] = menuRGBSettings;
     //   break;
@@ -128,7 +155,7 @@ void menuCallBackSettings(void)
     //   break;
 
     #ifdef FIL_RUNOUT_PIN
-    case KEY_ICON_1:
+    case KEY_ICON_2:
       item_runout_i = (item_runout_i + 1) % ITEM_RUNOUT_NUM;                
       settingsItems.items[key_num] = itemRunout[item_runout_i];
       menuDrawItem(&settingsItems.items[key_num], key_num);
@@ -137,7 +164,7 @@ void menuCallBackSettings(void)
       break;
     #endif
     
-    case KEY_ICON_2:
+    case KEY_ICON_3:
       infoMenu.menu[++infoMenu.cur] = menuInfo;
       break;
 
@@ -151,15 +178,24 @@ void menuCallBackSettings(void)
 }
 
 void menuSettings(void)
-{
-
+{  
+  #ifdef BEEPER_PIN
+  for(uint8_t i=0; i<ITEM_SILENT_NUM; i++)
+  {
+    if(infoSettings.silent == item_silent[i])
+    {
+      item_silent_i = i;
+      settingsItems.items[BUZZER_KEY_INDEX] = itemSilent[i];
+    }
+  }
+  #endif 
   #ifdef FIL_RUNOUT_PIN
   for(uint8_t i=0; i<ITEM_RUNOUT_NUM; i++)
   {
     if(infoSettings.runout == item_runout[i])
     {
       item_runout_i = i;
-      settingsItems.items[KEY_ICON_1] = itemRunout[item_runout_i];
+      settingsItems.items[KEY_ICON_2] = itemRunout[item_runout_i];
     }
   }
   #endif  

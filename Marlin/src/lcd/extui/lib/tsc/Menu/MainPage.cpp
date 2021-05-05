@@ -31,7 +31,7 @@ LABEL_MAINMENU,
     {ICON_PRINT,                LABEL_PRINT},
     {ICON_SETTINGS,             LABEL_SETTINGS},
     #ifdef AUTO_BED_LEVELING_BILINEAR
-      {ICON_LEVELING,             LABEL_LEVELING},
+      {ICON_LEVELING,             LABEL_ABL},
     #else
       {ICON_BACKGROUND,           LABEL_BACKGROUND},
     #endif
@@ -96,7 +96,10 @@ void menuCallBackMainPage() {
       case KEY_ICON_4: infoMenu.menu[++infoMenu.cur] = menuSettings;  break;
       case KEY_ICON_5:
         #ifdef AUTO_BED_LEVELING_BILINEAR
-          infoMenu.menu[++infoMenu.cur] = menuAutoLeveling;
+          // infoMenu.menu[++infoMenu.cur] = menuAutoLeveling;
+          storeCmd("G28");     //reset 
+          storeCmd("G29");     //start ABL
+          storeCmd("M500");    //save ABL info
         #else
           //infoMenu.menu[++infoMenu.cur] = menuManualLeveling;
         #endif
