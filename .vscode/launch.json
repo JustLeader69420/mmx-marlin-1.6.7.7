@@ -12,9 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "E:/work_program/D2_pro/test/Marlin/.pio/build/langgo407ve/firmware.elf",
+            "executable": "K:/d301_printer/MarlinApp/.pio/build/langgo407ve/firmware.elf",
             "projectEnvName": "langgo407ve",
-            "toolchainBinDir": "C:/Users/Administrator/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "toolchainBinDir": "C:/Users/langgo/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "STM32F40x.svd",
             "preLaunchTask": {
@@ -34,14 +34,14 @@
             "svdFile":"STM32F40x.svd",
             //"serialNumber": "137526290"
         },
-
+        
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "E:/work_program/D2_pro/test/Marlin/.pio/build/langgo407ve/firmware.elf",
+            "executable": "K:/d301_printer/MarlinApp/.pio/build/langgo407ve/firmware.elf",
             "projectEnvName": "langgo407ve",
-            "toolchainBinDir": "C:/Users/Administrator/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "toolchainBinDir": "C:/Users/langgo/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "STM32F40x.svd"
         }

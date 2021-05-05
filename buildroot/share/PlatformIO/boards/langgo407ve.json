@@ -15,7 +15,8 @@
       ]
     ],
     "mcu": "stm32f407vet6",
-    "variant": "MARLIN_F407VE"
+    "variant": "MARLIN_F407VE",
+    "offset": "0x10000"
   },
   "debug": {
     "jlink_device": "STM32F407VE",
