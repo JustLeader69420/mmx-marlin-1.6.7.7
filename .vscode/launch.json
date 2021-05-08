@@ -22,19 +22,16 @@
                 "task": "Pre-Debug (langgo407ve)"
             }
         },
-
         {
-            "cwd":"${workspaceRoot}",
-            "executable":"./.pio/build/langgo407ve/firmware.elf",
-            "name":"cortex debug",
-            "request":"launch",
-            "type":"cortex-debug",
-            "servertype":"jlink",
-            "device":"STM32F407ZE",
-            "svdFile":"STM32F40x.svd",
-            //"serialNumber": "137526290"
+            "cwd": "${workspaceRoot}",
+            "executable": "./.pio/build/langgo407ve/firmware.elf",
+            "name": "cortex debug",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "jlink",
+            "device": "STM32F407ZE",
+            // "serialNumber": "604662528"
         },
-        
         {
             "type": "platformio-debug",
             "request": "launch",
