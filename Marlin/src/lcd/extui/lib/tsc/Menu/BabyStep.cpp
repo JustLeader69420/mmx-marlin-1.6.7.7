@@ -54,11 +54,11 @@ static void initElements(uint8_t position)
 }
 
 static float getBabyStepZAxisTotalMM(){
-  // return babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
+  return babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
 }
 
 static void setBabyStepZAxisIncMM(float mm){
-  // babystep.add_mm(Z_AXIS, mm);
+  babystep.add_mm(Z_AXIS, mm);
 }
 
 void showBabyStep(void)
