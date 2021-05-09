@@ -267,6 +267,9 @@ void Endstops::init() {
   #endif
 
   #if HAS_CUSTOM_PROBE_PIN
+      //校准引脚 拉低
+      OUT_WRITE(CALIB_PIN, LOW);  //add code du 2021.1.22
+
     #if ENABLED(ENDSTOPPULLUP_ZMIN_PROBE)
       SET_INPUT_PULLUP(Z_MIN_PROBE_PIN);
     #elif ENABLED(ENDSTOPPULLDOWN_ZMIN_PROBE)

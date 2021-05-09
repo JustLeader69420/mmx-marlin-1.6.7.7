@@ -705,6 +705,13 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
   // Move the probe to the starting XYZ
   do_blocking_move_to(npos);
 
+  WRITE(CALIB_PIN, LOW);
+  SERIAL_PRINTF("***********wait 500ms probe***************\n");
+  safe_delay(500);
+  WRITE(CALIB_PIN, HIGH);
+  SERIAL_PRINTF("***********wait 100ms probe***************\n");
+  safe_delay(100);
+
   float measured_z = NAN;
   if (!deploy()) measured_z = run_z_probe(sanity_check) + offset.z;
   if (!isnan(measured_z)) {
@@ -728,6 +735,8 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
     #endif
   }
 
+  WRITE(CALIB_PIN, LOW);  //reset hall calib
+  
   return measured_z;
 }
 
