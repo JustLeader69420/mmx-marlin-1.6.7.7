@@ -30,6 +30,7 @@
             "type": "cortex-debug",
             "servertype": "jlink",
             "device": "STM32F407ZE",
+            "svdFile": "STM32F40x.svd",
             // "serialNumber": "604662528"
         },
         {
