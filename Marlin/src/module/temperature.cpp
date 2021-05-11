@@ -220,6 +220,7 @@ const char str_t_thermal_runaway[] PROGMEM = STR_T_THERMAL_RUNAWAY,
     if (target >= FAN_COUNT) return;
 
     fan_speed[target] = speed;
+    TIM8->CCR2=(uint16_t)((float)speed*219.604);
 
     TERN_(REPORT_FAN_CHANGE, report_fan_speed(target));
   }
@@ -1678,6 +1679,42 @@ void Temperature::updateTemperaturesFromRawValues() {
   #define INIT_CHAMBER_AUTO_FAN_PIN(P) SET_OUTPUT(P)
 #endif
 
+
+TIM_HandleTypeDef TIM8_Handler;         
+TIM_OC_InitTypeDef TIM8_CH2Handler;	   
+
+/*fix extruder fan doesn't work*/ 
+void TIM8_CH2_PWM_Init(uint16_t arr,uint16_t psc)
+{ 
+    TIM8_Handler.Instance=TIM8;           
+    TIM8_Handler.Init.Prescaler=psc;       
+    TIM8_Handler.Init.CounterMode=TIM_COUNTERMODE_UP;
+    TIM8_Handler.Init.Period=arr;         
+    TIM8_Handler.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_PWM_Init(&TIM8_Handler);      
+    
+    TIM8_CH2Handler.OCMode=TIM_OCMODE_PWM1; 
+    TIM8_CH2Handler.Pulse=0;           
+    TIM8_CH2Handler.OCPolarity=TIM_OCPOLARITY_HIGH; 
+    HAL_TIM_PWM_ConfigChannel(&TIM8_Handler,&TIM8_CH2Handler,TIM_CHANNEL_2);
+	
+    HAL_TIM_PWM_Start(&TIM8_Handler,TIM_CHANNEL_2);
+}
+
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
+{
+    GPIO_InitTypeDef GPIO_Initure;
+	__HAL_RCC_TIM8_CLK_ENABLE();			
+	__HAL_RCC_GPIOC_CLK_ENABLE();			
+	
+    GPIO_Initure.Pin=GPIO_PIN_7;           
+    GPIO_Initure.Mode=GPIO_MODE_AF_PP;  	
+    GPIO_Initure.Pull=GPIO_PULLUP;         
+    GPIO_Initure.Speed=GPIO_SPEED_HIGH;     
+	 GPIO_Initure.Alternate= GPIO_AF3_TIM8;	
+    HAL_GPIO_Init(GPIOC,&GPIO_Initure);
+}
+
 /**
  * Initialize the temperature manager
  * The manager is implemented by periodic calls to manage_heater()
@@ -1755,8 +1792,10 @@ void Temperature::init() {
     OUT_WRITE(HEATER_CHAMBER_PIN, HEATER_CHAMBER_INVERTING);
   #endif
 
-  #if HAS_FAN0
+
+  #if HAS_FAN0 
     INIT_FAN_PIN(FAN_PIN);
+    TIM8_CH2_PWM_Init(55999,2);
   #endif
   #if HAS_FAN1
     INIT_FAN_PIN(FAN1_PIN);
