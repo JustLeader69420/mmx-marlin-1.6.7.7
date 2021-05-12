@@ -31,6 +31,8 @@
   #include "../HAL/shared/eeprom_api.h"
 #endif
 
+void setCurrentOffset(float offset);
+
 class MarlinSettings {
   public:
     static uint16_t datasize();

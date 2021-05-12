@@ -29,7 +29,7 @@
  */
 
 #include "MarlinCore.h"
-
+#include "module/settings.h"
 #if ENABLED(MARLIN_DEV_MODE)
   #warning "WARNING! Disable MARLIN_DEV_MODE for the final build!"
 #endif
@@ -1301,6 +1301,9 @@ void setup() {
   #endif
 
   marlin_state = MF_RUNNING;
+
+  setCurrentOffset(-0.2);//init z probe offset
+  settings.save();
 
   SETUP_LOG("setup() completed.");
 }
