@@ -323,10 +323,16 @@ namespace ExtUI {
   }
 
   void setAxisPosition_mm(const float position, const extruder_t extruder, const feedRate_t feedrate/*=0*/) {
+    // setActiveTool(extruder, true);
+
+    // current_position.e = position;
+    // line_to_current_position(feedrate ?: manual_feedrate_mm_s.e);
+    if(planner.is_full()) return;
+    float actualMM_M = feedrate ? feedrate : manual_feedrate_mm_s.e;
     setActiveTool(extruder, true);
 
     current_position.e = position;
-    line_to_current_position(feedrate ?: manual_feedrate_mm_s.e);
+    line_to_current_position(MMM_TO_MMS(actualMM_M));
   }
 
   void setActiveTool(const extruder_t extruder, bool no_move) {
