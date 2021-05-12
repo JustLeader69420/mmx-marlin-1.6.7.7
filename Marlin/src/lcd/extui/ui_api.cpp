@@ -100,6 +100,12 @@
   #include "../../feature/host_actions.h"
 #endif
 
+#if ENABLED(SDSUPPORT)
+  #ifndef SD_DETECT_PIN
+    #define SD_DETECT_PIN PE3
+  #endif
+#endif
+
 namespace ExtUI {
   static struct {
     uint8_t printer_killed : 1;
@@ -1062,10 +1068,35 @@ namespace ExtUI {
 // At the moment, we piggy-back off the ultralcd calls, but this could be cleaned up in the future
 
 void MarlinUI::init() {
+  // #if ENABLED(SDSUPPORT) && PIN_EXISTS(SD_DETECT)
+  #if ENABLED(SDSUPPORT) && PINS_EXIST(SD_DETECT)
+    SET_INPUT_PULLUP(SD_DETECT_PIN);
+  #endif
   ExtUI::onStartup();
 }
 
-void MarlinUI::update() { ExtUI::onIdle(); }
+void MarlinUI::update() {
+  #if ENABLED(SDSUPPORT)
+    static bool last_sd_status;
+    const bool sd_status = !READ(SD_DETECT_PIN);
+    if (sd_status != last_sd_status) {
+      last_sd_status = sd_status;
+      if (sd_status) {
+        card.mount();
+        if (card.isMounted())
+          ExtUI::onMediaInserted();
+        else
+          ExtUI::onMediaError();
+      }
+      else {
+        const bool ok = card.isMounted();
+        card.release();
+        if (ok) ExtUI::onMediaRemoved();
+      }
+    }
+  #endif // SDSUPPORT
+  ExtUI::onIdle(); 
+}
 
 void MarlinUI::kill_screen(PGM_P const error, PGM_P const component) {
   using namespace ExtUI;
