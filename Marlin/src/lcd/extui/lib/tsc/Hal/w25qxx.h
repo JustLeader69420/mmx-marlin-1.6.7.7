@@ -21,6 +21,8 @@
 #define W25QXX_PAGE_SIZE    (256)
 #define W25QXX_SECTOR_SIZE  (4*1024)  //min erase unit
 #define W25QXX_BLOCK_SIZE   (64*1024)
+
+#define W25Q64_MARLIN_SETTING_ADDR  /*8MB*/ (8*1024*1024 - (3*W25QXX_SECTOR_SIZE) )
 #define W25Q64_SETTING_ADDR  /*8MB*/ (8*1024*1024 - (2*W25QXX_SECTOR_SIZE) )
 #define W25Q64_TSC_PARA_ADDR  /*8MB*/ (8*1024*1024 - W25QXX_SECTOR_SIZE)
 
@@ -44,6 +46,7 @@ void w25qxx_spi_dma_init();
 void w25qxx_spi_set_data_width_8_16(uint8_t data_size);
 void w25qxx_spi_transferDMA(void *txbuf, void *rxbuf, uint16_t cnt);
 
+void w25qxx_read_saved(uint32_t addr, uint8_t *data, uint16_t size);
 
 #endif 
 
