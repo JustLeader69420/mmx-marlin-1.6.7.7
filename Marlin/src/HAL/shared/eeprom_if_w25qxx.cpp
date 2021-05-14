@@ -30,15 +30,38 @@
 #if ENABLED(W25QXX_SPI_EEPROM)
 
 #include "eeprom_if.h"
+#include "rtt.h"
 
+#define EEPROM_RW_DEBUG 0
 
 #if 1 //ENABLED(USE_SHARED_EEPROM)
 
 #define MARLIN_EEPROM_SIZE  (W25QXX_SECTOR_SIZE)  //4k
 static uint8_t ram_eeprom[MARLIN_EEPROM_SIZE] __attribute__((aligned(4))) = {0};
 static bool eeprom_data_written = false;
-
+static uint8_t ram_write[MARLIN_EEPROM_SIZE] __attribute__((aligned(4)));
+static uint8_t ram_read[MARLIN_EEPROM_SIZE] __attribute__((aligned(4)));
+uint32_t sector_addr = W25Q64_MARLIN_SETTING_ADDR;
 void eeprom_init() {
+
+#if EEPROM_RW_DEBUG
+  for (int i=0; i<MARLIN_EEPROM_SIZE; ++i) {
+    ram_eeprom[i] = i & 0xff;
+  }
+  memcpy(ram_write, ram_eeprom, sizeof(ram_write)); //because spi will recover buffer???
+
+  W25Qxx_EraseSector(sector_addr);
+  W25Qxx_WriteBuffer(ram_write, W25Q64_MARLIN_SETTING_ADDR, sizeof(ram_eeprom));
+
+  W25Qxx_ReadBuffer(ram_read, W25Q64_MARLIN_SETTING_ADDR, sizeof(ram_read));
+  if ( memcmp(ram_read, ram_eeprom, sizeof(ram_eeprom)) ) {
+    rtt.printf("fuck. eeprom read back not match.");
+  }
+  else {
+    rtt.printf("nice. eeprom read back match. test success");
+  }
+  
+#endif
   W25Qxx_ReadBuffer(ram_eeprom, W25Q64_MARLIN_SETTING_ADDR, sizeof(ram_eeprom));
 }
 

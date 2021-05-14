@@ -36,12 +36,12 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V83"
+#define EEPROM_VERSION "V84"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
 // Can be disabled for production build.
-//#define DEBUG_EEPROM_READWRITE
+#define DEBUG_EEPROM_READWRITE
 
 #include "settings.h"
 
@@ -153,6 +153,10 @@
 #if ENABLED(BTT_FSMC_LCD)
   // #include "../lcd/extui/lib/tsc/TSC_Menu.h"
   #include "../lcd/extui/lib/tsc/Menu/Settings.h"
+#endif
+
+#if ENABLED(BABYSTEPPING)
+  #include "../../src/feature/babystep.h"
 #endif
 
 #pragma pack(push, 1) // No padding between variables
@@ -439,6 +443,10 @@ typedef struct SettingsDataStruct {
   #if 0 //add by langgo
     SETTINGS custom_settings;
     uint32_t TSC_Para[7];
+  #endif
+
+  #if ENABLED(BABYSTEPPING)
+    int16_t babystep_z_steps;
   #endif
 
 } SettingsData;
@@ -1394,6 +1402,13 @@ void MarlinSettings::postprocess() {
     #endif
 
     //
+    // BABYSTEPPING
+    //
+    #if ENABLED(BABYSTEPPING)
+      EEPROM_WRITE( babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] );
+    #endif
+
+    //
     // Validate CRC and Data Size
     //
     if (!eeprom_error) {
@@ -2251,6 +2266,10 @@ void MarlinSettings::postprocess() {
         EEPROM_READ(touch.calibration);
       #endif
 
+      #if ENABLED(BABYSTEPPING)
+        EEPROM_READ(babystep.axis_total[BS_TOTAL_IND(Z_AXIS)]);
+      #endif
+
       eeprom_error = size_error(eeprom_index - (EEPROM_OFFSET));
       if (eeprom_error) {
         DEBUG_ECHO_START();
@@ -2859,6 +2878,10 @@ void MarlinSettings::reset() {
     #else
       password.is_set = false;
     #endif
+  #endif
+
+  #if ENABLED(BABYSTEPPING)
+    babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
   #endif
 
   postprocess();

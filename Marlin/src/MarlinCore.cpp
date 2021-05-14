@@ -1097,10 +1097,11 @@ void setup() {
   #if BOTH(SDSUPPORT, SDCARD_EEPROM_EMULATION)
     SETUP_RUN(card.mount());          // Mount media with settings before first_load
   #endif
-
+  
   SETUP_RUN(settings.first_load());   // Load data from EEPROM if available (or use defaults)
                                       // This also updates variables in the planner, elsewhere
-
+  set_bed_leveling_enabled();
+  
   #if HAS_TOUCH_XPT2046
     SETUP_RUN(touch.init());
   #endif
