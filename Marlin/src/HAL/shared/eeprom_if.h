@@ -21,9 +21,13 @@
  */
 #pragma once
 
+#include "../../lcd/extui/lib/tsc/Hal/w25qxx.h"
+#define MARLIN_EEPROM_SIZE  (W25QXX_SECTOR_SIZE)  //4k
+
 //
 // EEPROM
 //
 void eeprom_init();
+void eeprom_finish();
 void eeprom_write_byte(uint8_t *pos, unsigned char value);
 uint8_t eeprom_read_byte(uint8_t *pos);

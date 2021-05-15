@@ -40,9 +40,12 @@
 #define DEFAULT_MACHINE_NAME "HP STM32F407VE"
 
 //#define I2C_EEPROM
-#define SRAM_EEPROM_EMULATION
-#define MARLIN_EEPROM_SIZE                0x2000  // 8KB
-
+#if 0
+    #define SRAM_EEPROM_EMULATION
+    #define MARLIN_EEPROM_SIZE                0x2000  // 8KB
+#else
+    #define W25QXX_SPI_EEPROM
+#endif
 //
 // Servos
 //

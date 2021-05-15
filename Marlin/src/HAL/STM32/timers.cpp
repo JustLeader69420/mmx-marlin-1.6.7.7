@@ -27,7 +27,7 @@
 // Local defines
 // ------------------------
 
-#define NUM_HARDWARE_TIMERS 14
+#define NUM_HARDWARE_TIMERS 15
 
 // Default timer priorities. Override by specifying alternate priorities in the board pins file.
 // The TONE timer is not present here, as it currently cannot be set programmatically. It is set

@@ -1,5 +1,6 @@
 #include "../TSC_Menu.h"
-
+#include "../../../../../feature/bedlevel/bedlevel.h"
+#include "../../../../../feature/bedlevel/abl/abl.h"
 //1 title, ITEM_PER_PAGE items (icon + label) 
 MENUITEMS StatusItems = {
 // title
@@ -272,6 +273,10 @@ void menuCallStatus(void)
       break;
     case KEY_ICON_7:
       infoMenu.menu[++infoMenu.cur] = menuPrint;
+      if(z_values[1][1] != 0){
+        planner.leveling_active = true;
+        set_bed_leveling_enabled(true);
+      }
       break;
 
     default:break;
