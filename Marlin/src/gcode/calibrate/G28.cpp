@@ -35,6 +35,10 @@
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
+#if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+  #include "../../feature/babystep.h"
+#endif
+
 #if ENABLED(SENSORLESS_HOMING)
   #include "../../feature/tmc_util.h"
 #endif
@@ -194,6 +198,10 @@
  *  Z   Home to the Z endstop
  */
 void GcodeSuite::G28() {
+  #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+    int16_t tsbabystep =  babystep.axis_total[BS_TOTAL_IND(Z_AXIS)];
+  #endif
+
   DEBUG_SECTION(log_G28, "G28", DEBUGGING(LEVELING));
   if (DEBUGGING(LEVELING)) log_machine_info();
 
@@ -477,5 +485,9 @@ void GcodeSuite::G28() {
       const uint8_t cv = L64XX::chain[j];
       L64xxManager.set_param((L64XX_axis_t)cv, L6470_ABS_POS, stepper.position(L64XX_axis_xref[cv]));
     }
+  #endif
+
+  #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+    babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = tsbabystep;
   #endif
 }
