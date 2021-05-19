@@ -36,6 +36,10 @@
 #include "../../../module/probe.h"
 #include "../../queue.h"
 
+#if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+  #include "../../../feature/babystep.h"
+#endif
+
 #if ENABLED(PROBE_TEMP_COMPENSATION)
   #include "../../../feature/probe_temp_comp.h"
   #include "../../../module/temperature.h"
@@ -664,7 +668,10 @@ G29_TYPE GcodeSuite::G29() {
 
           #elif ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
-            z_values[meshCount.x][meshCount.y] = measured_z + zoffset;
+            z_values[meshCount.x][meshCount.y] = measured_z + zoffset
+            #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+                + babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
+            #endif
             TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(meshCount, z_values[meshCount.x][meshCount.y]));
 
           #endif

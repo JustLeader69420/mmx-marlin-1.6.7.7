@@ -199,7 +199,7 @@
  */
 void GcodeSuite::G28() {
   #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-    int16_t tsbabystep =  babystep.axis_total[BS_TOTAL_IND(Z_AXIS)];
+    float tsbabystep =  babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
   #endif
 
   DEBUG_SECTION(log_G28, "G28", DEBUGGING(LEVELING));
@@ -488,6 +488,6 @@ void GcodeSuite::G28() {
   #endif
 
   #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-    babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = tsbabystep;
+    babystep.add_mm(Z_AXIS,tsbabystep);
   #endif
 }
