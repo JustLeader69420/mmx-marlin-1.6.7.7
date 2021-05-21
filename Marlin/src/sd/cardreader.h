@@ -26,6 +26,9 @@
 #define IFSD(A,B) TERN(SDSUPPORT,A,B)
 
 #if ENABLED(SDSUPPORT)
+  #ifndef SD_DETECT_PIN
+    #define SD_DETECT_PIN PE3
+  #endif
 
 #if BOTH(SDCARD_SORT_ALPHA, SDSORT_DYNAMIC_RAM)
   #define SD_RESORT 1
@@ -285,7 +288,7 @@ private:
 #if ENABLED(USB_FLASH_DRIVE_SUPPORT)
   #define IS_SD_INSERTED() Sd2Card::isInserted()
 #elif PIN_EXISTS(SD_DETECT)
-  #define IS_SD_INSERTED() (READ(SD_DETECT_PIN) == SD_DETECT_STATE)
+  #define IS_SD_INSERTED() (READ(SD_DETECT_PIN) == LOW)
 #else
   // No card detect line? Assume the card is inserted.
   #define IS_SD_INSERTED() true
