@@ -124,7 +124,10 @@ static void redrawPosition(void)
   GUI_SetColor(GANTRYLBL_COLOR);
   GUI_SetBkColor(GANTRYLBL_BKCOLOR);
   GUI_ClearPrect(&RecGantry);
-  sprintf_P(tempstr, "X: %.2f   Y: %.2f   Z: %.2f", statusMsg.x, statusMsg.y, statusMsg.z);
+  // sprintf_P(tempstr, "X: %.2f   Y: %.2f   Z: %.2f", statusMsg.x, statusMsg.y, statusMsg.z);
+  sprintf_P(tempstr, "X: %d.%d   Y: %d.%d   Z: %d.%d", (int)(statusMsg.x),(int)(statusMsg.x*10)%10, 
+                                                       (int)(statusMsg.y),(int)(statusMsg.y*10)%10,
+                                                       (int)(statusMsg.z),(int)(statusMsg.z*10)%10);
   GUI_DispStringInPrect(&RecGantry,(uint8_t *)tempstr);
   GUI_RestoreColorDefault();
 }
