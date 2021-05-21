@@ -72,6 +72,8 @@
   #include "../../../module/tool_change.h"
 #endif
 
+#include "../../../lcd/extui/lib/tsc/Menu/Popup.h"
+
 #if ABL_GRID
   #if ENABLED(PROBE_Y_FIRST)
     #define PR_OUTER_VAR meshCount.x
@@ -899,6 +901,8 @@ G29_TYPE GcodeSuite::G29() {
   #endif
 
   report_current_position();
+
+  ABL_STATUS = ABL_DONE;
 
   G29_RETURN(isnan(measured_z));
 }

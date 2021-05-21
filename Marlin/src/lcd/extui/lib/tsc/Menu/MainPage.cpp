@@ -1,4 +1,5 @@
 #include "../TSC_Menu.h"
+#include "Popup.h"
 
 //1 title, ITEM_PER_PAGE items(icon+label) 
 const MENUITEMS mainPageItems = {
@@ -97,9 +98,7 @@ void menuCallBackMainPage() {
       case KEY_ICON_5:
         #ifdef AUTO_BED_LEVELING_BILINEAR
           // infoMenu.menu[++infoMenu.cur] = menuAutoLeveling;
-          storeCmd("G28");     //reset 
-          storeCmd("G29");     //start ABL
-          storeCmd("M500");    //save ABL info
+          popupReminder_ABL();
         #else
           //infoMenu.menu[++infoMenu.cur] = menuManualLeveling;
         #endif

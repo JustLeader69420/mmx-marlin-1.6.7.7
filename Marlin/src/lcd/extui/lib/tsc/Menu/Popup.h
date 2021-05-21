@@ -28,6 +28,13 @@
   #define POPUP_BOTTOM_HEIGHT 70
 #endif
 
+#define ABL_STANDBY         1
+#define ABL_HEATING         2
+#define ABL_START           3
+#define ABL_LEVELING        4
+#define ABL_DONE            5
+#define ABL_CLOSE_WINDOW    6
+
 enum
 {
   KEY_POPUP_CONFIRM = 0,
@@ -40,10 +47,15 @@ extern GUI_RECT doubleBtnRect[];
 extern GUI_RECT singleBtnRect;
 extern WINDOW window;
 
+extern uint8_t ABL_STATUS;
+
 void windowSetButton(const BUTTON *btn);
 void windowReDrawButton(uint8_t positon, uint8_t is_press);
 void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no);
 void popupReminder(uint8_t* info, uint8_t* context);
 void menuPopup(void);
+void popupReminder_ABL();
+void menuPopup_ABL(void);
+void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_t *inf);
 
 #endif

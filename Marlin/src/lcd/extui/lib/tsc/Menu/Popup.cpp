@@ -1,8 +1,14 @@
 #include "Popup.h"
 #include "../TSC_Menu.h"
+#include "../../../ui_api.h"
+#include "../../../../../libs/buzzer.h"
+#include "../../../../../gcode/gcode.h"
+// #include "../../../../../inc/MarlinConfigPre.h"
 
 
 #define BUTTON_NUM 1
+
+uint8_t ABL_STATUS = ABL_STANDBY;
 
 BUTTON bottomSingleBtn = {
   //button location                       color before pressed   color after pressed
@@ -75,9 +81,113 @@ void menuCallBackPopup(void)
   }
 }
 
+void menuCallBackPopup_ABL(void)
+{
+  static uint16_t delay_ms_count = 0;
+  static uint8_t temp_silent = infoSettings.silent;
+  char context[100];
+  
+  uint8_t E0_temp = (uint8_t)getActualTemp_celsius(ExtUI::E0);
+  uint8_t BED_temp = (uint8_t)getActualTemp_celsius(ExtUI::BED);
+  uint16_t key_num = KEY_GetValue(BUTTON_NUM, &singleBtnRect);
+
+  switch(key_num)
+  {            
+    case 0: 
+      if(ABL_STATUS != ABL_LEVELING)
+      {
+        setTargetTemp_celsius(0,ExtUI::E0);
+        setTargetTemp_celsius(0,ExtUI::BED);
+        ABL_STATUS = ABL_STANDBY;
+        infoMenu.cur--; 
+      }
+      break;
+    
+    default:
+      switch(ABL_STATUS)
+      {
+        case ABL_HEATING :  ExtUI::delay_ms(1);
+                            delay_ms_count ++;
+                            if(delay_ms_count >= 1000)
+                            {
+                              delay_ms_count = 0;
+                              sprintf_P(context, "%s:%3d/150   %s:%3d/50%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), E0_temp,
+                                                                                  GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), BED_temp,
+                                                                                  GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+                              GUI_DrawWindow_ABL(&window, textSelect(LABEL_TIPS), (uint8_t *)context);       
+
+                              if(E0_temp >= 150 && BED_temp >= 50) ABL_STATUS = ABL_START;
+                            }
+                            break;
+
+        case ABL_START :    SERIAL_ECHOLNPGM("go Leveling");
+                            storeCmd("G28");     //reset 
+                            storeCmd("G29");     //start ABL
+                            storeCmd("M500");    //save ABL info
+                            storeCmd("G28");
+
+                            sprintf_P(context, "%s %s         %s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+                            popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)context, NULL, NULL);
+
+                            temp_silent = infoSettings.silent;
+                            infoSettings.silent = 1;
+                            ABL_STATUS = ABL_LEVELING;
+                            break;
+
+        case ABL_DONE :     sprintf_P(context, "%s %s!              %s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_BUTTON_DONE), GET_TEXT(MSG_USERWAIT));
+                            popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
+                            setTargetTemp_celsius(0,ExtUI::E0);
+                            setTargetTemp_celsius(0,ExtUI::BED);
+                            infoSettings.silent = temp_silent;
+                            ABL_STATUS = ABL_CLOSE_WINDOW;
+                            break;
+
+        case ABL_CLOSE_WINDOW : ExtUI::delay_ms(1);
+                                delay_ms_count ++;
+                                if(delay_ms_count >= 10000)
+                                {
+                                  delay_ms_count = 0;
+                                  ABL_STATUS = ABL_STANDBY;
+                                  infoMenu.cur--;  
+                                }
+                                break;
+        default:;
+      }
+      break;            
+  }
+}
+
+void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_t *inf)//这个函数只更新窗口内容
+{
+  const uint16_t titleHeight = window->title.height;
+  const uint16_t lineWidth = window->lineWidth;
+  const uint16_t infoHeight = window->info.height;
+  const uint16_t infoBackColor = window->info.backColor;
+  const int16_t  sx = window->rect.x0,
+                 sy = window->rect.y0,
+                 ex = window->rect.x1;
+  const uint16_t nowBackColor = GUI_GetBkColor();
+  const uint16_t nowFontColor = GUI_GetColor();
+  const GUI_TEXT_MODE nowTextMode = GUI_GetTextMode();
+
+  GUI_SetTextMode(GUI_TEXTMODE_NORMAL);
+  GUI_SetBkColor(BLACK);
+  GUI_SetColor(window->info.fontColor);
+  GUI_DispStringInRect(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf);
+
+  GUI_SetBkColor(nowBackColor);
+  GUI_SetColor(nowFontColor);
+  GUI_SetTextMode(nowTextMode); 
+}
+
 void menuPopup(void)
 {
   menuSetFrontCallBack(menuCallBackPopup);
+}
+
+void menuPopup_ABL(void)
+{
+  menuSetFrontCallBack(menuCallBackPopup_ABL);
 }
 
 void popupReminder(uint8_t* info, uint8_t* context)
@@ -88,3 +198,23 @@ void popupReminder(uint8_t* info, uint8_t* context)
     infoMenu.menu[++infoMenu.cur] = menuPopup;
   }
 }
+
+void popupReminder_ABL()
+{
+  char context[100];
+
+  sprintf_P(context, "%s:%3d/150   %s:%3d/50%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::E0),
+                                                    GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::BED),
+                                                    GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+  popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
+
+  setTargetTemp_celsius(150,ExtUI::E0);
+  setTargetTemp_celsius(50,ExtUI::BED);
+  ABL_STATUS = ABL_HEATING;
+
+  if(infoMenu.menu[infoMenu.cur] != menuPopup_ABL)
+  {
+    infoMenu.menu[++infoMenu.cur] = menuPopup_ABL;
+  }
+}
+
