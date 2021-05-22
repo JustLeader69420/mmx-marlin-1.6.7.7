@@ -181,6 +181,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
     // Machine state
     info.current_position = current_position;
     info.zraise = zraise;
+    info.z_current_position = (float)(planner.position.z)/800.0;
     TERN_(HAS_HOME_OFFSET, info.home_offset = home_offset);
     TERN_(HAS_POSITION_SHIFT, info.position_shift = position_shift);
     info.feedrate = uint16_t(feedrate_mm_s * 60.0f);
@@ -480,21 +481,25 @@ void PrintJobRecovery::resume() {
     gcode.process_subcommands_now_P(PSTR("G12"));
   #endif
 
-  // Move back to the saved XY
-  sprintf_P(cmd, PSTR("G1 X%s Y%s F3000"),
-    dtostrf(info.current_position.x, 1, 3, str_1),
-    dtostrf(info.current_position.y, 1, 3, str_2)
-  );
-  gcode.process_subcommands_now(cmd);
-
   // Move back to the saved Z
-  dtostrf(info.current_position.z, 1, 3, str_1);
+  dtostrf(info.z_current_position, 1, 3, str_1);
   #if Z_HOME_DIR > 0 || ENABLED(POWER_LOSS_RECOVER_ZHOME)
     sprintf_P(cmd, PSTR("G1 Z%s F200"), str_1);
   #else
     gcode.process_subcommands_now_P(PSTR("G1 Z0 F200"));
     sprintf_P(cmd, PSTR("G92.9 Z%s"), str_1);
   #endif
+  gcode.process_subcommands_now(cmd);
+
+  dtostrf(info.current_position.z, 1, 3, str_1);
+  sprintf_P(cmd, PSTR("G1 Z%s"), str_1);
+  gcode.process_subcommands_now(cmd);
+
+  // Move back to the saved XY
+  sprintf_P(cmd, PSTR("G1 X%s Y%s F3000"),
+    dtostrf(info.current_position.x, 1, 3, str_1),
+    dtostrf(info.current_position.y, 1, 3, str_2)
+  );
   gcode.process_subcommands_now(cmd);
 
   // Restore the feedrate
@@ -524,6 +529,7 @@ void PrintJobRecovery::resume() {
 
   // Resume the SD file from the last position
   char *fn = info.sd_filename;
+  if(*fn == '/') fn++;
   extern const char M23_STR[];
   sprintf_P(cmd, M23_STR, fn);
   gcode.process_subcommands_now(cmd);

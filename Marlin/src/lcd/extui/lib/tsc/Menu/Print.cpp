@@ -138,7 +138,7 @@ void menuCallBackPrint(void)
         if (filelist.seek(curPage * NUM_PER_PAGE + key_num))
         {
           if (filelist.isDir()) {
-            if(EnterDir(filelist.longFilename()) == false) break;
+            if(EnterDir(filelist.shortFilename()) == false) break;
             update = 1;
             curPage = 0;
             filelist.changeDir(filelist.shortFilename());

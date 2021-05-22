@@ -48,6 +48,7 @@ typedef struct {
   // Machine state
   xyze_pos_t current_position;
   float zraise;
+  float z_current_position; 
 
   #if HAS_HOME_OFFSET
     xyz_pos_t home_offset;

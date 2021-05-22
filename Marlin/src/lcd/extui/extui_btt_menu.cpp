@@ -134,6 +134,7 @@ namespace ExtUI {
   #if ENABLED(POWER_LOSS_RECOVERY)
     void onPowerLossResume() {
       // Called on resume from power-loss
+      infoMenu.menu[++infoMenu.cur] = menuPowerFailed;
     }
   #endif
 
