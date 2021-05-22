@@ -36,7 +36,7 @@ LABEL_MAINMENU,
     #else
       {ICON_BACKGROUND,           LABEL_BACKGROUND},
     #endif
-    {ICON_BACKGROUND,           LABEL_BACKGROUND},
+    {ICON_BABYSTEP,              LABEL_BABYSTEP},
     {ICON_BACK,                 LABEL_BACK}}
     #endif
   #endif
@@ -103,6 +103,7 @@ void menuCallBackMainPage() {
           //infoMenu.menu[++infoMenu.cur] = menuManualLeveling;
         #endif
         break;
+      case KEY_ICON_6: infoMenu.menu[++infoMenu.cur] = menuBabyStep;  break;
       case KEY_ICON_7: infoMenu.cur--;  break;
       default:break;
     #endif

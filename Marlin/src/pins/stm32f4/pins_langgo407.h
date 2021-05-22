@@ -34,7 +34,7 @@
 #endif
 
 #ifndef BOARD_INFO_NAME
-  #define BOARD_INFO_NAME "MD langgo STM32F4XX"
+  #define BOARD_INFO_NAME "MingDa GD32F407"
 #endif
 
 #define DEFAULT_MACHINE_NAME "HP STM32F407VE"
