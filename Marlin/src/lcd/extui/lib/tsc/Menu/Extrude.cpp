@@ -39,6 +39,7 @@ const ITEM itemLen[ITEM_LEN_NUM] = {
 const  uint8_t item_len[ITEM_LEN_NUM] = {1, 5, 10};
 static uint8_t item_len_i = 1;
 static float extrudeCoordinate = 0.0f;
+bool pause_extrude_flag = false;
 
 void extrudeCoordinateReDraw(void)
 {
@@ -92,6 +93,10 @@ void menuCallBackExtrude(void)
       break;
 
     case KEY_ICON_7: 
+      if(pause_extrude_flag){
+        pause_extrude_flag = false;
+        wait_for_user = false;
+      }
       infoMenu.cur--; 
       break;
     

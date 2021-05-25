@@ -157,7 +157,8 @@ void GcodeSuite::M600() {
       mmu2_M600();
       resume_print(slow_load_length, fast_load_length, 0, beep_count DXC_PASS);
     #else
-      wait_for_confirmation(true, beep_count DXC_PASS);
+      // wait_for_confirmation(true, beep_count DXC_PASS);
+      no_filament_carry_on_printf(true, beep_count DXC_PASS);
       resume_print(slow_load_length, fast_load_length, ADVANCED_PAUSE_PURGE_LENGTH,
                    beep_count, (parser.seenval('R') ? parser.value_celsius() : 0) DXC_PASS);
     #endif

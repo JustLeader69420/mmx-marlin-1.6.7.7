@@ -7,6 +7,8 @@
 #define EXTRUDE_NORMAL_SPEED    300
 #define EXTRUDE_FAST_SPEED      600
 
+extern bool pause_extrude_flag;
+
 void menuExtrude(void);
 
 #endif

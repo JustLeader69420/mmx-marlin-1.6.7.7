@@ -36,6 +36,8 @@ typedef struct {
 
 #include "../libs/nozzle.h"
 
+#include "../lcd/extui/lib/tsc/TSC_Menu.h"
+
 enum PauseMode : char {
   PAUSE_MODE_SAME,
   PAUSE_MODE_PAUSE_PRINT,
@@ -86,6 +88,8 @@ extern uint8_t did_pause_print;
 #endif
 
 bool pause_print(const float &retract, const xyz_pos_t &park_point, const float &unload_length=0, const bool show_lcd=false DXC_PARAMS);
+
+void no_filament_carry_on_printf(const bool is_reload=false, const int8_t max_beep_count=0 DXC_PARAMS);
 
 void wait_for_confirmation(const bool is_reload=false, const int8_t max_beep_count=0 DXC_PARAMS);
 

@@ -478,6 +478,84 @@ void show_continue_prompt(const bool is_reload) {
   serialprintPGM(is_reload ? PSTR(_PMSG(STR_FILAMENT_CHANGE_INSERT) "\n") : PSTR(_PMSG(STR_FILAMENT_CHANGE_WAIT) "\n"));
 }
 
+void no_filament_carry_on_printf(const bool is_reload/*=false*/, const int8_t max_beep_count/*=0*/ DXC_ARGS){
+  bool nozzle_timed_out = false;
+
+  show_continue_prompt(is_reload);
+
+  first_impatient_beep(max_beep_count);
+
+  // Start the heater idle timers
+  const millis_t nozzle_timeout = SEC_TO_MS(PAUSE_PARK_NOZZLE_TIMEOUT);
+
+  HOTEND_LOOP() thermalManager.heater_idle[e].start(nozzle_timeout);
+
+  #if ENABLED(DUAL_X_CARRIAGE)
+    const int8_t saved_ext        = active_extruder;
+    const bool saved_ext_dup_mode = extruder_duplication_enabled;
+    active_extruder = DXC_ext;
+    extruder_duplication_enabled = false;
+  #endif
+
+  //load extruder ui
+  infoMenu.menu[++infoMenu.cur] = menuExtrude;
+  pause_extrude_flag = true;  //start flag
+
+  wait_for_user = true;    // LCD click or M108 will clear this
+  while (wait_for_user) {
+    impatient_beep(max_beep_count);
+    // SERIAL_ECHOLNPAIR("222:");----------------------------------------------------------------------------------------------------------------------------------
+    // If the nozzle has timed out...
+    if (!nozzle_timed_out)
+      HOTEND_LOOP() nozzle_timed_out |= thermalManager.heater_idle[e].timed_out;
+    // SERIAL_ECHOLNPAIR("333:");
+
+    // Wait for the user to press the button to re-heat the nozzle, then
+    // re-heat the nozzle, re-show the continue prompt, restart idle timers, start over
+    if (nozzle_timed_out) {
+      SERIAL_ECHOLNPAIR("444:");
+      TERN_(HAS_LCD_MENU, lcd_pause_show_message(PAUSE_MESSAGE_HEAT));
+      SERIAL_ECHO_MSG(_PMSG(STR_FILAMENT_CHANGE_HEAT));
+
+      TERN_(HOST_PROMPT_SUPPORT, host_prompt_do(PROMPT_USER_CONTINUE, GET_TEXT(MSG_HEATER_TIMEOUT), GET_TEXT(MSG_REHEAT)));
+
+      TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired_P(GET_TEXT(MSG_HEATER_TIMEOUT)));
+
+      wait_for_user_response(0, true); // Wait for LCD click or M108
+
+      TERN_(HOST_PROMPT_SUPPORT, host_prompt_do(PROMPT_INFO, GET_TEXT(MSG_REHEATING)));
+
+      TERN_(EXTENSIBLE_UI, ExtUI::onStatusChanged_P(GET_TEXT(MSG_REHEATING)));
+
+      // Re-enable the heaters if they timed out
+      HOTEND_LOOP() thermalManager.reset_hotend_idle_timer(e);
+
+      // Wait for the heaters to reach the target temperatures
+      ensure_safe_temperature(false);
+
+      // Show the prompt to continue
+      show_continue_prompt(is_reload);
+
+      // Start the heater idle timers
+      const millis_t nozzle_timeout = SEC_TO_MS(PAUSE_PARK_NOZZLE_TIMEOUT);
+
+      HOTEND_LOOP() thermalManager.heater_idle[e].start(nozzle_timeout);
+      TERN_(HOST_PROMPT_SUPPORT, host_prompt_do(PROMPT_USER_CONTINUE, PSTR("Reheat Done"), CONTINUE_STR));
+      TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired_P(PSTR("Reheat finished.")));
+      wait_for_user = true;
+      nozzle_timed_out = false;
+
+      first_impatient_beep(max_beep_count);
+    }
+    idle_no_sleep();
+  }
+  #if ENABLED(DUAL_X_CARRIAGE)
+    active_extruder = saved_ext;
+    extruder_duplication_enabled = saved_ext_dup_mode;
+    stepper.set_directions();
+  #endif
+}
+
 void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep_count/*=0*/ DXC_ARGS) {
   DEBUG_SECTION(wfc, "wait_for_confirmation", true);
   DEBUG_ECHOLNPAIR("... is_reload:", is_reload, " maxbeep:", int(max_beep_count) DXC_SAY);
@@ -504,17 +582,20 @@ void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep
   KEEPALIVE_STATE(PAUSED_FOR_USER);
   TERN_(HOST_PROMPT_SUPPORT, host_prompt_do(PROMPT_USER_CONTINUE, GET_TEXT(MSG_NOZZLE_PARKED), CONTINUE_STR));
   TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired_P(GET_TEXT(MSG_NOZZLE_PARKED)));
+  SERIAL_ECHOLNPAIR("111:");
   wait_for_user = true;    // LCD click or M108 will clear this
   while (wait_for_user) {
     impatient_beep(max_beep_count);
-
+    // SERIAL_ECHOLNPAIR("222:");
     // If the nozzle has timed out...
     if (!nozzle_timed_out)
       HOTEND_LOOP() nozzle_timed_out |= thermalManager.heater_idle[e].timed_out;
+    // SERIAL_ECHOLNPAIR("333:");
 
     // Wait for the user to press the button to re-heat the nozzle, then
     // re-heat the nozzle, re-show the continue prompt, restart idle timers, start over
     if (nozzle_timed_out) {
+      SERIAL_ECHOLNPAIR("444:");
       TERN_(HAS_LCD_MENU, lcd_pause_show_message(PAUSE_MESSAGE_HEAT));
       SERIAL_ECHO_MSG(_PMSG(STR_FILAMENT_CHANGE_HEAT));
 
@@ -589,7 +670,7 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
     "\n"
   );
   //*/
-
+   SERIAL_ECHOLNPAIR("555:");
   if (!did_pause_print) return;
 
   // Re-enable the heaters if they timed out
