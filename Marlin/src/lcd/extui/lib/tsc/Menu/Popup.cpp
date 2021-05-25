@@ -153,7 +153,7 @@ void menuCallBackPopup_ABL(void)
                                 break;
         default:;
       }
-      break;            
+      break;
   }
 }
 
@@ -208,7 +208,7 @@ void popupReminder_ABL()
                                                     GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
   popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
 
-  setTargetTemp_celsius(150,ExtUI::E0);
+  setTargetTemp_celsius(155,ExtUI::E0);
   setTargetTemp_celsius(50,ExtUI::BED);
   ABL_STATUS = ABL_HEATING;
 
