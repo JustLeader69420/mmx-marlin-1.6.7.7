@@ -258,7 +258,7 @@ void TSCBoot::scanUpdates(void) {
   volatile uint8_t result = 0;   //must volatile
 
   result = scanUpdateFile();
-#if 0 //temp disable 2021年5月2日
+#if 1 //temp disable 2021年5月2日
   if (result & FONT) {
     updateFont((char *)FONT_ROOT_DIR "/byte_a~1.fon", BYTE_ASCII_ADDR);
     updateFont((char *)FONT_ROOT_DIR "/word_u~1.fon", WORD_UNICODE);
