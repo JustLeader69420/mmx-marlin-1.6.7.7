@@ -297,6 +297,7 @@ void menuCallBackStopPrinting(void)
   {
     case KEY_POPUP_CONFIRM:
       ExtUI::stopPrint();
+      set_bed_leveling_enabled(false);
       break;
 
     case KEY_POPUP_CANCEL:

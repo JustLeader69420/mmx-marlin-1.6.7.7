@@ -1100,7 +1100,7 @@ void setup() {
   
   SETUP_RUN(settings.first_load());   // Load data from EEPROM if available (or use defaults)
                                       // This also updates variables in the planner, elsewhere
-  set_bed_leveling_enabled();
+  // set_bed_leveling_enabled();
   
   #if HAS_TOUCH_XPT2046
     SETUP_RUN(touch.init());

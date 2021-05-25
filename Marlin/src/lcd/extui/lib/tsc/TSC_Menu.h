@@ -12,6 +12,10 @@
 #include "../../../../sd/cardreader.h"
 #include "../../../../libs/duration_t.h"
 #include "../../../../module/printcounter.h"
+
+#ifdef AUTO_BED_LEVELING_BILINEAR
+  #include "../../../../feature/bedlevel/bedlevel.h"
+#endif
 // Hardware
 #include "Hal/stm32f4_fsmc.h"
 #include "Hal/sw_spi.h"

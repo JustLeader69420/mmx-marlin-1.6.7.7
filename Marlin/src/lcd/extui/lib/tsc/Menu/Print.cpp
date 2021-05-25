@@ -143,6 +143,9 @@ void menuCallBackPrint(void)
             curPage = 0;
             filelist.changeDir(filelist.shortFilename());
           } else { //gcode
+            #ifdef AUTO_BED_LEVELING_BILINEAR
+              set_bed_leveling_enabled();
+            #endif
             ExtUI::printFile(filelist.shortFilename());
           }
         }
