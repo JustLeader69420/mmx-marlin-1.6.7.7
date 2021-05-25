@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include "../TSC_Menu.h"
+#include "../../../../../module/settings.h"
 
 SETTINGS infoSettings, // Settings para
          lastSettings; // Last Settings para
@@ -64,7 +65,7 @@ void menuCallBackInfo(void)
 void menuInfo(void)
 {
   const char* hardware = "Board   : " BOARD_INFO_NAME;
-  const char* firmware = "Firmware: " SHORT_BUILD_VERSION " " __DATE__;
+  const char* firmware = "Firmware: " SHORT_BUILD_VERSION " " __DATE__ " " EEPROM_VERSION;
   
   uint16_t HW_X = (LCD_WIDTH_PIXEL - GUI_StrPixelWidth((uint8_t *)hardware))/2;
   uint16_t FW_X = (LCD_WIDTH_PIXEL - GUI_StrPixelWidth((uint8_t *)firmware))/2;

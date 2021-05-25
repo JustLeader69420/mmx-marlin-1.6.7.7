@@ -20,6 +20,8 @@
  *
  */
 #pragma once
+#define EEPROM_VERSION "V2"
+#define EEPROM_OFFSET 100
 
 //
 // settings.cpp - Settings and EEPROM storage
