@@ -28,6 +28,7 @@
  *  - https://github.com/grbl/grbl
  */
 
+/********************head*************************/
 #include "MarlinCore.h"
 #include "module/settings.h"
 #if ENABLED(MARLIN_DEV_MODE)
@@ -221,6 +222,9 @@
   #include "feature/password/password.h"
 #endif
 
+
+
+/********************parameter***************************/
 PGMSTR(NUL_STR, "");
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
 PGMSTR(G28_STR, "G28");
@@ -318,6 +322,7 @@ void setup_powerhold() {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnarrowing"
 
+//if the pin is protected, return true; else return false
 bool pin_is_protected(const pin_t pin) {
   static const pin_t sensitive_pins[] PROGMEM = SENSITIVE_PINS;
   LOOP_L_N(i, COUNT(sensitive_pins)) {
@@ -329,28 +334,28 @@ bool pin_is_protected(const pin_t pin) {
 }
 
 #pragma GCC diagnostic pop
-
+//if protected pin error printf
 void protected_pin_err() {
   SERIAL_ERROR_MSG(STR_ERR_PROTECTED_PIN);
 }
-
+//quick stop the motor
 void quickstop_stepper() {
   planner.quick_stop();
   planner.synchronize();
   set_current_from_steppers_for_axis(ALL_AXES);
   sync_plan_position();
 }
-
+//enable the E motor
 void enable_e_steppers() {
   #define _ENA_E(N) ENABLE_AXIS_E##N();
   REPEAT(E_STEPPERS, _ENA_E)
 }
-
+//enable all motors
 void enable_all_steppers() {
   TERN_(AUTO_POWER_CONTROL, powerManager.power_on());
-  ENABLE_AXIS_X();
-  ENABLE_AXIS_Y();
-  ENABLE_AXIS_Z();
+  ENABLE_AXIS_X();  // enable X motor, write PD3 Low
+  ENABLE_AXIS_Y();  // enable Y motor, write PD3 Low
+  ENABLE_AXIS_Z();  // enable Z motor, write PD3 Low
   enable_e_steppers();
 }
 

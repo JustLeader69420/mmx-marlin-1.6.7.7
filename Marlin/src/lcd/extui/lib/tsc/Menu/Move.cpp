@@ -25,6 +25,16 @@ const ITEM itemMoveLen[ITEM_MOVE_LEN_NUM] = {
 };
 const float item_move_len[ITEM_MOVE_LEN_NUM] = {0.1f, 1, 10};
 static uint8_t item_move_len_i = 1;
+// xyz轴变化的mm值
+static float x_add_mm   = 0;
+static float y_add_mm   = 0;
+static float z_add_mm   = 0;
+// 临时存放xyz的值
+static int   x_add_mm_t = 0;
+static int   y_add_mm_t = 0;
+static int   z_add_mm_t = 0;
+// 发送Gcode命令
+static char G0_STR[64] = {0};
 
 static void setAxisPosition(float diff_mm, const ExtUI::axis_t axis)
 {
@@ -54,6 +64,26 @@ void menuCallBackMove()
   statusMsg_GetCurMsg(&tempMsg);
   // Position refresh per 1 sec
   static uint32_t nowTime_ms = 0;
+
+  if(queue.length == 0){    // G命令队列为空
+    if(x_add_mm != 0 || y_add_mm != 0 || z_add_mm != 0){
+      x_add_mm_t = (getAxisPosition_mm(ExtUI::X) + x_add_mm) * 10;
+      y_add_mm_t = (getAxisPosition_mm(ExtUI::Y) + y_add_mm) * 10;
+      z_add_mm_t = (getAxisPosition_mm(ExtUI::Z) + z_add_mm) * 10;
+
+      x_add_mm_t = (x_add_mm_t > X_BED_SIZE*10) ? X_BED_SIZE*10 : x_add_mm_t;    // 防止超越机器最大大小
+      y_add_mm_t = (y_add_mm_t > Y_BED_SIZE*10) ? Y_BED_SIZE*10 : y_add_mm_t;
+      z_add_mm_t = (z_add_mm_t > Z_BED_SIZE*10) ? Z_BED_SIZE*10 : z_add_mm_t;
+
+      x_add_mm = y_add_mm = z_add_mm = 0;
+
+      memset(G0_STR, 0, sizeof(G0_STR));
+      sprintf(G0_STR, "G0 X%d.%d Y%d.%d Z%d.%d F1000\n", x_add_mm_t/10, x_add_mm_t%10,
+                                                    y_add_mm_t/10, y_add_mm_t%10,
+                                                    z_add_mm_t/10, z_add_mm_t%10);
+      queue.enqueue_one_now(G0_STR);
+    }
+  }
   if (millis() - nowTime_ms > 1000) { // Refresh per 1 sec
     nowTime_ms = millis();
     // Refresh position
@@ -68,25 +98,26 @@ void menuCallBackMove()
   KEY_VALUES key_num = menuKeyGetValue();
   switch (key_num)
   {
-  case KEY_ICON_0: setAxisPosition(item_move_len[item_move_len_i], ExtUI::X);    break;
-  case KEY_ICON_1: setAxisPosition(item_move_len[item_move_len_i], ExtUI::Y);    break;
-  case KEY_ICON_2: setAxisPosition(item_move_len[item_move_len_i], ExtUI::Z);    break;
-  case KEY_ICON_3: 
-    item_move_len_i = (item_move_len_i+1)%ITEM_MOVE_LEN_NUM;            
-    moveItems.items[key_num] = itemMoveLen[item_move_len_i];
-    menuDrawItem(&moveItems.items[key_num], key_num);
-    break;
-  case KEY_ICON_4: setAxisPosition(-item_move_len[item_move_len_i], ExtUI::X);    break;
-  case KEY_ICON_5: setAxisPosition(-item_move_len[item_move_len_i], ExtUI::Y);    break;
-  case KEY_ICON_6: setAxisPosition(-item_move_len[item_move_len_i], ExtUI::Z);    break;
-  case KEY_ICON_7: infoMenu.cur--; break;  
-  default:
-    break;
+    case KEY_ICON_0: x_add_mm += item_move_len[item_move_len_i];    break;
+    case KEY_ICON_1: y_add_mm += item_move_len[item_move_len_i];    break;
+    case KEY_ICON_2: z_add_mm += item_move_len[item_move_len_i];    break;
+    case KEY_ICON_3: 
+      item_move_len_i = (item_move_len_i+1)%ITEM_MOVE_LEN_NUM;            
+      moveItems.items[key_num] = itemMoveLen[item_move_len_i];
+      menuDrawItem(&moveItems.items[key_num], key_num);
+      break;
+    case KEY_ICON_4: x_add_mm -= item_move_len[item_move_len_i];    break;
+    case KEY_ICON_5: y_add_mm -= item_move_len[item_move_len_i];    break;
+    case KEY_ICON_6: z_add_mm -= item_move_len[item_move_len_i];    break;
+    case KEY_ICON_7: infoMenu.cur--; break;  
+    default:
+      break;
   }
 }
 
 void menuMove()
 {
+  x_add_mm = y_add_mm = z_add_mm = 0; // 防止上一次界面的干扰
   statusMsg_GetCurMsg(&statusMsg);
   menuDrawPage(&moveItems);
   redrawPosition();

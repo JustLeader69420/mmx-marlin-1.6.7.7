@@ -87,8 +87,8 @@ default:
 }
 }
 
-// Store gcode cmd to gcode queue
-// If the gcode queue is full, reminde in title bar.
+// 存储gcode cmd到gcode队列
+// 如果gcode队列已满，在标题栏中提醒。
 bool storeCmd(const char *cmd)
 {  
   if (queue.length >= BUFSIZE) {  

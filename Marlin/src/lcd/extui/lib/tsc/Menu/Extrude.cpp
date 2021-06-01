@@ -39,15 +39,22 @@ const ITEM itemLen[ITEM_LEN_NUM] = {
 const  uint8_t item_len[ITEM_LEN_NUM] = {1, 5, 10};
 static uint8_t item_len_i = 1;
 static float extrudeCoordinate = 0.0f;
-bool pause_extrude_flag = false;
+
+static int extrudeCoordinate2 = 0;  // 显示挤出多少料
+static int e_add_mm = 0;    // 存放需要挤出的距离，但需要及时清空
+static int e_add_mm_t = 0;  // 临时存放挤出的距离，用来承接e_add_mm，防止它被清空后无数据
+static char G1_STR[64] = {0};// 发送Gcode命令
+
+bool pause_extrude_flag = false;  // 暂停挤出机的标志
 
 void extrudeCoordinateReDraw(void)
 {
   const GUI_RECT rect = {exhibitRect.x0, CENTER_Y, exhibitRect.x1, (int16_t)(CENTER_Y+BYTE_HEIGHT)};
   char buf[36];
-  sprintf_P(buf, PSTR("%.2f"), extrudeCoordinate);
+  // sprintf_P(buf, PSTR("%.2f"), extrudeCoordinate);
+  sprintf_P(buf, PSTR("%d"), extrudeCoordinate2);   // 将数据装换成字符串
   GUI_ClearPrect(&rect);
-  GUI_DispStringInPrect(&rect, (uint8_t *)buf);
+  GUI_DispStringInPrect(&rect, (uint8_t *)buf);     // 绘制字符串
 }
 
 const char* extruderDisplayID[] = EXTRUDER_ID;
@@ -56,7 +63,8 @@ void showExtrudeCoordinate(void)
 {
   const GUI_RECT rect = {exhibitRect.x0, (int16_t)(CENTER_Y-BYTE_HEIGHT), exhibitRect.x1, CENTER_Y};
   item_extruder_i = ExtUI::getActiveTool();
-  extrudeCoordinate = ExtUI::getAxisPosition_mm(item_extruder_i);
+  // extrudeCoordinate = ExtUI::getAxisPosition_mm(item_extruder_i);
+  extrudeCoordinate2 = ExtUI::getAxisPosition_mm(item_extruder_i);
   GUI_ClearPrect(&rect);
   GUI_DispStringInPrect(&rect, (uint8_t *)extruderDisplayID[item_extruder_i]);
   extrudeCoordinateReDraw();
@@ -65,14 +73,33 @@ void showExtrudeCoordinate(void)
 void menuCallBackExtrude(void)
 {
   KEY_VALUES key_num = menuKeyGetValue();
+
+  if(queue.length == 0){   // G命令队列为空
+    if(e_add_mm != 0){
+      e_add_mm_t = (getAxisPosition_mm(item_extruder_i) + e_add_mm);
+      e_add_mm = 0;
+
+      memset(G1_STR, 0, sizeof(G1_STR));
+      sprintf(G1_STR, "G1 E%d F250\n", e_add_mm_t);
+      queue.enqueue_one_now(G1_STR);
+    }
+    // 显示在屏幕上
+    if (extrudeCoordinate2 != ExtUI::getAxisPosition_mm(item_extruder_i)){
+      extrudeCoordinate2 = ExtUI::getAxisPosition_mm(item_extruder_i);
+      extrudeCoordinateReDraw();
+    }
+  }
+
   switch(key_num)
   {
     case KEY_ICON_0:
-      ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      // ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
       break;
     
     case KEY_ICON_3:
-      ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) + item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      // ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) + item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      e_add_mm += item_len[item_len_i];   // 点击了进料按钮，数值增大
       break;
     
     case KEY_ICON_4:
@@ -104,14 +131,15 @@ void menuCallBackExtrude(void)
       break;
   }
   
-  if (extrudeCoordinate != ExtUI::getAxisPosition_mm(item_extruder_i)){
-    extrudeCoordinate = ExtUI::getAxisPosition_mm(item_extruder_i);
-    extrudeCoordinateReDraw();
-  }
+  // if (extrudeCoordinate != ExtUI::getAxisPosition_mm(item_extruder_i)){
+  //   extrudeCoordinate = ExtUI::getAxisPosition_mm(item_extruder_i);
+  //   extrudeCoordinateReDraw();
+  // }
 }
 
 void menuExtrude()
 {
+  e_add_mm = 0;   // 防止上一次界面的干扰
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
   menuSetFrontCallBack(menuCallBackExtrude);
