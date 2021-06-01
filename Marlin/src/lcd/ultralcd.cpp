@@ -1520,10 +1520,11 @@ void MarlinUI::update() {
     #endif
   }
 
+  //resume pause printf
   void MarlinUI::resume_print() {
-    reset_status();
-    TERN_(PARK_HEAD_ON_PAUSE, wait_for_heatup = wait_for_user = false);
-    if (IS_SD_PAUSED()) queue.inject_P(M24_STR);
+    reset_status();   //Reset the status message
+    TERN_(PARK_HEAD_ON_PAUSE, wait_for_heatup = wait_for_user = false); //adjust flag
+    if (IS_SD_PAUSED()) queue.inject_P(M24_STR);  //the M24 Gcode enqueue
     #ifdef ACTION_ON_RESUME
       host_action_resume();
     #endif

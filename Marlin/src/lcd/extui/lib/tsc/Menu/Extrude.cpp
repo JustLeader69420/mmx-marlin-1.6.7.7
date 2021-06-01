@@ -95,7 +95,7 @@ void menuCallBackExtrude(void)
     case KEY_ICON_7: 
       if(pause_extrude_flag){
         pause_extrude_flag = false;
-        wait_for_user = false;
+        // wait_for_user = false;   //wait touch continue button
       }
       infoMenu.cur--; 
       break;

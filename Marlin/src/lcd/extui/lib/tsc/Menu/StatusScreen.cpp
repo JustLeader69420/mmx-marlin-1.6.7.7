@@ -276,10 +276,10 @@ void menuCallStatus(void)
       break;
     case KEY_ICON_7:
       infoMenu.menu[++infoMenu.cur] = menuPrint;
-      if(z_values[1][1] != 0){
-        planner.leveling_active = true;
-        set_bed_leveling_enabled(true);
-      }
+      // if(z_values[1][1] != 0){
+      //   planner.leveling_active = true;
+      //   set_bed_leveling_enabled(true);
+      // }
       break;
 
     default:break;

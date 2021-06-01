@@ -486,9 +486,9 @@ void no_filament_carry_on_printf(const bool is_reload/*=false*/, const int8_t ma
   first_impatient_beep(max_beep_count);
 
   // Start the heater idle timers
-  const millis_t nozzle_timeout = SEC_TO_MS(PAUSE_PARK_NOZZLE_TIMEOUT);
+  // const millis_t nozzle_timeout = SEC_TO_MS(PAUSE_PARK_NOZZLE_TIMEOUT);
 
-  HOTEND_LOOP() thermalManager.heater_idle[e].start(nozzle_timeout);
+  // HOTEND_LOOP() thermalManager.heater_idle[e].start(nozzle_timeout);
 
   #if ENABLED(DUAL_X_CARRIAGE)
     const int8_t saved_ext        = active_extruder;
@@ -497,17 +497,18 @@ void no_filament_carry_on_printf(const bool is_reload/*=false*/, const int8_t ma
     extruder_duplication_enabled = false;
   #endif
 
-  //load extruder ui
-  infoMenu.menu[++infoMenu.cur] = menuExtrude;
-  pause_extrude_flag = true;  //start flag
 
+  //show filament runout
+  TERN_(EXTENSIBLE_UI, ExtUI::onFilamentRunout(ExtUI::getActiveTool()));
+  
+  //always pause until touch continue button
   wait_for_user = true;    // LCD click or M108 will clear this
   while (wait_for_user) {
     impatient_beep(max_beep_count);
     // SERIAL_ECHOLNPAIR("222:");----------------------------------------------------------------------------------------------------------------------------------
     // If the nozzle has timed out...
-    if (!nozzle_timed_out)
-      HOTEND_LOOP() nozzle_timed_out |= thermalManager.heater_idle[e].timed_out;
+    // if (!nozzle_timed_out)
+    //   HOTEND_LOOP() nozzle_timed_out |= thermalManager.heater_idle[e].timed_out;
     // SERIAL_ECHOLNPAIR("333:");
 
     // Wait for the user to press the button to re-heat the nozzle, then
