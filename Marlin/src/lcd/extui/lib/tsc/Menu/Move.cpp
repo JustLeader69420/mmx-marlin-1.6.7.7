@@ -71,9 +71,12 @@ void menuCallBackMove()
       y_add_mm_t = (getAxisPosition_mm(ExtUI::Y) + y_add_mm) * 10;
       z_add_mm_t = (getAxisPosition_mm(ExtUI::Z) + z_add_mm) * 10;
 
-      x_add_mm_t = (x_add_mm_t > X_BED_SIZE*10) ? X_BED_SIZE*10 : x_add_mm_t;    // 防止超越机器最大大小
+      x_add_mm_t = (x_add_mm_t > X_BED_SIZE*10) ? X_BED_SIZE*10 : x_add_mm_t;    // 防止超越机器越界
       y_add_mm_t = (y_add_mm_t > Y_BED_SIZE*10) ? Y_BED_SIZE*10 : y_add_mm_t;
       z_add_mm_t = (z_add_mm_t > Z_BED_SIZE*10) ? Z_BED_SIZE*10 : z_add_mm_t;
+      if(x_add_mm_t < 0)  x_add_mm_t = 0;
+      if(y_add_mm_t < 0)  y_add_mm_t = 0;
+      if(z_add_mm_t < 0)  z_add_mm_t = 0;
 
       x_add_mm = y_add_mm = z_add_mm = 0;
 
