@@ -4,7 +4,7 @@
 #define TFT35_V2_0
 
 //Colors for drawing the icons
-#define GANTRYLBL_BKCOLOR   0x2187
+#define GANTRYLBL_BKCOLOR   MD_GRAY//0x2187
 #define GANTRYLBL_COLOR     WHITE
 #define HEADING_COLOR       WHITE
 #define VAL_COLOR           BLACK
@@ -41,7 +41,8 @@ void drawStatusScreenMsg(void);
 #if defined(TFT35_V1_0) || defined(TFT35_V1_1) || defined(TFT35_V1_2) || defined(TFT35_V2_0) || defined(TFT35_V3_0)
 
   #define SSICON_VAL_X0           5
-  #define SSICON_VAL_Y0           67
+  #define SSICON_VAL_Y0           65
+  #define SSICON_INFO_X           10
   //#define  statusicon_val_charcount  7
 
   #define SSICON_NAME_X0          40
@@ -50,7 +51,7 @@ void drawStatusScreenMsg(void);
 
   #define STATUS_MSG_ICON_XOFFSET     5
   #define STATUS_MSG_ICON_YOFFSET     5
-  #define STATUS_MSG_TITLE_XOFFSET    5
+  #define STATUS_MSG_TITLE_XOFFSET    10
   #define STATUS_MSG_BODY_XOFFSET     0
   #define STATUS_MSG_BODY_YOFFSET     60
   #define STATUS_MSG_BODY_BOTTOM      6

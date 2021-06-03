@@ -5,8 +5,8 @@
 
 
 #define FK_COLOR	WHITE
-#define BK_COLOR	0x0A29
-#define TITLE_COLOR 0xD928
+#define BK_COLOR	BLACK//0x0A29
+#define TITLE_COLOR BLACK//0xD928
 
 enum
 {
@@ -37,6 +37,10 @@ typedef struct
   int16_t x0, y0, x1, y1;
 }GUI_RECT;
 
+typedef struct
+{
+  int16_t x0, y0, r;
+}GUI_Circle;
 
 void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos);
 void LCD_SetWindow(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey);
@@ -55,6 +59,7 @@ void GUI_DrawPoint(uint16_t x, uint16_t y);
 void GUI_FillRect(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey);
 void GUI_FillPrect(const GUI_RECT *rect);
 void GUI_ClearRect(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey);
+void GUI_Clear_RCRect(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t r);
 void GUI_ClearPrect(const GUI_RECT *rect);
 void GUI_FillRectColor(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t color);
 void GUI_FillRectArry(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint8_t *arry);

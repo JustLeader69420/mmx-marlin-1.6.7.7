@@ -117,6 +117,29 @@ void GUI_ClearRect(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey)
   LCD_WriteMultiple(backGroundColor, (ex-sx) * (ey-sy));
 }
 
+void GUI_Clear_RCRect(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t r) //RoundCornersRect
+{
+  uint16_t temp_fkColor;
+  temp_fkColor = GUI_GetColor();
+  GUI_SetColor(0x2945);
+  /*********虚化锯齿*********/
+  GUI_FillCircle(sx+r-1,sy+r-1,r-1);  //左上
+  GUI_FillCircle(ex-r,  sy+r-1,r-1);  //右上
+  GUI_FillCircle(sx+r-1,ey-r  ,r-1);  //左下
+  GUI_FillCircle(ex-r  ,ey-r  ,r-1);  //右下
+  /*********实圆角*********/
+  GUI_SetColor(GUI_GetBkColor());
+  GUI_FillCircle(sx+r,  sy+r,  r);  //左上
+  GUI_FillCircle(ex-r-1,sy+r,  r);  //右上
+  GUI_FillCircle(sx+r,  ey-r-1,r);  //左下
+  GUI_FillCircle(ex-r-1,ey-r-1,r);  //右下
+  GUI_FillRect(sx  ,sy+r,sx+r,ey-r);
+  GUI_FillRect(ex-r,sy+r,ex  ,ey-r);
+  GUI_SetColor(temp_fkColor);
+  LCD_SetWindow( sx+r, sy, ex-r-1, ey-1);
+  LCD_WriteMultiple(backGroundColor, (ex-sx-2*r) * (ey-sy));
+}
+
 void GUI_ClearPrect(const GUI_RECT *rect)
 {
   GUI_ClearRect(rect->x0, rect->y0, rect->x1, rect->y1);

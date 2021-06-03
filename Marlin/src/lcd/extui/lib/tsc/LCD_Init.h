@@ -2,6 +2,7 @@
 
 #include "./Hal/stm32f4_fsmc.h"
 
+#define MD_GRAY               0x4208
 #define WHITE                 0xFFFF
 #define BLACK                 0x0000
 #define BLUE                  0x001F

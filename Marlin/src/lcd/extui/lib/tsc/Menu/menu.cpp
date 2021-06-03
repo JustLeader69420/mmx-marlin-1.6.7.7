@@ -223,8 +223,8 @@ void menuDrawListItem(const LISTITEM *item, uint8_t position)
   if (item->icon == NULL) return;
 
   if(item->type == LIST_BUTTON) {
-    GUI_SetBkColor(GRAY);
-    GUI_ClearPrect(rect);
+    GUI_SetBkColor(MD_GRAY);
+    GUI_Clear_RCRect(rect->x0,rect->y0,rect->x1,rect->y1,25);
     GUI_DispStringInPrect(rect, item->icon);
     GUI_SetBkColor(BK_COLOR);
   } else if (item->type == LIST_LABEL) {

@@ -1,6 +1,7 @@
 #include "../TSC_Menu.h"
 #include "../../../../../feature/bedlevel/bedlevel.h"
 #include "../../../../../feature/bedlevel/abl/abl.h"
+#include "../Menu/menu.h"
 //1 title, ITEM_PER_PAGE items (icon + label) 
 MENUITEMS StatusItems = {
 // title
@@ -44,28 +45,33 @@ const GUI_POINT pointID[4] = {
   {4*ICON_WIDTH+3*SPACE_X+START_X - BYTE_WIDTH/2,                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
 };
 const GUI_RECT rectB[4] = {
-  {START_X + 0 * ICON_WIDTH + 0 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
-   START_X + 1 * ICON_WIDTH + 0 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
+  {START_X + 0 * ICON_WIDTH + 0 * SPACE_X + SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
+   START_X + 1 * ICON_WIDTH + 0 * SPACE_X - SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
   
-  {START_X + 1 * ICON_WIDTH + 1 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
-   START_X + 2 * ICON_WIDTH + 1 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
+  {START_X + 1 * ICON_WIDTH + 1 * SPACE_X + SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
+   START_X + 2 * ICON_WIDTH + 1 * SPACE_X - SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
   
-  {START_X + 2 * ICON_WIDTH + 2 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
-   START_X + 3 * ICON_WIDTH + 2 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
+  {START_X + 2 * ICON_WIDTH + 2 * SPACE_X + SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
+   START_X + 3 * ICON_WIDTH + 2 * SPACE_X - SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
   
-  {START_X + 3 * ICON_WIDTH + 3 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
-   START_X + 4 * ICON_WIDTH + 3 * SPACE_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
+  {START_X + 3 * ICON_WIDTH + 3 * SPACE_X + SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,
+   START_X + 4 * ICON_WIDTH + 3 * SPACE_X - SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0 + BYTE_HEIGHT},
 };
 
 //info rectangle          
 const GUI_RECT RectInfo = {START_X + 1 * ICON_WIDTH + 1 * SPACE_X,  TITLE_END_Y +  1 * ICON_HEIGHT + 1 * SPACE_Y,
                            START_X + 3 * ICON_WIDTH + 2 * SPACE_X,  TITLE_END_Y +  2 * ICON_HEIGHT + 1 * SPACE_Y};
 
-const  GUI_RECT msgRect ={START_X + 1 * ICON_WIDTH + 1 * SPACE_X + 2,   TITLE_END_Y +  1 * ICON_HEIGHT + 1 * SPACE_Y + STATUS_MSG_BODY_YOFFSET,
-                          START_X + 3 * ICON_WIDTH + 2 * SPACE_X - 2,   TITLE_END_Y +  2 * ICON_HEIGHT + 1 * SPACE_Y - STATUS_MSG_BODY_BOTTOM};
+const  GUI_RECT msgRect ={START_X + 1 * ICON_WIDTH + 2 * SPACE_X + 2,   TITLE_END_Y +  1 * ICON_HEIGHT + 1 * SPACE_Y + STATUS_MSG_BODY_YOFFSET - 7,
+                          START_X + 3 * ICON_WIDTH + 1 * SPACE_X - 2,   TITLE_END_Y +  2 * ICON_HEIGHT + 1 * SPACE_Y - STATUS_MSG_BODY_BOTTOM - 7};
 
-const GUI_RECT RecGantry = {START_X,                        1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y+STATUS_GANTRY_YOFFSET,
-                            4*ICON_WIDTH+3*SPACE_X+START_X, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y-STATUS_GANTRY_YOFFSET};
+const GUI_RECT RecGantry = {START_X+(SPACE_Y-2*STATUS_GANTRY_YOFFSET)/2, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y+STATUS_GANTRY_YOFFSET,
+                            4*ICON_WIDTH+3*SPACE_X+START_X-(SPACE_Y-2*STATUS_GANTRY_YOFFSET)/2, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y-STATUS_GANTRY_YOFFSET+1};
+
+const GUI_Circle Gantry_Circle_pointID[2] = {
+  {RecGantry.x0,RecGantry.y0+(RecGantry.y1-RecGantry.y0)/2,(RecGantry.y1-RecGantry.y0)/2},
+  {RecGantry.x1,RecGantry.y0+(RecGantry.y1-RecGantry.y0)/2,(RecGantry.y1-RecGantry.y0)/2},
+};
 
 STATUS_MSG statusMsg;
 
@@ -121,8 +127,14 @@ static void redrawFeedRate(void)
 static void redrawPosition(void)
 {
   char tempstr[100];
-  GUI_SetColor(GANTRYLBL_COLOR);
+  GUI_SetColor(0x2945);
   GUI_SetBkColor(GANTRYLBL_BKCOLOR);
+  GUI_FillCircle(Gantry_Circle_pointID[0].x0-1,Gantry_Circle_pointID[0].y0,Gantry_Circle_pointID[0].r);
+  GUI_FillCircle(Gantry_Circle_pointID[1].x0+1,Gantry_Circle_pointID[1].y0,Gantry_Circle_pointID[1].r);
+  GUI_SetColor(GANTRYLBL_BKCOLOR);
+  GUI_FillCircle(Gantry_Circle_pointID[0].x0,Gantry_Circle_pointID[0].y0,Gantry_Circle_pointID[0].r);
+  GUI_FillCircle(Gantry_Circle_pointID[1].x0,Gantry_Circle_pointID[1].y0,Gantry_Circle_pointID[1].r);
+  GUI_SetColor(GANTRYLBL_COLOR);
   GUI_ClearPrect(&RecGantry);
   // sprintf_P(tempstr, "X: %.2f   Y: %.2f   Z: %.2f", statusMsg.x, statusMsg.y, statusMsg.z);
   sprintf_P(tempstr, "X: %d.%d   Y: %d.%d   Z: %d.%d", (int)(statusMsg.x),(int)(statusMsg.x*10)%10, 
@@ -232,15 +244,31 @@ void statusScreen_setMsg(const uint8_t *title, const uint8_t *msg)
 void redrawStatusMsg(void)
 {
   GUI_SetBkColor(INFOMSG_BKCOLOR);
-  GUI_ClearPrect(&msgRect);  
+  GUI_ClearPrect(&msgRect); 
+
+  GUI_SetColor(0x8C51);
+  GUI_FillCircle(msgRect.x0-1,(msgRect.y1-msgRect.y0)/2 + msgRect.y0,(msgRect.y1-msgRect.y0)/2); 
+  GUI_FillCircle(msgRect.x1+1,(msgRect.y1-msgRect.y0)/2 + msgRect.y0,(msgRect.y1-msgRect.y0)/2); 
+  GUI_SetColor(INFOMSG_BKCOLOR);
+  GUI_FillCircle(msgRect.x0,(msgRect.y1-msgRect.y0)/2 + msgRect.y0,(msgRect.y1-msgRect.y0)/2); 
+  GUI_FillCircle(msgRect.x1,(msgRect.y1-msgRect.y0)/2 + msgRect.y0,(msgRect.y1-msgRect.y0)/2); 
+  GUI_SetColor(INFOMSG_COLOR);
+
   Scroll_CreatePara(&msgScroll, (uint8_t *)msgbody, &msgRect);
   GUI_SetBkColor(BK_COLOR);
 }
 
 void drawStatusScreenMsg(void)
 {
-  GUI_SetBkColor(0x4B0D);
-  GUI_ClearPrect(&RectInfo);
+  // GUI_SetBkColor(0x4B0D);
+  // GUI_ClearPrect(&RectInfo);
+  // GUI_Clear_RCRect(RectInfo.x0, RectInfo.y0, RectInfo.x1, RectInfo.y1, 20);
+  const ITEM itemStatus = {ICON_DEC,LABEL_BACKGROUND};
+  GUI_SetBkColor(BLACK);
+  menuDrawItem(&itemStatus, 5);
+  menuDrawItem(&itemStatus, 6);
+  GUI_SetBkColor(MD_GRAY);
+  GUI_ClearRect(RectInfo.x0+20,RectInfo.y0,RectInfo.x1-20,RectInfo.y1);
   GUI_DispString(RectInfo.x0 + STATUS_MSG_TITLE_XOFFSET,RectInfo.y0 + STATUS_MSG_ICON_YOFFSET, textSelect(LABEL_STATUS_INFO));
   redrawStatusMsg();
 }

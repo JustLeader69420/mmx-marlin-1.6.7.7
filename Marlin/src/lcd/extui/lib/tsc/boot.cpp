@@ -82,7 +82,7 @@ void ICON_ReadDisplay(uint16_t sx, uint16_t sy, uint8_t icon)
 
 void ICON_PressedDisplay(uint16_t sx, uint16_t sy, uint8_t icon)
 {
-  uint16_t mode = 0x0FF0;
+  uint16_t mode = DARKGRAY; //0x0FF0;
   uint16_t x, y;
   uint16_t color = 0;
   uint32_t address = ICON_ADDR(icon);
