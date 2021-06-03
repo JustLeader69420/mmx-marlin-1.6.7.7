@@ -78,7 +78,7 @@ namespace ExtUI {
   void onPrintTimerPaused() {}
   void onPrintTimerStopped() {}
   void onFilamentRunout(const extruder_t extruder) {
-    popupReminder(textSelect(LABEL_WARNING), textSelect(LABEL_FILAMENT_RUNOUT));
+    popupReminder_p(textSelect(LABEL_WARNING), textSelect(LABEL_FILAMENT_RUNOUT));
     Buzzer_play(sound_error);
   }
   void onUserConfirmRequired(const char * const msg) {

@@ -35,6 +35,7 @@ WINDOW window = {
 
 static BUTTON *windowButton =  NULL;
 static uint16_t buttonNum = 0;
+static bool filament_runout_flag = false;   //no filament start
 
 void windowReDrawButton(uint8_t positon, uint8_t pressed)
 {
@@ -73,7 +74,14 @@ void menuCallBackPopup(void)
   switch(key_num)
   {            
     case KEY_POPUP_CONFIRM: 
-      infoMenu.cur--; 
+      infoMenu.cur--;
+      //if no filament, load extruder menu
+      if(filament_runout_flag){
+        filament_runout_flag = false;
+        //load extruder ui
+        pause_extrude_flag = true;  //start flag
+        infoMenu.menu[++infoMenu.cur] = menuExtrude;
+      }
       break;
     
     default:
@@ -188,6 +196,16 @@ void menuPopup(void)
 void menuPopup_ABL(void)
 {
   menuSetFrontCallBack(menuCallBackPopup_ABL);
+}
+
+void popupReminder_p(uint8_t* info, uint8_t* context)
+{
+  filament_runout_flag = true;    //this is no filament
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  if(infoMenu.menu[infoMenu.cur] != menuPopup)
+  {
+    infoMenu.menu[++infoMenu.cur] = menuPopup;
+  }
 }
 
 void popupReminder(uint8_t* info, uint8_t* context)
