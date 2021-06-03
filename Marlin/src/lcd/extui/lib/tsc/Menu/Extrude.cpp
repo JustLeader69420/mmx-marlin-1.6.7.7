@@ -79,14 +79,19 @@ void menuCallBackExtrude(void)
       e_add_mm_t = (getAxisPosition_mm(item_extruder_i) + e_add_mm);
       e_add_mm = 0;
 
-      memset(G1_STR, 0, sizeof(G1_STR));
-      sprintf(G1_STR, "G1 E%d F250\n", e_add_mm_t);
-      queue.enqueue_one_now(G1_STR);
-    }
-    // 显示在屏幕上
-    if (extrudeCoordinate2 != ExtUI::getAxisPosition_mm(item_extruder_i)){
-      extrudeCoordinate2 = ExtUI::getAxisPosition_mm(item_extruder_i);
-      extrudeCoordinateReDraw();
+      memset(G1_STR, 0, sizeof(G1_STR));    // 清空数组
+      switch(item_speed_i){   // 选择进料速度
+        case 0:
+          sprintf(G1_STR, "G1 E%d F%d\n", e_add_mm_t, item_speed[item_speed_i]);
+          break;
+        case 1:
+          sprintf(G1_STR, "G1 E%d F%d\n", e_add_mm_t, item_speed[item_speed_i]);
+          break;
+        case 2:
+          sprintf(G1_STR, "G1 E%d F%d\n", e_add_mm_t, item_speed[item_speed_i]);
+          break;
+      }
+      queue.enqueue_one_now(G1_STR);    // 命令填入队列
     }
   }
 
@@ -135,6 +140,12 @@ void menuCallBackExtrude(void)
   //   extrudeCoordinate = ExtUI::getAxisPosition_mm(item_extruder_i);
   //   extrudeCoordinateReDraw();
   // }
+
+  // 显示在屏幕上
+  if (extrudeCoordinate2 != (int)ExtUI::getAxisPosition_mm(item_extruder_i)){
+    extrudeCoordinate2 = (int)ExtUI::getAxisPosition_mm(item_extruder_i);
+    extrudeCoordinateReDraw();
+  }
 }
 
 void menuExtrude()

@@ -66,24 +66,35 @@ void menuCallBackMove()
   static uint32_t nowTime_ms = 0;
 
   if(queue.length == 0){    // G命令队列为空
-    if(x_add_mm != 0 || y_add_mm != 0 || z_add_mm != 0){
+    // 判断哪个轴移动了
+    if(x_add_mm != 0){
       x_add_mm_t = (getAxisPosition_mm(ExtUI::X) + x_add_mm) * 10;
-      y_add_mm_t = (getAxisPosition_mm(ExtUI::Y) + y_add_mm) * 10;
-      z_add_mm_t = (getAxisPosition_mm(ExtUI::Z) + z_add_mm) * 10;
-
-      x_add_mm_t = (x_add_mm_t > X_BED_SIZE*10) ? X_BED_SIZE*10 : x_add_mm_t;    // 防止超越机器越界
-      y_add_mm_t = (y_add_mm_t > Y_BED_SIZE*10) ? Y_BED_SIZE*10 : y_add_mm_t;
-      z_add_mm_t = (z_add_mm_t > Z_BED_SIZE*10) ? Z_BED_SIZE*10 : z_add_mm_t;
+      // 防止超越机器越界
+      x_add_mm_t = (x_add_mm_t > X_BED_SIZE*10) ? X_BED_SIZE*10 : x_add_mm_t;    
       if(x_add_mm_t < 0)  x_add_mm_t = 0;
-      if(y_add_mm_t < 0)  y_add_mm_t = 0;
-      if(z_add_mm_t < 0)  z_add_mm_t = 0;
-
-      x_add_mm = y_add_mm = z_add_mm = 0;
-
+      // 清空，防数据干扰
+      x_add_mm = 0;
+      // 清空数组，防数据干扰
       memset(G0_STR, 0, sizeof(G0_STR));
-      sprintf(G0_STR, "G0 X%d.%d Y%d.%d Z%d.%d F1000\n", x_add_mm_t/10, x_add_mm_t%10,
-                                                    y_add_mm_t/10, y_add_mm_t%10,
-                                                    z_add_mm_t/10, z_add_mm_t%10);
+      sprintf(G0_STR, "G0 X%d.%d F1500\n", x_add_mm_t/10, x_add_mm_t%10);   // 生成G命令
+      queue.enqueue_one_now(G0_STR);    // G命令入队
+    }
+    else if(y_add_mm != 0){
+      y_add_mm_t = (getAxisPosition_mm(ExtUI::Y) + y_add_mm) * 10;
+      y_add_mm_t = (y_add_mm_t > Y_BED_SIZE*10) ? Y_BED_SIZE*10 : y_add_mm_t;
+      if(y_add_mm_t < 0)  y_add_mm_t = 0;
+      y_add_mm = 0;
+      memset(G0_STR, 0, sizeof(G0_STR));
+      sprintf(G0_STR, "G0 Y%d.%d F1500\n", y_add_mm_t/10, y_add_mm_t%10);
+      queue.enqueue_one_now(G0_STR);
+    }
+    else if(z_add_mm != 0){
+      z_add_mm_t = (getAxisPosition_mm(ExtUI::Z) + z_add_mm) * 10;
+      z_add_mm_t = (z_add_mm_t > Z_BED_SIZE*10) ? Z_BED_SIZE*10 : z_add_mm_t;
+      if(z_add_mm_t < 0)  z_add_mm_t = 0;
+      z_add_mm = 0;
+      memset(G0_STR, 0, sizeof(G0_STR));
+      sprintf(G0_STR, "G0 Z%d.%d F1000\n", z_add_mm_t/10, z_add_mm_t%10);
       queue.enqueue_one_now(G0_STR);
     }
   }
