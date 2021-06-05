@@ -141,6 +141,8 @@ enum
   ICON_INFOBOX_PART1,
   ICON_INFOBOX_PART2,
   ICON_EM_STOP,
+  ICON_UP,
+  ICON_DOWN,
   
 //  ICON_RESERVE
 // Preview should be in the last place
