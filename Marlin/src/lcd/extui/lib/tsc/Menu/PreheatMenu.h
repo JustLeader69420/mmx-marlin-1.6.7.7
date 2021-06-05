@@ -2,8 +2,8 @@
 #define _PREHEATMENU_H_
 
 //                       PLA      PETG       ABS     "CUSTOM1" "CUSTOM2"
-#define PREHEAT_BED      {60,      70,       100,       55,       55}
-#define PREHEAT_HOTEND   {200,     250,      230,       200,      200}
+#define PREHEAT_BED      {50,      70,       80,       55,       55}
+#define PREHEAT_HOTEND   {190,     250,      230,       200,      200}
 
 typedef enum
 {

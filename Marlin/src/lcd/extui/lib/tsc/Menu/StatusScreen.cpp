@@ -7,10 +7,16 @@ MENUITEMS StatusItems = {
 // title
 LABEL_READY,
 // icon                       label
- {{ICON_STATUSNOZZLE,         LABEL_BACKGROUND},
+ {{ICON_HEAT,                 LABEL_BACKGROUND},
+  {ICON_STATUSNOZZLE,         LABEL_BACKGROUND},
   {ICON_STATUSBED,            LABEL_BACKGROUND},
-  {ICON_STATUSFAN,            LABEL_BACKGROUND},
-  {ICON_STATUS_SPEED,         LABEL_BACKGROUND},
+  // {ICON_STATUSFAN,            LABEL_BACKGROUND},
+  // {ICON_STATUS_SPEED,         LABEL_BACKGROUND},
+  #ifdef AUTO_BED_LEVELING_BILINEAR
+    {ICON_LEVELING,             LABEL_BACKGROUND},
+  #else
+    {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  #endif
   {ICON_MAINMENU,             LABEL_MAINMENU},  
   {ICON_BACKGROUND,           LABEL_BACKGROUND}, //Reserved for gantry position to be added later
   {ICON_BACKGROUND,           LABEL_BACKGROUND}, //Reserved for gantry position to be added later
@@ -91,8 +97,8 @@ void statusMsg_GetCurMsg(STATUS_MSG *msg)
 
 #define STATUS_START_Y (TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0)
 
-#define TOOL_VAL_SEPARATOR_X     (START_X + 0 * ICON_WIDTH + 0 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH)/2)
-#define BED_VAL_SEPARATOR_X      (START_X + 1 * ICON_WIDTH + 1 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH)/2)
+#define TOOL_VAL_SEPARATOR_X     (START_X + 1 * ICON_WIDTH + 1 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH)/2)
+#define BED_VAL_SEPARATOR_X      (START_X + 2 * ICON_WIDTH + 2 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH)/2)
 #define FAN_VAL_SEPARATOR_X      (START_X + 2 * ICON_WIDTH + 2 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH*4)/2 + BYTE_WIDTH*3)
 #define FEEDRATE_VAL_SEPARATOR_X (START_X + 3 * ICON_WIDTH + 3 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH*4)/2 + BYTE_WIDTH*3)
 
@@ -151,28 +157,28 @@ static void drawStatus(void)
   GUI_SetTextMode(GUI_TEXTMODE_TRANS);
   GUI_SetColor(HEADING_COLOR);
 
-  GUI_DispStringRight(pointID[0].x, pointID[0].y, (uint8_t *)heatDisplayID[statusMsg.curTool+1]); // Ext label
-  GUI_DispStringRight(pointID[1].x, pointID[1].y, (uint8_t *)heatDisplayID[0]); // Bed label
-  GUI_DispStringRight(pointID[2].x, pointID[2].y, (uint8_t *)fanID[0]); // Fan label
-  GUI_DispStringRight(pointID[3].x, pointID[3].y, (uint8_t *)SpeedID[0]); // Speed / Flow label
+  GUI_DispStringRight(pointID[1].x, pointID[1].y, (uint8_t *)heatDisplayID[statusMsg.curTool+1]); // Ext label
+  GUI_DispStringRight(pointID[2].x, pointID[2].y, (uint8_t *)heatDisplayID[0]); // Bed label
+  // GUI_DispStringRight(pointID[2].x, pointID[2].y, (uint8_t *)fanID[0]); // Fan label
+  // GUI_DispStringRight(pointID[3].x, pointID[3].y, (uint8_t *)SpeedID[0]); // Speed / Flow label
 
   GUI_SetColor(VAL_COLOR);
   GUI_SetBkColor(WHITE);
 
-  GUI_ClearPrect(&rectB[0]);
+  GUI_ClearPrect(&rectB[1]);
   GUI_DispString(TOOL_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Ext value
   redrawToolAct();
   redrawToolTag();
-  GUI_ClearPrect(&rectB[1]);
+  GUI_ClearPrect(&rectB[2]);
   GUI_DispString(BED_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Bed value
   redrawBedAct();
   redrawBedTag();
-  GUI_ClearPrect(&rectB[2]);
-  GUI_DispString(FAN_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"%"); // Fan speed percent
-  redrawFan();
-  GUI_ClearPrect(&rectB[3]);
-  GUI_DispString(FEEDRATE_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"%"); // Feedrate percent
-  redrawFeedRate();
+  // GUI_ClearPrect(&rectB[2]);
+  // GUI_DispString(FAN_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"%"); // Fan speed percent
+  // redrawFan();
+  // GUI_ClearPrect(&rectB[3]);
+  // GUI_DispString(FEEDRATE_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"%"); // Feedrate percent
+  // redrawFeedRate();
 
   redrawPosition();
 
@@ -286,18 +292,24 @@ void menuCallStatus(void)
   switch (key_num)
   {
     case KEY_ICON_0:
+      infoMenu.menu[++infoMenu.cur] = menuPreheat;
+      break;
+    case KEY_ICON_1:
       heatSetCurHeaterIndex(statusMsg.curTool+1); // Tool, Nozzle
       infoMenu.menu[++infoMenu.cur] = menuHeat;
       break;
-    case KEY_ICON_1:
+    case KEY_ICON_2:
       heatSetCurHeaterIndex(0); // Bed
       infoMenu.menu[++infoMenu.cur] = menuHeat;
       break;
-    case KEY_ICON_2:
-      infoMenu.menu[++infoMenu.cur] = menuFan;
-      break;
     case KEY_ICON_3:
-      infoMenu.menu[++infoMenu.cur] = menuSpeed;
+      // infoMenu.menu[++infoMenu.cur] = menuSpeed;
+      #ifdef AUTO_BED_LEVELING_BILINEAR
+        // infoMenu.menu[++infoMenu.cur] = menuAutoLeveling;
+        infoMenu.menu[++infoMenu.cur] = menuPopup_ABL;
+      #else
+        //infoMenu.menu[++infoMenu.cur] = menuManualLeveling;
+      #endif
       break;
     case KEY_ICON_4:
       infoMenu.menu[++infoMenu.cur] = menuMain;

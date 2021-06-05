@@ -29,11 +29,12 @@
 #endif
 
 #define ABL_STANDBY         1
-#define ABL_HEATING         2
-#define ABL_START           3
-#define ABL_LEVELING        4
-#define ABL_DONE            5
-#define ABL_CLOSE_WINDOW    6
+#define ABL_INIT            2
+#define ABL_HEATING         3
+#define ABL_START           4
+#define ABL_LEVELING        5
+#define ABL_DONE            6
+#define ABL_CLOSE_WINDOW    7
 
 enum
 {
@@ -54,7 +55,6 @@ void windowReDrawButton(uint8_t positon, uint8_t is_press);
 void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no);
 void popupReminder(uint8_t* info, uint8_t* context);
 void menuPopup(void);
-void popupReminder_ABL();
 void menuPopup_ABL(void);
 void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_t *inf);
 

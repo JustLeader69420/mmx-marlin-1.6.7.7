@@ -106,6 +106,16 @@ void menuCallBackPopup_ABL(void)
     default:
       switch(ABL_STATUS)
       {
+        case ABL_INIT    :  sprintf_P(context, "%s:%3d/150   %s:%3d/50%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::E0),
+                                                                              GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::BED),
+                                                                              GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+                            popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
+
+                            setTargetTemp_celsius(155,ExtUI::E0);
+                            setTargetTemp_celsius(50,ExtUI::BED);
+                            ABL_STATUS = ABL_HEATING;
+                            break;
+
         case ABL_HEATING :  ExtUI::delay_ms(1);
                             delay_ms_count ++;
                             if(delay_ms_count >= 1000)
@@ -187,6 +197,7 @@ void menuPopup(void)
 
 void menuPopup_ABL(void)
 {
+  ABL_STATUS = ABL_INIT;
   menuSetFrontCallBack(menuCallBackPopup_ABL);
 }
 
@@ -196,25 +207,6 @@ void popupReminder(uint8_t* info, uint8_t* context)
   if(infoMenu.menu[infoMenu.cur] != menuPopup)
   {
     infoMenu.menu[++infoMenu.cur] = menuPopup;
-  }
-}
-
-void popupReminder_ABL()
-{
-  char context[100];
-
-  sprintf_P(context, "%s:%3d/150   %s:%3d/50%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::E0),
-                                                    GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::BED),
-                                                    GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
-  popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
-
-  setTargetTemp_celsius(155,ExtUI::E0);
-  setTargetTemp_celsius(50,ExtUI::BED);
-  ABL_STATUS = ABL_HEATING;
-
-  if(infoMenu.menu[infoMenu.cur] != menuPopup_ABL)
-  {
-    infoMenu.menu[++infoMenu.cur] = menuPopup_ABL;
   }
 }
 
