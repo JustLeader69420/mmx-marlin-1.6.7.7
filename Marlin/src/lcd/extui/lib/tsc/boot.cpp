@@ -8,7 +8,7 @@ const GUI_RECT iconUpdateRect = {(LCD_WIDTH_PIXEL - ICON_WIDTH)/2,              
 const GUI_RECT labelUpdateRect = {0,              (LCD_HEIGHT_PIXEL - ICON_HEIGHT)/2 + ICON_HEIGHT, 
                                  LCD_WIDTH_PIXEL, (LCD_HEIGHT_PIXEL - ICON_HEIGHT)/2 + ICON_HEIGHT + BYTE_HEIGHT};
 
-const char iconBmpName[][34]={
+const char iconBmpName[][35]={
 "Heat", "Move", "Home", "Print", "Extrude", "Fan", "Settings", "Leveling", "Inc", "Dec",
 "Nozzle", "Hotbed", "Temp_1", "Temp_5", "Temp_10", "Stop", "Back", "Inc_X", "Inc_Y", "Inc_Z",
 "Mmm_01", "Mmm_1", "Mmm_10", "Dec_X", "Dec_Y","Dec_Z", "Home_X", "Home_Y", "Home_Z", "Folder",
@@ -20,7 +20,7 @@ const char iconBmpName[][34]={
 "RGB_Se~1", "RGB_Red", "RGB_Gr~1", "RGB_Blue", "RGB_Wh~1", "RGB_Off", "Preheat_Both", "Preheat_PLA", "Preheat_PETG", "Preheat_ABS",
 "PowerS~1", "Custom", "Custom0", "Custom1", "Custom2", "Custom3", "Custom4", "Custom5", "Custom6", "Home_Move", "Heat_Fan",
 "ManualLevel", "CoolDown", "Silent~1","Status~3","Status~1","Status~2","MainMenu","Status~4","StatusFlow","InfoBox_part1", "InfoBox_part2", "EM_Stop",
-"Up","Down",
+"Up","Down", "Start",
 };
 
 #define LCD_DMA_MAX_TRANS	(65535)		// DMA 65535 bytes one frame

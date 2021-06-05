@@ -143,7 +143,7 @@ enum
   ICON_EM_STOP,
   ICON_UP,
   ICON_DOWN,
-  
+  ICON_START,
 //  ICON_RESERVE
 // Preview should be in the last place
   ICON_PREVIEW,

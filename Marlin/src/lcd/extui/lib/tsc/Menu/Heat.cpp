@@ -14,7 +14,7 @@ LABEL_HEAT,
   {ICON_INC,                  LABEL_INC},
   {ICON_NOZZLE,               LABEL_NOZZLE},
   {ICON_5_DEGREE,             LABEL_5_DEGREE},
-  {ICON_STOP,                 LABEL_STOP},
+  {ICON_START,                LABEL_HEAT},
   {ICON_BACK,                 LABEL_BACK},}
 };
 
@@ -29,6 +29,12 @@ const ITEM itemTool[] = {
   {ICON_NOZZLE,               LABEL_NOZZLE},
   {ICON_NOZZLE,               LABEL_NOZZLE},
 };    
+
+const ITEM itemStartStop[2] = {
+// icon                       label
+  {ICON_STOP,                 LABEL_STOP},
+  {ICON_START,                LABEL_HEAT},
+};
 
 #define ITEM_DEGREE_NUM 3
 const ITEM itemDegree[ITEM_DEGREE_NUM] = {
@@ -128,7 +134,12 @@ void menuCallBackHeat(void)
       break;
     
     case KEY_ICON_6:
-      setTargetTemp(0);
+        if(getRealTargetTemp() == 0)
+        {
+          setTargetTemp(getTargetTemp());
+        }else{
+          setTargetTemp(0);
+        }
       break;
     
     case KEY_ICON_7:
@@ -138,6 +149,7 @@ void menuCallBackHeat(void)
     default :
       break;
   }
+
   static uint32_t nowTime_ms = 0;
   if (millis() - nowTime_ms > 1000) { // Refresh per 1 sec
     nowTime_ms = millis();
@@ -151,6 +163,12 @@ void menuCallBackHeat(void)
   {
     tarTemp = getRealTargetTemp();
     targetReDraw();
+    if(tarTemp == 0)
+    {
+      menuDrawItem(&itemStartStop[1], KEY_ICON_6);
+    }else{
+      menuDrawItem(&itemStartStop[0], KEY_ICON_6);
+    }
   }
 }
 
@@ -158,6 +176,12 @@ void menuHeat(void)
 {
   heatItems.items[KEY_ICON_4] = itemTool[heaterIndex];
   menuDrawPage(&heatItems);
+  if(getRealTargetTemp() == 0)
+  {
+    menuDrawItem(&itemStartStop[1], KEY_ICON_6);
+  }else{
+    menuDrawItem(&itemStartStop[0], KEY_ICON_6);
+  }
   showTemperature();
   menuSetFrontCallBack(menuCallBackHeat);
 }
