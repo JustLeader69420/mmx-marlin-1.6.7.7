@@ -45,10 +45,10 @@ const char* SpeedID[2] = {"Sp.", "Flow"};
 // text position rectangles for Live icons 
 //icon 0
 const GUI_POINT pointID[4] = {
-  {1*ICON_WIDTH+0*SPACE_X+START_X - BYTE_WIDTH/2,                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
-  {2*ICON_WIDTH+1*SPACE_X+START_X - BYTE_WIDTH/2,                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
-  {3*ICON_WIDTH+2*SPACE_X+START_X - BYTE_WIDTH/2,                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
-  {4*ICON_WIDTH+3*SPACE_X+START_X - BYTE_WIDTH/2,                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
+  {1*ICON_WIDTH+0*SPACE_X+START_X - 2*(BYTE_WIDTH/2),                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
+  {2*ICON_WIDTH+1*SPACE_X+START_X - 2*(BYTE_WIDTH/2),                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
+  {3*ICON_WIDTH+2*SPACE_X+START_X - 2*(BYTE_WIDTH/2),                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
+  {4*ICON_WIDTH+3*SPACE_X+START_X - 2*(BYTE_WIDTH/2),                   TITLE_END_Y + 0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_NAME_Y0},
 };
 const GUI_RECT rectB[4] = {
   {START_X + 0 * ICON_WIDTH + 0 * SPACE_X + SSICON_INFO_X,  TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0,

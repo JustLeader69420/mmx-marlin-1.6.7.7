@@ -46,7 +46,7 @@ void drawStatusScreenMsg(void);
   //#define  statusicon_val_charcount  7
 
   #define SSICON_NAME_X0          40
-  #define SSICON_NAME_Y0          7
+  #define SSICON_NAME_Y0          10
   //#define  statusicon_name_charcount  3
 
   #define STATUS_MSG_ICON_XOFFSET     5
