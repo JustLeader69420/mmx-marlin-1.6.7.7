@@ -35,7 +35,7 @@ millis_t Stopwatch::stopTimestamp;
 
 bool Stopwatch::stop() {
   Stopwatch::debug(PSTR("stop"));
-
+  // 检查计时器是否在运行或者暂停状态
   if (isRunning() || isPaused()) {
     TERN_(EXTENSIBLE_UI, ExtUI::onPrintTimerStopped());
     state = STOPPED;

@@ -153,11 +153,12 @@
 #if ENABLED(BTT_FSMC_LCD)
   // #include "../lcd/extui/lib/tsc/TSC_Menu.h"
   #include "../lcd/extui/lib/tsc/Menu/Settings.h"
+  #include "../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
 #endif
 
-#if ENABLED(BABYSTEPPING)
-  #include "../../src/feature/babystep.h"
-#endif
+// #if ENABLED(BABYSTEPPING)
+//   #include "../../src/feature/babystep.h"
+// #endif
 
 #pragma pack(push, 1) // No padding between variables
 
@@ -445,9 +446,10 @@ typedef struct SettingsDataStruct {
     uint32_t TSC_Para[7];
   #endif
 
-  #if ENABLED(BABYSTEPPING)
-    int16_t babystep_z_steps;
-  #endif
+  // #if ENABLED(BABYSTEPPING)
+  //   int16_t babystep_z_steps;
+  // #endif
+  float leveling_offset;
 
 } SettingsData;
 
@@ -1404,9 +1406,14 @@ void MarlinSettings::postprocess() {
     //
     // BABYSTEPPING
     //
-    #if ENABLED(BABYSTEPPING)
-      EEPROM_WRITE( babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] );
-    #endif
+    // #if ENABLED(BABYSTEPPING)
+    //   EEPROM_WRITE( babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] );
+    // #endif
+
+    //
+    // Leveling Offset
+    //
+    EEPROM_WRITE(LevelingOffset);
 
     //
     // Validate CRC and Data Size
@@ -2266,9 +2273,14 @@ void MarlinSettings::postprocess() {
         EEPROM_READ(touch.calibration);
       #endif
 
-      #if ENABLED(BABYSTEPPING)
-        EEPROM_READ(babystep.axis_total[BS_TOTAL_IND(Z_AXIS)]);
-      #endif
+      // #if ENABLED(BABYSTEPPING)
+      //   EEPROM_READ(babystep.axis_total[BS_TOTAL_IND(Z_AXIS)]);
+      // #endif
+
+      //
+      // Leveling Offset
+      //
+      EEPROM_READ(LevelingOffset);
 
       eeprom_error = size_error(eeprom_index - (EEPROM_OFFSET));
       if (eeprom_error) {
@@ -2880,9 +2892,14 @@ void MarlinSettings::reset() {
     #endif
   #endif
 
-  #if ENABLED(BABYSTEPPING)
-    babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
-  #endif
+  // #if ENABLED(BABYSTEPPING)
+  //   babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
+  // #endif
+
+  //
+  // Leveling Offset
+  //
+  LevelingOffset = 0.2f;
 
   postprocess();
 
@@ -3811,6 +3828,11 @@ void MarlinSettings::reset() {
         #endif
       );
     #endif
+
+    CONFIG_ECHO_HEADING("The Leveling Offset:");
+    CONFIG_ECHO_START();
+    SERIAL_ECHOLNPAIR("  Z: ", LevelingOffset);
+
   }
 
 #endif // !DISABLE_M503

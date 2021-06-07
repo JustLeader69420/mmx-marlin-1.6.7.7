@@ -181,7 +181,7 @@ float Planner::steps_to_mm[XYZE_N];             // (mm) Millimeters per step
 #endif
 
 #if HAS_LEVELING
-  bool Planner::leveling_active = false; // Flag that auto bed leveling is enabled
+  bool Planner::leveling_active = false; // 自动床调平已启用的标志
   #if ABL_PLANAR
     matrix_3x3 Planner::bed_level_matrix; // Transform to compensate for bed level
   #endif
@@ -1659,7 +1659,7 @@ float Planner::get_axis_position_mm(const AxisEnum axis) {
 }
 
 /**
- * Block until all buffered steps are executed / cleaned
+ *阻塞，直到执行/清除所有缓冲步骤
  */
 void Planner::synchronize() {
   while (has_blocks_queued() || cleaning_buffer_counter
