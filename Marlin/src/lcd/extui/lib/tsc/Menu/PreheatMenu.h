@@ -1,9 +1,14 @@
 #ifndef _PREHEATMENU_H_
 #define _PREHEATMENU_H_
 
-//                       PLA      PETG       ABS     "CUSTOM1" "CUSTOM2"
-#define PREHEAT_BED      {50,      70,       80,       55,       55}
-#define PREHEAT_HOTEND   {190,     250,      230,       200,      200}
+//                       PLA       ABS   "CUSTOM2" "SHUTDOWN" "CUSTOM3"
+#define PREHEAT_BED      {50,      80,       55,       0,       55}
+#define PREHEAT_HOTEND   {190,     230,      200,      0,      200}
+
+#define INFO_OFFSET_X0  54
+#define INFO_OFFSET_X1  15
+#define INFO_OFFSET_Y0  20
+#define INFO_OFFSET_Y1  61
 
 typedef enum
 {
