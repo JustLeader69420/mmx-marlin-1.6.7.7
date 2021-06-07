@@ -70,7 +70,7 @@ int GCodeParser::codenum;
   char *GCodeParser::command_args; // start of parameters
 #endif
 
-// Create a global instance of the GCode parser singleton
+// 创建一个单例模式的 GCode 解析器全局实例。Create a global instance of the GCode parser singleton
 GCodeParser parser;
 
 /**

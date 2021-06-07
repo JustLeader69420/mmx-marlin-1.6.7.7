@@ -34,7 +34,7 @@
     #define IT_BLTOUCH_DEPLOY       "Schiera"
     #define IT_BLTOUCH_STOW         "Stiva"
     #define IT_BLTOUCH_REPEAT       "Ripeti"
-    #define IT_PROBE_OFFSET         "Offset"
+    #define IT_PROBE_OFFSET         "Z Offset"
     #define IT_EEPROM_SAVE          "Salva"
     #define IT_INC                  "Incrementa"
     #define IT_DEC                  "Diminuisci"

@@ -34,7 +34,7 @@
     #define CZ_BLTOUCH_DEPLOY       "Deploy"
     #define CZ_BLTOUCH_STOW         "Stow"
     #define CZ_BLTOUCH_REPEAT       "Repeat"
-    #define CZ_PROBE_OFFSET         "Offset"
+    #define CZ_PROBE_OFFSET         "Z Offset"
     #define CZ_EEPROM_SAVE          "Save"
     #define CZ_INC                  "Přidat"
     #define CZ_DEC                  "Ubrat"

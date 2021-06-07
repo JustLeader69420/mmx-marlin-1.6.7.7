@@ -76,7 +76,7 @@ void menuCallBackMove()
       x_add_mm = 0;
       // 清空数组，防数据干扰
       memset(G0_STR, 0, sizeof(G0_STR));
-      sprintf(G0_STR, "G0 X%d.%d F1500\n", x_add_mm_t/10, x_add_mm_t%10);   // 生成G命令
+      sprintf(G0_STR, "G0 X%d.%d F3000\n", x_add_mm_t/10, x_add_mm_t%10);   // 生成G命令
       queue.enqueue_one_now(G0_STR);    // G命令入队
     }
     else if(y_add_mm != 0){
@@ -85,7 +85,7 @@ void menuCallBackMove()
       if(y_add_mm_t < 0)  y_add_mm_t = 0;
       y_add_mm = 0;
       memset(G0_STR, 0, sizeof(G0_STR));
-      sprintf(G0_STR, "G0 Y%d.%d F1500\n", y_add_mm_t/10, y_add_mm_t%10);
+      sprintf(G0_STR, "G0 Y%d.%d F3000\n", y_add_mm_t/10, y_add_mm_t%10);
       queue.enqueue_one_now(G0_STR);
     }
     else if(z_add_mm != 0){

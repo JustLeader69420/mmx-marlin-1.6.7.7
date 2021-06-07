@@ -195,7 +195,7 @@ G29_TYPE GcodeSuite::G29() {
     G29_RETURN(false);
   }
 
-  // Define local vars 'static' for manual probing, 'auto' otherwise
+  // 将本地变量定义为'static' 用于手动探测,否则定义为 'auto' 
   #define ABL_VAR TERN_(PROBE_MANUALLY, static)
 
   ABL_VAR int verbose_level;
@@ -259,9 +259,9 @@ G29_TYPE GcodeSuite::G29() {
   #endif
 
   /**
-   * On the initial G29 fetch command parameters.
+   * 获取G29的参数
    */
-  if (!g29_in_progress) {
+  if (!g29_in_progress) {   // 判定G29函数是否正在进行
 
     TERN_(HAS_MULTI_HOTEND, if (active_extruder) tool_change(0));
 
@@ -269,13 +269,13 @@ G29_TYPE GcodeSuite::G29() {
       abl_probe_index = -1;
     #endif
 
-    abl_should_enable = planner.leveling_active;
+    abl_should_enable = planner.leveling_active;  // 自动床调平已启用的标志，默认false
 
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
-      const bool seen_w = parser.seen('W');
+      const bool seen_w = parser.seen('W');   // 检测参数是否带有 W 参数，有返回true
       if (seen_w) {
-        if (!leveling_is_valid()) {
+        if (!leveling_is_valid()) {   // 检测是否拥有双线性网格
           SERIAL_ERROR_MSG("No bilinear grid");
           G29_RETURN(false);
         }
@@ -291,7 +291,7 @@ G29_TYPE GcodeSuite::G29() {
         int8_t i = parser.byteval('I', -1), j = parser.byteval('J', -1);
 
         if (!isnan(rx) && !isnan(ry)) {
-          // Get nearest i / j from rx / ry
+          // 从rx / ry得到最近的i / j （其中i和j组成了双线性网格，像‘#’）
           i = (rx - bilinear_start.x + 0.5 * gridSpacing.x) / gridSpacing.x;
           j = (ry - bilinear_start.y + 0.5 * gridSpacing.y) / gridSpacing.y;
           LIMIT(i, 0, GRID_MAX_POINTS_X - 1);
@@ -314,7 +314,7 @@ G29_TYPE GcodeSuite::G29() {
 
     #endif
 
-    // Jettison bed leveling data
+    // 抛弃床调整的(旧)数据并关闭平层补偿。此时EEPROM 中的数据不受影响。
     if (!seen_w && parser.seen('J')) {
       reset_bed_level();
       G29_RETURN(false);
@@ -353,19 +353,17 @@ G29_TYPE GcodeSuite::G29() {
       mean = 0;
 
     #elif ENABLED(AUTO_BED_LEVELING_BILINEAR)
-
-      zoffset = parser.linearval('Z');
-
+      zoffset = parser.linearval('Z');  // 设置网格值时指定 Z 偏移。判断Z后面是否有数值，无为0
     #endif
 
     #if ABL_GRID
 
-      xy_probe_feedrate_mm_s = MMM_TO_MMS(parser.linearval('S', XY_PROBE_SPEED));
+      xy_probe_feedrate_mm_s = MMM_TO_MMS(parser.linearval('S', XY_PROBE_SPEED));   // 获取X轴和Y轴之间的移动速度(mm/min)
 
-      const float x_min = probe.min_x(), x_max = probe.max_x(),
+      const float x_min = probe.min_x(), x_max = probe.max_x(),   // 获取探针活动范围
                   y_min = probe.min_y(), y_max = probe.max_y();
 
-      if (parser.seen('H')) {
+      if (parser.seen('H')) {   // 命令是否有 H 参数，H参数是用来设置要探测的区域的正方形宽度和高度的。
         const int16_t size = (int16_t)parser.value_linear_units();
         probe_position_lf.set(
           _MAX(X_CENTER - size / 2, x_min),
@@ -392,7 +390,7 @@ G29_TYPE GcodeSuite::G29() {
         G29_RETURN(false);
       }
 
-      // probe at the points of a lattice grid
+      // 在网格的点上探测
       gridSpacing.set((probe_position_rb.x - probe_position_lf.x) / (abl_grid_points.x - 1),
                       (probe_position_rb.y - probe_position_lf.y) / (abl_grid_points.y - 1));
 
@@ -404,15 +402,15 @@ G29_TYPE GcodeSuite::G29() {
       SERIAL_EOL();
     }
 
-    planner.synchronize();
+    planner.synchronize();  // 阻塞
 
     if (!faux) remember_feedrate_scaling_off();
 
-    // Disable auto bed leveling during G29.
-    // Be formal so G29 can be done successively without G28.
+    // G29期间关闭自动床调平。
+    // 要正式，这样G29就可以在没有G28的情况下连续完成。
     if (!no_action) set_bed_leveling_enabled(false);
 
-    // Deploy certain probes before starting probing
+    // 在开始探测之前部署某些探测
     #if HAS_BED_PROBE
       if (ENABLED(BLTOUCH))
         do_z_clearance(Z_CLEARANCE_DEPLOY_PROBE);
@@ -670,10 +668,10 @@ G29_TYPE GcodeSuite::G29() {
 
           #elif ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
-            z_values[meshCount.x][meshCount.y] = measured_z + zoffset
-            #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-                + babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
-            #endif
+            z_values[meshCount.x][meshCount.y] = measured_z + zoffset;
+            // #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+            //     + babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
+            // #endif
             TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(meshCount, z_values[meshCount.x][meshCount.y]));
 
           #endif
@@ -866,8 +864,7 @@ G29_TYPE GcodeSuite::G29() {
       if (!dryrun) {
         if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR("G29 uncorrected Z:", current_position.z);
 
-        // Unapply the offset because it is going to be immediately applied
-        // and cause compensation movement in Z
+        // 取消应用偏移量，因为它将被立即应用并引起 Z 轴上的补偿运动
         const float fade_scaling_factor = TERN(ENABLE_LEVELING_FADE_HEIGHT, planner.fade_scaling_factor_for_z(current_position.z), 1);
         current_position.z -= fade_scaling_factor * bilinear_z_offset(current_position);
 

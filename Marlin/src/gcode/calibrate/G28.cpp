@@ -198,9 +198,9 @@
  *  Z   Home to the Z endstop
  */
 void GcodeSuite::G28() {
-  #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-    float tsbabystep =  babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
-  #endif
+  // #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+  //   float tsbabystep =  babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
+  // #endif
 
   DEBUG_SECTION(log_G28, "G28", DEBUGGING(LEVELING));
   if (DEBUGGING(LEVELING)) log_machine_info();
@@ -487,7 +487,7 @@ void GcodeSuite::G28() {
     }
   #endif
 
-  #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-    babystep.add_mm(Z_AXIS,tsbabystep);
-  #endif
+  // #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+  //   babystep.add_mm(Z_AXIS,tsbabystep);
+  // #endif
 }

@@ -34,7 +34,7 @@
     #define PT_BLTOUCH_DEPLOY       "Abrir"
     #define PT_BLTOUCH_STOW         "Encolher"
     #define PT_BLTOUCH_REPEAT       "Repetir"
-    #define PT_PROBE_OFFSET         "Offset"
+    #define PT_PROBE_OFFSET         "Z Offset"
     #define PT_EEPROM_SAVE          "Gravar"
     #define PT_INC                  "Aumentar"
     #define PT_DEC                  "Diminuir"

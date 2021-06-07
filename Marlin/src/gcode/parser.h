@@ -247,7 +247,7 @@ public:
   // The code value pointer was set
   FORCE_INLINE static bool has_value() { return value_ptr != nullptr; }
 
-  // Seen a parameter with a value
+  // 是否为一个带值的参数，是返回true
   static inline bool seenval(const char c) { return seen(c) && has_value(); }
 
   // The value as a string
