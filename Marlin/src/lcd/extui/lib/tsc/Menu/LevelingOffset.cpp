@@ -76,14 +76,17 @@ void LevelingOffsetReDraw(void)
 void menuCallBackLevelingOffset(void)
 {
   static float leveling_offset_value = 0.0f;    // 用于显示屏幕的值
+  float ts_value = 0.0f;   // 临时存放数据
   KEY_VALUES key_num =  menuKeyGetValue();
   switch(key_num)
   {
     case KEY_ICON_0:
-      setLevelingOffset(leveling_offset_value - elementsUnit.ele[elementsUnit.cur]);
+      ts_value = leveling_offset_value - elementsUnit.ele[elementsUnit.cur];
+      setLevelingOffset(ts_value<-2 ? -2 : ts_value);   // 最小值为-2
       break;
     case KEY_ICON_3:
-      setLevelingOffset(leveling_offset_value + elementsUnit.ele[elementsUnit.cur]);
+      ts_value = leveling_offset_value + elementsUnit.ele[elementsUnit.cur];
+      setLevelingOffset(ts_value>2 ? 2 : ts_value);   // 最大值为2
       break;
     case KEY_ICON_4:
       settings.save();

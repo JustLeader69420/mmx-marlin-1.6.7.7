@@ -34,7 +34,7 @@
     #define DE_BLTOUCH_DEPLOY       "Deploy"
     #define DE_BLTOUCH_STOW         "Stow"
     #define DE_BLTOUCH_REPEAT       "Repeat"
-    #define DE_PROBE_OFFSET         "Offset"
+    #define DE_PROBE_OFFSET         "Z Offset"
     #define DE_EEPROM_SAVE          "Save"
     #define DE_INC                  "Erhöhen"
     #define DE_DEC                  "Verringern"
