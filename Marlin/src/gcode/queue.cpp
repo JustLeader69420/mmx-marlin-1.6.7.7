@@ -63,7 +63,7 @@ long GCodeQueue::last_N[NUM_SERIAL];
  * the main loop. The gcode.process_next_command method parses the next
  * command and hands off execution to individual handler functions.
  */
-uint8_t GCodeQueue::length = 0,  // Count of commands in the queue
+uint8_t GCodeQueue::length = 0,  // 队列中命令的计数
         GCodeQueue::index_r = 0, // Ring buffer read position
         GCodeQueue::index_w = 0; // Ring buffer write position
 

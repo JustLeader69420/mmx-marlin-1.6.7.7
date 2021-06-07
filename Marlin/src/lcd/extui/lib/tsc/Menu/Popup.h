@@ -53,6 +53,7 @@ extern uint8_t ABL_STATUS;
 void windowSetButton(const BUTTON *btn);
 void windowReDrawButton(uint8_t positon, uint8_t is_press);
 void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no);
+void popupReminder_p(uint8_t* info, uint8_t* context);
 void popupReminder(uint8_t* info, uint8_t* context);
 void menuPopup(void);
 void menuPopup_ABL(void);
