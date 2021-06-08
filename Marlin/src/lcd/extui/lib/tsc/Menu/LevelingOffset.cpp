@@ -6,10 +6,10 @@ MENUITEMS LevelingOffsetItems = {
 // title
 LABEL_PROBE_OFFSET,
 // icon                        label
- {{ICON_DEC,                  LABEL_DEC},
+ {{ICON_DOWN,                 LABEL_DEC},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
-  {ICON_INC,                  LABEL_INC},
+  {ICON_UP,                   LABEL_INC},
   {ICON_EEPROM_SAVE,          LABEL_EEPROM_SAVE},
   {ICON_01_MM,                LABEL_01_MM},
   {ICON_NORMAL_SPEED,         LABEL_VALUE_ZERO},
