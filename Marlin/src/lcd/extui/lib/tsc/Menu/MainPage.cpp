@@ -32,7 +32,11 @@ LABEL_MAINMENU,
     {ICON_PERCENTAGE,           LABEL_PERCENTAGE},
     {ICON_SETTINGS,             LABEL_SETTINGS},
     {ICON_FAN,                  LABEL_FAN},
-    {ICON_BABYSTEP,             LABEL_BABYSTEP},
+    #ifdef AUTO_BED_LEVELING_BILINEAR
+      {ICON_PROBE_OFFSET,         LABEL_PROBE_OFFSET},
+    #else
+      {ICON_BACKGROUND,           LABEL_BACKGROUND},
+    #endif
     {ICON_BACK,                 LABEL_BACK}}
     #endif
   #endif
@@ -92,7 +96,11 @@ void menuCallBackMainPage() {
       case KEY_ICON_3: infoMenu.menu[++infoMenu.cur] = menuSpeed;     break;
       case KEY_ICON_4: infoMenu.menu[++infoMenu.cur] = menuSettings;  break;
       case KEY_ICON_5: infoMenu.menu[++infoMenu.cur] = menuFan;       break;
-      case KEY_ICON_6: infoMenu.menu[++infoMenu.cur] = menuBabyStep;  break;
+
+      #ifdef AUTO_BED_LEVELING_BILINEAR
+        case KEY_ICON_6: infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;  break;
+      #endif
+
       case KEY_ICON_7: infoMenu.cur--;  break;
       default:break;
     #endif
