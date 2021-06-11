@@ -321,7 +321,7 @@ namespace ExtUI {
       const char *shortFilename();
       const char *filename();
       bool isDir();
-
+      void firstOpenPrint();
       void changeDir(const char * const dirname);
       void upDir();
       bool isAtRootDir();

@@ -3,6 +3,8 @@
 
 static ExtUI::FileList filelist;
 
+bool enter_by_icon = false; // 是否通过点击图标进入Prinf
+
 
 LISTITEMS printItems = {
 //  title
@@ -43,6 +45,7 @@ void ExitDir(void)
   int i = strlen(title);
   for(; i > 0 && title[i] != '/';i--)
   {	
+    title[i]=0; // 找到上一个目录
   }
   title[i]=0;
 }
@@ -173,6 +176,12 @@ void menuPrint(void)
   GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_LOADING));
   if (ExtUI::isMediaInserted())
   {
+    if(enter_by_icon){
+      enter_by_icon = false;
+      filelist.firstOpenPrint();
+      memset(title, 0, sizeof(title));
+      sprintf(title, "SD:");
+    }
     filelist.refresh();
     for(uint8_t i = 0; i < NUM_PER_PAGE; i++) printItems.items[i].icon = NULL;
     menuDrawListPage(&printItems);

@@ -315,6 +315,7 @@ void menuCallStatus(void)
       infoMenu.menu[++infoMenu.cur] = menuMain;
       break;
     case KEY_ICON_7:
+      enter_by_icon = true;
       infoMenu.menu[++infoMenu.cur] = menuPrint;
       // if(z_values[1][1] != 0){
       //   planner.leveling_active = true;

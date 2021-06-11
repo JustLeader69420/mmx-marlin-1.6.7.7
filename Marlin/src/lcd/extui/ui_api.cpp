@@ -1029,6 +1029,11 @@ namespace ExtUI {
     return IFSD(card.longFilename, "");
   }
 
+  // 从图标进入打印目录需要清空目录数组
+  void FileList::firstOpenPrint() {
+    card.clearDirPath();
+  }
+
   bool FileList::isDir() {
     return IFSD(card.flag.filenameIsDir, false);
   }

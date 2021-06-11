@@ -117,6 +117,7 @@ public:
   static int8_t cdup();
   static uint16_t countFilesInWorkDir();
   static uint16_t get_num_Files();
+  static void clearDirPath();
 
   // Select a file
   static void selectFileByIndex(const uint16_t nr);

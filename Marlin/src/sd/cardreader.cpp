@@ -910,6 +910,12 @@ void CardReader::cdroot() {
   TERN_(SDCARD_SORT_ALPHA, presort());
 }
 
+void CardReader::clearDirPath(){
+  flag.workDirIsRoot = true;
+  memset(workDirParents, 0, sizeof(workDirParents));
+  workDirDepth = 0;
+}
+
 #if ENABLED(SDCARD_SORT_ALPHA)
 
   /**
