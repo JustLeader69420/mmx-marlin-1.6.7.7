@@ -45,6 +45,9 @@ static int e_add_mm = 0;    // 存放需要挤出的距离，但需要及时清�
 static int e_add_mm_t = 0;  // 临时存放挤出的距离，用来承接e_add_mm，防止它被清空后无数据
 static char G1_STR[64] = {0};// 发送Gcode命令
 
+static bool isBusy = false; // 判断当前系统是否繁忙
+static uint8_t top_info_ai = 0, top_info_bi = 0, top_info_ci = 0;    // 用于是否需要清空顶部背景
+
 bool pause_extrude_flag = false;  // 暂停挤出机的标志
 
 void extrudeCoordinateReDraw(void)
@@ -72,9 +75,14 @@ void showExtrudeCoordinate(void)
 
 void menuCallBackExtrude(void)
 {
+  STATUS_MSG tempMsg;
+  statusMsg_GetCurMsg(&tempMsg);
+  // Position refresh per 1 sec
+  static uint32_t nowTime_ms = 0;
   KEY_VALUES key_num = menuKeyGetValue();
 
-  if(queue.length == 0){   // G命令队列为空
+  if(queue.length == 0 && (!pause_extrude_flag)){   // G命令队列为空,且为非暂停状态（注：暂停状态属于阻塞状态，无法通过G代码移动电机）
+    isBusy = false;
     if(e_add_mm != 0){
       e_add_mm_t = (getAxisPosition_mm(item_extruder_i) + e_add_mm);
       e_add_mm = 0;
@@ -93,18 +101,22 @@ void menuCallBackExtrude(void)
       }
       queue.enqueue_one_now(G1_STR);    // 命令填入队列
     }
-  }
+  }else isBusy = true;
 
   switch(key_num)
   {
     case KEY_ICON_0:
-      // ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
-      e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
+      if(pause_extrude_flag)  // 暂停状态使用这个函数
+        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      else
+        e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
       break;
     
     case KEY_ICON_3:
-      // ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) + item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
-      e_add_mm += item_len[item_len_i];   // 点击了进料按钮，数值增大
+      if(pause_extrude_flag)
+        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) + item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      else
+        e_add_mm += item_len[item_len_i];   // 点击了进料按钮，数值增大
       break;
     
     case KEY_ICON_4:
@@ -142,6 +154,32 @@ void menuCallBackExtrude(void)
   // }
 
   // 显示在屏幕上
+  if (millis() - nowTime_ms > 1000) { // Refresh per 1 sec
+    nowTime_ms = millis();
+    // Refresh position
+    if(isBusy && (!pause_extrude_flag)){
+      if(top_info_ai == 0){
+        top_info_ai++;  top_info_bi = 0;  top_info_ci = 0;
+        GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+      }
+      drawTopInfo(LABEL_BUSY);  // 绘制繁忙信息
+    }
+   #ifdef PREVENT_COLD_EXTRUSION
+    else if(tempMsg.actHotend < EXTRUDE_MINTEMP){
+      if(top_info_bi == 0){
+        top_info_bi++;  top_info_ai = 0;  top_info_ci = 0;
+        GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+      }
+      drawTopInfo((uint8_t*)"NOZZLE tempreature is too low !");
+    }
+   #endif
+    else{
+      if(top_info_ci == 0){
+        top_info_ci++;  top_info_bi = 0; top_info_ai = 0;
+        GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+      }
+    }
+  }
   if (extrudeCoordinate2 != (int)ExtUI::getAxisPosition_mm(item_extruder_i)){
     extrudeCoordinate2 = (int)ExtUI::getAxisPosition_mm(item_extruder_i);
     extrudeCoordinateReDraw();
@@ -150,7 +188,7 @@ void menuCallBackExtrude(void)
 
 void menuExtrude()
 {
-  e_add_mm = 0;   // 防止上一次界面的干扰
+  e_add_mm = top_info_ai = top_info_bi = top_info_ci = 0;   // 防止上一次界面的干扰
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
   menuSetFrontCallBack(menuCallBackExtrude);
