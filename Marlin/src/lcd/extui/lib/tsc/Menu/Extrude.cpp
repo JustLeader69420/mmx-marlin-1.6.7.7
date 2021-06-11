@@ -106,7 +106,7 @@ void menuCallBackExtrude(void)
   switch(key_num)
   {
     case KEY_ICON_0:
-      if(pause_extrude_flag)  // 暂停状态使用这个函数
+      if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
         ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
       else
         e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小

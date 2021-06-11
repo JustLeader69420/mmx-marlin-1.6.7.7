@@ -79,7 +79,7 @@ void menuCallBackPopup(void)
       if(filament_runout_flag){
         filament_runout_flag = false;
         //load extruder ui
-        pause_extrude_flag = true;  //start flag
+        pause_extrude_flag = true;  // 暂停状态启动挤出界面
         infoMenu.menu[++infoMenu.cur] = menuExtrude;
       }
       break;

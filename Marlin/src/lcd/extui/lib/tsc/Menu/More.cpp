@@ -7,6 +7,7 @@ void menuCallBackIsPause(void)
   {
     case KEY_POPUP_CONFIRM:
       if(setPrintPause(true))
+        pause_extrude_flag = true;  // 暂停状态启动挤出界面
         infoMenu.menu[infoMenu.cur] = menuExtrude;
       break;
 
