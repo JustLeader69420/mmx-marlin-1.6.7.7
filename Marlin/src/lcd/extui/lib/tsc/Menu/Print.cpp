@@ -4,6 +4,7 @@
 static ExtUI::FileList filelist;
 
 bool enter_by_icon = false; // 是否通过点击图标进入Prinf
+bool can_print_flag = true; // 能够进行打印的标志
 
 
 LISTITEMS printItems = {
@@ -146,10 +147,12 @@ void menuCallBackPrint(void)
             curPage = 0;
             filelist.changeDir(filelist.shortFilename());
           } else { //gcode
-            #ifdef AUTO_BED_LEVELING_BILINEAR
-              set_bed_leveling_enabled();
-            #endif
-            ExtUI::printFile(filelist.shortFilename());
+            if(can_print_flag){ // 如果可以打印就开始打印，否则跳过
+              #ifdef AUTO_BED_LEVELING_BILINEAR
+                set_bed_leveling_enabled(true);
+              #endif
+              ExtUI::printFile(filelist.shortFilename());
+            }
           }
         }
       }

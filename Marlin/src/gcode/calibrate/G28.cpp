@@ -64,6 +64,7 @@
 
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../core/debug_out.h"
+#include "../../lcd/extui/lib/tsc/Menu/Print.h"
 
 #if ENABLED(QUICK_HOME)
 
@@ -198,9 +199,7 @@
  *  Z   Home to the Z endstop
  */
 void GcodeSuite::G28() {
-  // #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-  //   float tsbabystep =  babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
-  // #endif
+  can_print_flag = false;   // 不能进行打印
 
   DEBUG_SECTION(log_G28, "G28", DEBUGGING(LEVELING));
   if (DEBUGGING(LEVELING)) log_machine_info();
@@ -487,7 +486,5 @@ void GcodeSuite::G28() {
     }
   #endif
 
-  // #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-  //   babystep.add_mm(Z_AXIS,tsbabystep);
-  // #endif
+  can_print_flag = true;    // 可以进入打印
 }

@@ -296,8 +296,9 @@ void menuCallBackStopPrinting(void)
   switch(key_num)
   {
     case KEY_POPUP_CONFIRM:
-      ExtUI::stopPrint();
       set_bed_leveling_enabled(false);
+      can_print_flag = false;   // 不能进行打印
+      ExtUI::stopPrint();
       break;
 
     case KEY_POPUP_CANCEL:
