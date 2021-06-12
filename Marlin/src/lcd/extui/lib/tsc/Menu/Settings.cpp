@@ -65,7 +65,7 @@ void menuCallBackInfo(void)
 void menuInfo(void)
 {
   const char* hardware = "Board   : " BOARD_INFO_NAME;
-  const char* firmware = "Firmware: " SHORT_BUILD_VERSION " " __DATE__ " " EEPROM_VERSION;
+  const char* firmware = "Firmware: " SHORT_BUILD_VERSION " " __DATE__;
   
   uint16_t HW_X = (LCD_WIDTH_PIXEL - GUI_StrPixelWidth((uint8_t *)hardware))/2;
   uint16_t FW_X = (LCD_WIDTH_PIXEL - GUI_StrPixelWidth((uint8_t *)firmware))/2;
