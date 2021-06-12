@@ -499,7 +499,7 @@ void no_filament_carry_on_printf(const bool is_reload/*=false*/, const int8_t ma
 
 
   //show filament runout
-  TERN_(EXTENSIBLE_UI, ExtUI::onFilamentRunout(ExtUI::getActiveTool()));
+  // TERN_(EXTENSIBLE_UI, ExtUI::onFilamentRunout(ExtUI::getActiveTool()));
   
   //always pause until touch continue button
   wait_for_user = true;    // LCD click or M108 will clear this

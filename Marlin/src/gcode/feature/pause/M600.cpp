@@ -134,9 +134,10 @@ void GcodeSuite::M600() {
                     slow_load_length = 0.0f,
                     fast_load_length = 0.0f;
   #else
-    // Unload filament
-    const float unload_length = -ABS(parser.seen('U') ? parser.value_axis_units(E_AXIS)
-                                                      : fc_settings[active_extruder].unload_length);
+    // // Unload filament
+    // const float unload_length = -ABS(parser.seen('U') ? parser.value_axis_units(E_AXIS)
+    //                                                   : fc_settings[active_extruder].unload_length);
+     const float unload_length = 0;   // D2_pro不会退料
 
     // Slow load filament
     constexpr float slow_load_length = FILAMENT_CHANGE_SLOW_LOAD_LENGTH;
@@ -151,12 +152,12 @@ void GcodeSuite::M600() {
       + 1 + FILAMENT_CHANGE_ALERT_BEEPS
     #endif
   );
-
   if (pause_print(retract, park_point, unload_length, true DXC_PASS)) {
     #if ENABLED(MMU2_MENUS)
       mmu2_M600();
       resume_print(slow_load_length, fast_load_length, 0, beep_count DXC_PASS);
     #else
+      SERIAL_ECHOLNPAIR("test:M600-2");
       // wait_for_confirmation(true, beep_count DXC_PASS);
       no_filament_carry_on_printf(true, beep_count DXC_PASS);
       resume_print(slow_load_length, fast_load_length, ADVANCED_PAUSE_PURGE_LENGTH,

@@ -122,13 +122,13 @@ class TFilamentMonitor : public FilamentMonitorBase {
         && (printingIsActive() || TERN0(ADVANCED_PAUSE_FEATURE, did_pause_print))
       ) {
         TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, cli()); // Prevent RunoutResponseDelayed::block_completed from accumulating here
-        response.run();
-        sensor.run();
-        const bool ran_out = response.has_run_out();
+        response.run();   // 标志位值减少
+        sensor.run();     // 复位标志位（喂狗）
+        const bool ran_out = response.has_run_out();  // 判断标志位是否大于0
         TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, sei());
         if (ran_out) {
-          filament_ran_out = true;
-          event_filament_runout();
+          filament_ran_out = true;  // 确认材料已用完
+          event_filament_runout();  // 弹出弹窗，并执行M600命令
           planner.synchronize();
         }
       }
@@ -163,11 +163,11 @@ class FilamentSensorBase {
       #undef INIT_RUNOUT_PIN
     }
 
-    // Return a bitmask of runout pin states
+    // 返回一个runout引脚状态的位掩码（bitmask）
     static inline uint8_t poll_runout_pins() {
       #define _OR_RUNOUT(N) | (READ(FIL_RUNOUT##N##_PIN) ? _BV((N) - 1) : 0)
-      return (0 REPEAT_S(1, INCREMENT(NUM_RUNOUT_SENSORS), _OR_RUNOUT));
-      #undef _OR_RUNOUT
+      return (0 REPEAT_S(1, INCREMENT(NUM_RUNOUT_SENSORS), _OR_RUNOUT));  // 0|1 或者 0|0
+      #undef _OR_RUNOUT // 取消定义 _OR_RUNOUT ，之后引用会报错（如果不再定义）
     }
 
     // Return a bitmask of runout flag states (1 bits always indicates runout)
@@ -248,8 +248,8 @@ class FilamentSensorBase {
       static inline void block_completed(const block_t* const) {}
 
       static inline void run() {
-        const bool out = poll_runout_state(active_extruder);
-        if (!out) filament_present(active_extruder);
+        const bool out = poll_runout_state(active_extruder);  // 检测断料检测开关的状态
+        if (!out) filament_present(active_extruder);          // 复位标志
         #ifdef FILAMENT_RUNOUT_SENSOR_DEBUG
           static bool was_out = false;
           if (out != was_out) {

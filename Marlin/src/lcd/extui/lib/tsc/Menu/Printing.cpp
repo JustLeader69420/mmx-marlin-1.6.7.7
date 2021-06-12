@@ -73,8 +73,21 @@ bool setPrintPause(bool is_pause)
   if (is_pause) {
     ExtUI::pausePrint();
   } else {
-    ExtUI::setUserConfirmed();
-    ExtUI::resumePrint();
+
+    #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+      if(READ(FIL_RUNOUT_PIN) != FIL_RUNOUT_STATE){   // 检测是否有耗材
+        ExtUI::setFilamentRunoutState(false);
+    #endif
+    
+        ExtUI::setUserConfirmed();
+        ExtUI::resumePrint();
+
+    #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+      }
+      else
+        TERN_(EXTENSIBLE_UI, ExtUI::onFilamentRunout(ExtUI::getActiveTool()));  // 跳出filament runout弹窗
+    #endif
+
   }
   pauseLock = false;
   return true;
