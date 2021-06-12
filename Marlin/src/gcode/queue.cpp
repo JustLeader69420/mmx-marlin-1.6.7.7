@@ -109,10 +109,12 @@ bool GCodeQueue::has_commands_queued() {
 }
 
 /**
- * Clear the Marlin command queue
+ * 清除Marlin命令队列
  */
 void GCodeQueue::clear() {
   index_r = index_w = length = 0;
+  injected_commands_P = nullptr;    // 指针指向空
+  memset(injected_commands, 0, sizeof(injected_commands));  // 清空缓冲数组
 }
 
 /**

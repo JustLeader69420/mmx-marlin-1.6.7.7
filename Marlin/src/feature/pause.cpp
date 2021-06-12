@@ -671,8 +671,8 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
     "\n"
   );
   //*/
-   SERIAL_ECHOLNPAIR("555:");
-  if (!did_pause_print) return;
+  // 当非暂停状态或者停止状态不再恢复，直接退出
+  if (!did_pause_print || card.flag.abort_sd_printing) return;
 
   // Re-enable the heaters if they timed out
   bool nozzle_timed_out = false;

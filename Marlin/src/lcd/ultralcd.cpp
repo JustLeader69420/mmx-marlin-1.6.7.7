@@ -1484,8 +1484,8 @@ void MarlinUI::update() {
 
   void MarlinUI::abort_print() {
     #if ENABLED(SDSUPPORT)
-      wait_for_heatup = wait_for_user = false;
-      card.flag.abort_sd_printing = true;
+      card.flag.abort_sd_printing = true;       // 停止sd卡打印标志，用于MarinCore
+      wait_for_heatup = wait_for_user = false;  // 不在等待
     #endif
     #ifdef ACTION_ON_CANCEL
       host_action_cancel();
@@ -1512,7 +1512,8 @@ void MarlinUI::update() {
 
     #if ENABLED(PARK_HEAD_ON_PAUSE)
       TERN_(HAS_WIRED_LCD, lcd_pause_show_message(PAUSE_MESSAGE_PARKING, PAUSE_MODE_PAUSE_PRINT)); // Show message immediately to let user know about pause in progress
-      queue.inject_P(PSTR("M25 P\nM24"));
+      // queue.inject_P(PSTR("M25 P\nM24"));
+      queue.inject_P(PSTR("M25\n"));
     #elif ENABLED(SDSUPPORT)
       queue.inject_P(PSTR("M25"));
     #elif defined(ACTION_ON_PAUSE)

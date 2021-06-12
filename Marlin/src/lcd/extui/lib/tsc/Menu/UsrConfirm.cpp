@@ -7,7 +7,7 @@ void menuCallUsrConfirm(void)
   {
     case KEY_POPUP_CONFIRM:
       //storeCmd("M1000");
-      ExtUI::setUserConfirmed();
+      // ExtUI::setUserConfirmed(); // 先不退出阻塞
       infoMenu.cur--;
       break;
   }

@@ -452,11 +452,9 @@ void startOrResumeJob() {
   inline void abortSDPrinting() {
     float rz;
     card.endFilePrint(TERN_(SD_RESORT, true));
-    SERIAL_ECHOLNPAIR("test: 4447");    // 测试语句
     queue.clear();        // 清空队列
     quickstop_stepper();  // 快速停下电机
     print_job_timer.stop();// 打印定时器停止
-    SERIAL_ECHOLNPAIR("test: 4448");    // 测试语句
     #if DISABLED(SD_ABORT_NO_COOLDOWN)
       thermalManager.disable_all_heaters(); // 关闭加热
     #endif
@@ -467,17 +465,14 @@ void startOrResumeJob() {
     #endif
     wait_for_heatup = false;
     TERN_(POWER_LOSS_RECOVERY, recovery.purge()); // 删除断电续打的文件
-    SERIAL_ECHOLNPAIR("test: 4449");    // 测试语句
 
     rz = current_position.z+5;
     do_blocking_move_to_z((rz>Z_MAX_POS ? Z_MAX_POS : rz), 3);  //z轴上升5mm，速度3mm/s，限制到Z轴最大位置
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject_P(PSTR(EVENT_GCODE_SD_ABORT)); // 发送“G28 XY\n”命令。复位XY轴
     #endif
-    SERIAL_ECHOLNPAIR("test: 4450");    // 测试语句
 
-    card.flag.abort_sd_printing = false;
-    SERIAL_ECHOLNPAIR("test: 4451");    // 测试语句
+    card.flag.abort_sd_printing = false;  // 结束停止打印状态
 
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
   }

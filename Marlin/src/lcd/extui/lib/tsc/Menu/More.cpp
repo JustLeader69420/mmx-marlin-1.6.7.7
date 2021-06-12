@@ -56,6 +56,7 @@ void menuCallBackMore(void)
       if (!isPaused()) // need paused before extrude
         infoMenu.menu[++infoMenu.cur] = menuIsPause;
       else
+        pause_extrude_flag = true;  // 暂停状态启动挤出界面
         infoMenu.menu[++infoMenu.cur] = menuExtrude; 
       break;
     
