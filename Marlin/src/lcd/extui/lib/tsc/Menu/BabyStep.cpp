@@ -84,7 +84,8 @@ void menuCallBackBabyStep(void)
       setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
       break;
     case KEY_ICON_4:
-      settings.save();
+      LevelingOffset = getBabyStepZAxisTotalMM(); // 将当前BabyStep的值赋给z_offset，方便下次调平使用
+      settings.save();                            // 保存，注意保存的是z_offset的值，而不是BabyStep的值，BabyStep每次复位都会被清零，防止干扰
       break;
     case KEY_ICON_5:
       elementsUnit.cur = (elementsUnit.cur + 1) % elementsUnit.totaled;
