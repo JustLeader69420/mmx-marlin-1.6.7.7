@@ -366,12 +366,42 @@ void PrintJobRecovery::resume() {
     );
     gcode.process_subcommands_now(cmd);
 
+    // 先加热，防止模具脱落
+    #if HAS_HEATED_BED
+      const int16_t bt = info.target_temperature_bed;
+      if (bt) {
+        // Restore the bed temperature
+        sprintf_P(cmd, PSTR("M190 S%i"), bt);
+        gcode.process_subcommands_now(cmd);
+      }
+    #endif
+
+    // Restore all hotend temperatures
+    #if HAS_HOTEND
+      HOTEND_LOOP() {
+        const int16_t et = info.target_temperature[e];
+        if (et) {
+          #if HAS_MULTI_HOTEND
+            sprintf_P(cmd, PSTR("T%i S"), e);
+            gcode.process_subcommands_now(cmd);
+          #endif
+          sprintf_P(cmd, PSTR("M109 S%i"), et);
+          gcode.process_subcommands_now(cmd);
+        }
+      }
+    #endif
+
+    // Z轴稍微抬起
+    gcode.process_subcommands_now("G0 Z5");
+    // 复位XY轴
     gcode.process_subcommands_now_P(PSTR(
       "G28R0"                               // No raise during G28
       #if IS_CARTESIAN && DISABLED(POWER_LOSS_RECOVER_ZHOME)
         "XY"                                // Don't home Z on Cartesian unless overridden
       #endif
     ));
+    // Z轴回到原处
+    gcode.process_subcommands_now("G0 Z0");
 
   #endif
 
@@ -403,29 +433,6 @@ void PrintJobRecovery::resume() {
     #endif
   #endif
 
-  #if HAS_HEATED_BED
-    const int16_t bt = info.target_temperature_bed;
-    if (bt) {
-      // Restore the bed temperature
-      sprintf_P(cmd, PSTR("M190 S%i"), bt);
-      gcode.process_subcommands_now(cmd);
-    }
-  #endif
-
-  // Restore all hotend temperatures
-  #if HAS_HOTEND
-    HOTEND_LOOP() {
-      const int16_t et = info.target_temperature[e];
-      if (et) {
-        #if HAS_MULTI_HOTEND
-          sprintf_P(cmd, PSTR("T%i S"), e);
-          gcode.process_subcommands_now(cmd);
-        #endif
-        sprintf_P(cmd, PSTR("M109 S%i"), et);
-        gcode.process_subcommands_now(cmd);
-      }
-    }
-  #endif
 
   // Select the previously active tool (with no_move)
   #if HAS_MULTI_EXTRUDER
@@ -482,18 +489,19 @@ void PrintJobRecovery::resume() {
   #endif
 
   // Move back to the saved Z
-  dtostrf(info.z_current_position, 1, 3, str_1);
+  // dtostrf(info.z_current_position, 1, 3, str_1);
+  dtostrf(info.current_position.z, 1, 3, str_1);
   #if Z_HOME_DIR > 0 || ENABLED(POWER_LOSS_RECOVER_ZHOME)
     sprintf_P(cmd, PSTR("G1 Z%s F200"), str_1);
   #else
-    gcode.process_subcommands_now_P(PSTR("G1 Z0 F200"));
+    // gcode.process_subcommands_now_P(PSTR("G1 Z0 F200")); // 导致Z轴向下移的罪魁祸首
     sprintf_P(cmd, PSTR("G92.9 Z%s"), str_1);
   #endif
   gcode.process_subcommands_now(cmd);
 
-  dtostrf(info.current_position.z, 1, 3, str_1);
-  sprintf_P(cmd, PSTR("G1 Z%s"), str_1);
-  gcode.process_subcommands_now(cmd);
+  // dtostrf(info.current_position.z, 1, 3, str_1); // 之前为了解决轴向下移的方法，向上移。
+  // sprintf_P(cmd, PSTR("G1 Z%s"), str_1);
+  // gcode.process_subcommands_now(cmd);
 
   // Move back to the saved XY
   sprintf_P(cmd, PSTR("G1 X%s Y%s F3000"),

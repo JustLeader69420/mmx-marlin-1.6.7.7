@@ -1252,7 +1252,7 @@ void setup() {
   #endif
 
   #if ENABLED(POWER_LOSS_RECOVERY)
-    gcode.process_subcommands_now("M413 S");
+    gcode.process_subcommands_now("M413 S1");   // 开启断电续打
     SETUP_RUN(recovery.check());
   #endif
 
