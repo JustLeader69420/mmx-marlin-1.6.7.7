@@ -108,7 +108,7 @@ static void redrawToolAct(void)
 }
 static void redrawToolTag(void)
 {
-  GUI_DispDec(TOOL_VAL_SEPARATOR_X + BYTE_WIDTH, STATUS_START_Y, (int16_t)statusMsg.tagHotend, 3, LEFT);
+  GUI_DispDec(TOOL_VAL_SEPARATOR_X + BYTE_WIDTH+1, STATUS_START_Y, (int16_t)statusMsg.tagHotend, 3, LEFT);
 }
 
 static void redrawBedAct(void)
@@ -117,7 +117,7 @@ static void redrawBedAct(void)
 }
 static void redrawBedTag(void)
 {
-  GUI_DispDec(BED_VAL_SEPARATOR_X + BYTE_WIDTH, STATUS_START_Y, (int16_t)statusMsg.tagBed, 3, LEFT);
+  GUI_DispDec(BED_VAL_SEPARATOR_X + BYTE_WIDTH+1, STATUS_START_Y, (int16_t)statusMsg.tagBed, 3, LEFT);
 }
 
 static void redrawFan(void)
@@ -226,14 +226,6 @@ void loopStatusCheck(void)
   if (statusMsg.tagBed != tempMsg.tagBed) {
     statusMsg.tagBed = tempMsg.tagBed;
     redrawBedTag();
-  }
-  if (statusMsg.fanPercent != tempMsg.fanPercent) {
-    statusMsg.fanPercent = tempMsg.fanPercent;
-    redrawFan();
-  }
-  if (statusMsg.feedRatePercent != tempMsg.feedRatePercent) {
-    statusMsg.feedRatePercent = tempMsg.feedRatePercent;
-    redrawFeedRate();
   }
 
   GUI_RestoreColorDefault();
