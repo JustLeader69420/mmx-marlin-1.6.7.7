@@ -57,8 +57,33 @@ static float getBabyStepZAxisTotalMM(){
   return babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
 }
 
+static int WhatIsBabyStepMM(float mm){
+  float oldmm = getBabyStepZAxisTotalMM();
+  if((oldmm>=2 && mm>0) || (oldmm<=-2 && mm<0)) return 0;   // 超越值
+  if((oldmm+mm) >= 2) return 1;                             // 快到顶
+  if((oldmm+mm) <= -2) return 2;                            // 快到底
+  return 3;                                                 // 常规
+}
+
 static void setBabyStepZAxisIncMM(float mm){
-  babystep.add_mm(Z_AXIS, mm);
+  float oldmm = getBabyStepZAxisTotalMM();
+  switch (WhatIsBabyStepMM(mm))
+  {
+    case 1:
+      babystep.add_mm(Z_AXIS, 2.0f - oldmm);    // 值快到顶了
+      break;
+
+    case 2:
+      babystep.add_mm(Z_AXIS, -2.0f - oldmm);   // 值快到底了
+      break;
+
+    case 3:
+      babystep.add_mm(Z_AXIS, mm);              // 值正常
+      break;
+    
+    default:                                    // 其它
+      break;
+  }
 }
 
 void showBabyStep(void)
@@ -84,7 +109,9 @@ void menuCallBackBabyStep(void)
       setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
       break;
     case KEY_ICON_4:
-      LevelingOffset = getBabyStepZAxisTotalMM(); // 将当前BabyStep的值赋给z_offset，方便下次调平使用
+      LevelingOffset += getBabyStepZAxisTotalMM(); // 将当前BabyStep的值赋给z_offset，方便下次调平使用
+      LevelingOffset = LevelingOffset>2 ? 2 : LevelingOffset;   // 防止超过2mm
+      LevelingOffset = LevelingOffset<-2 ? -2 : LevelingOffset; // 防止低于-2mm
       settings.save();                            // 保存，注意保存的是z_offset的值，而不是BabyStep的值，BabyStep每次复位都会被清零，防止干扰
       break;
     case KEY_ICON_5:
