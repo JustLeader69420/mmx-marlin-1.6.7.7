@@ -66,6 +66,10 @@
 #include "../../core/debug_out.h"
 #include "../../lcd/extui/lib/tsc/Menu/Print.h"
 
+#ifdef AUTO_BED_LEVELING_BILINEAR
+  #include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+#endif
+
 #if ENABLED(QUICK_HOME)
 
   static void quick_home_xy() {
@@ -200,6 +204,9 @@
  */
 void GcodeSuite::G28() {
   can_print_flag = false;   // 不能进行打印
+  #ifdef AUTO_BED_LEVELING_BILINEAR
+    saveOffset();           // 在复位之前先尝试保存z-offset的数据
+  #endif
 
   DEBUG_SECTION(log_G28, "G28", DEBUGGING(LEVELING));
   if (DEBUGGING(LEVELING)) log_machine_info();
