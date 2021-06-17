@@ -40,12 +40,12 @@ void menuCallBackFan(void)
   {
     case KEY_ICON_0:
       if (fanPercent > 0)
-        ExtUI::setTargetFan_percent(fanPercent-1, curIndex);
+        ExtUI::setTargetFan_percent(fanPercent-5, curIndex);
       break;
       
     case KEY_ICON_3:
       if (fanPercent < 100)
-        ExtUI::setTargetFan_percent(fanPercent+1, curIndex);
+        ExtUI::setTargetFan_percent(fanPercent+5, curIndex);
       break;
       
     case KEY_ICON_4:
