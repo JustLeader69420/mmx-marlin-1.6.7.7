@@ -7,13 +7,13 @@ MENUITEMS StatusItems = {
 // title
 LABEL_READY,
 // icon                       label
- {{ICON_HEAT,                 LABEL_BACKGROUND},
-  {ICON_STATUSNOZZLE,         LABEL_BACKGROUND},
-  {ICON_STATUSBED,            LABEL_BACKGROUND},
+ {{ICON_HEAT,                 LABEL_PREHEAT},
+  {ICON_STATUSNOZZLE,         LABEL_NOZZLE},
+  {ICON_STATUSBED,            LABEL_BED},
   // {ICON_STATUSFAN,            LABEL_BACKGROUND},
   // {ICON_STATUS_SPEED,         LABEL_BACKGROUND},
   #ifdef AUTO_BED_LEVELING_BILINEAR
-    {ICON_LEVELING,             LABEL_BACKGROUND},
+    {ICON_LEVELING,             LABEL_LEVELING},
   #else
     {ICON_BACKGROUND,           LABEL_BACKGROUND},
   #endif
@@ -132,7 +132,7 @@ static void redrawFeedRate(void)
 
 static void redrawPosition(void)
 {
-  char tempstr[100];
+  /*char tempstr[100];
   GUI_SetColor(0x2945);
   GUI_SetBkColor(GANTRYLBL_BKCOLOR);
   GUI_FillCircle(Gantry_Circle_pointID[0].x0-1,Gantry_Circle_pointID[0].y0,Gantry_Circle_pointID[0].r);
@@ -147,7 +147,7 @@ static void redrawPosition(void)
                                                        (int)(statusMsg.y),(int)(statusMsg.y*10)%10,
                                                        (int)(statusMsg.z),(int)(statusMsg.z*10)%10);
   GUI_DispStringInPrect(&RecGantry,(uint8_t *)tempstr);
-  GUI_RestoreColorDefault();
+  GUI_RestoreColorDefault();*/    // 20210617，去除显示xyz，用来显示label
 }
 
 static void drawStatus(void)
@@ -180,7 +180,7 @@ static void drawStatus(void)
   // GUI_DispString(FEEDRATE_VAL_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"%"); // Feedrate percent
   // redrawFeedRate();
 
-  redrawPosition();
+  /*redrawPosition();*/ // 20210617
 
   GUI_RestoreColorDefault();
 }
@@ -195,12 +195,12 @@ void loopStatusCheck(void)
   if (millis() - nowTime_ms > 1000) { // Refresh per 1 sec
     nowTime_ms = millis();
     // Refresh position
-    if (statusMsg.x != tempMsg.x || statusMsg.y != tempMsg.y || statusMsg.z != tempMsg.z){
+    /*if (statusMsg.x != tempMsg.x || statusMsg.y != tempMsg.y || statusMsg.z != tempMsg.z){
       statusMsg.x = tempMsg.x;
       statusMsg.y = tempMsg.y;
       statusMsg.z = tempMsg.z;
       redrawPosition();
-    }
+    }*/ // 20210617
 
     GUI_SetColor(VAL_COLOR);
     GUI_SetBkColor(WHITE);
