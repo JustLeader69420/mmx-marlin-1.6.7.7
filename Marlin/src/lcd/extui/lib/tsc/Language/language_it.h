@@ -124,7 +124,7 @@
     #define IT_READ_ONBOARDSD_ERROR "Errore lettura SD CARD!"    
     #define IT_FILAMENT_RUNOUT      "Filamento finito!"    
     #define IT_PREHEAT              "Prepara"
-    #define IT_PREHEAT_BOTH         "Both"
+    #define IT_PREHEAT_BOTH         "Entrambi"
     #define IT_PREHEAT_PLA          "PLA"
     #define IT_PREHEAT_PETG         "PETG"
     #define IT_PREHEAT_ABS          "ABS"
