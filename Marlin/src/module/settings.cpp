@@ -2899,7 +2899,7 @@ void MarlinSettings::reset() {
   //
   // Leveling Offset
   //
-  LevelingOffset = 0.2f;
+  LevelingOffset = 0.0f;
 
   postprocess();
 

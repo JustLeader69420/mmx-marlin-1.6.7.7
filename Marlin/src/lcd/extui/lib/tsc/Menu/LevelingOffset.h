@@ -7,4 +7,6 @@ extern float LevelingOffset;
 
 void menuLevelingOffset(void);
 void setLevelingOffset(float offset);
+void saveOffset();
+
 #endif

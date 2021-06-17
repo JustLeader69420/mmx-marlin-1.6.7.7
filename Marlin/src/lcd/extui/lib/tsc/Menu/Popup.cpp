@@ -94,8 +94,6 @@ void menuCallBackPopup_ABL(void)
   static uint16_t delay_ms_count = 0;
   static uint8_t temp_silent = infoSettings.silent;
   char context[100];
-  int LevelingOffset_ts = (int)(LevelingOffset * 100);  // 将调平补偿数据扩大百倍并强制转换成整形数据
-  char G29_order[32] = {0};   // 存放G29指令
   
   uint8_t E0_temp = (uint8_t)getActualTemp_celsius(ExtUI::E0);
   uint8_t BED_temp = (uint8_t)getActualTemp_celsius(ExtUI::BED);
@@ -140,15 +138,8 @@ void menuCallBackPopup_ABL(void)
                             }
                             break;
 
-        case ABL_START :    
-                            memset(G29_order, 0, sizeof(G29_order));  // 清空数组
-                            if(LevelingOffset_ts != 0){
-                              sprintf_P(G29_order, "G29 Z%d.%d", LevelingOffset_ts/100, LevelingOffset_ts%100);
-                            }else sprintf_P(G29_order, "G29");
-
-                            SERIAL_ECHOLNPGM("go Leveling");
-                            storeCmd("G28");     //reset 
-                            storeCmd(G29_order);     //start ABL
+        case ABL_START :    storeCmd("G28");     //reset 
+                            storeCmd("G29");     //start ABL
                             storeCmd("M500");    //save ABL info
                             storeCmd("G28");
 
