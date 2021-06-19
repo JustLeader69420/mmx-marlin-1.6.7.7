@@ -1,0 +1,29 @@
+
+
+Breakpoint=2448311728: 124: 0, State=BP_STATE_ON
+OpenDocument="main.cpp", FilePath="C:/Users/langgo/.platformio/packages/framework-arduinoststm32/cores/arduino/main.cpp", Line=0
+OpenDocument="HAL.cpp", FilePath="K:/d301_printer/Marlin/Marlin/src/HAL/STM32/HAL.cpp", Line=94
+OpenDocument="startup_stm32f407xx.s", FilePath="C:/Users/langgo/.platformio/packages/framework-arduinoststm32/system/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s", Line=67
+OpenDocument="MarlinCore.cpp", FilePath="K:/d301_printer/Marlin/Marlin/src/MarlinCore.cpp", Line=691
+OpenDocument="wiring_digital.c", FilePath="C:/Users/langgo/.platformio/packages/framework-arduinoststm32/cores/arduino/wiring_digital.c", Line=43
+OpenDocument="temperature.cpp", FilePath="K:/d301_printer/Marlin/Marlin/src/module/temperature.cpp", Line=2823
+OpenDocument="WSerial.cpp", FilePath="C:/Users/langgo/.platformio/packages/framework-arduinoststm32/cores/arduino/WSerial.cpp", Line=30
+OpenDocument="ui_api.cpp", FilePath="K:/d301_printer/Marlin/Marlin/src/lcd/extui/ui_api.cpp", Line=286
+OpenDocument="touch_process.cpp", FilePath="K:/d301_printer/Marlin/Marlin/src/lcd/extui/lib/tsc/Hal/touch_process.cpp", Line=180
+OpenDocument="temperature.h", FilePath="K:/d301_printer/Marlin/Marlin/src/module/temperature.h", Line=0
+OpenDocument="StatusScreen.cpp", FilePath="K:/d301_printer/Marlin/Marlin/src/lcd/extui/lib/tsc/Menu/StatusScreen.cpp", Line=234
+OpenToolbar="Debug", Floating=0, x=0, y=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=2, w=777, h=95, FilterBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=3, w=777, h=334, FilterBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=777, h=108, FilterBarShown=0, ToolBarShown=0, ExecCountersShown=0, InstEncodingsShown=0
+OpenWindow="Source", x=0, y=0, w=0, h=0, FilterBarShown=0, ToolBarShown=0, ExecCountersShown=0
+OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=958, h=319, FilterBarShown=0, ToolBarShown=0, EditorAddress=0x90
+OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=1, w=777, h=95, FilterBarShown=0, ToolBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=91, h=635, FilterBarShown=1, ToolBarShown=0
+OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=961, h=319, FilterBarShown=0, ToolBarShown=0
+TableHeader="Watched Data", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh";"Access"], ColWidths=[127;105;77;54;414]
+TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Class";"Source"], ColWidths=[516;77;49;61;302;176]
+TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[184;119;164;89;237;72]
+TableHeader="Power Sampling", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[160;313;287]
+TableHeader="RegisterSelectionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Auto";"Name";"Address";"Description"], ColWidths=[27;27;27;27]
