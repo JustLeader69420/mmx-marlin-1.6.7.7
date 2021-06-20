@@ -9,7 +9,7 @@
 #include "cdc_acm_core.h"
 #include "drv_usbh_int.h"
 #include "drv_usbd_int.h"
-#include "rtt.h"
+// #include "rtt.h"
 // #include "log.h"
 #include "stm32yyxx_ll_pwr.h"   //use stm32 common rcc & nvic
 #include "stm32f4xx_hal.h"

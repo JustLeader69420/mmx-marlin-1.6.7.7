@@ -166,7 +166,7 @@ void usb_portvbus_switch (usb_core_driver *udev, uint8_t state)
     uint32_t port = 0U;
 
     /* enable or disable the external charge pump */
-    usb_vbus_drive (state);
+    // usb_vbus_drive (state);
 
     /* turn on the host port power. */
     port = usb_port_read (udev);

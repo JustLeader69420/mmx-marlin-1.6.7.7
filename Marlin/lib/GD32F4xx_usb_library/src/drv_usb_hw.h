@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 #define __DRV_USB_HW_H
 
 #include "usb_conf.h"
-
+#include "wiring_time.h"
 /* function declarations */
 /* configure USB clock */
 void usb_rcu_config (void);
@@ -47,9 +47,11 @@ void usb_intr_config (void);
 /* initializes delay unit using Timer2 */
 void usb_timer_init (void);
 /* delay in micro seconds */
-void usb_udelay (const uint32_t usec);
+// void usb_udelay (const uint32_t usec);
+#define usb_udelay(x)   delay(1)
 /* delay in milliseconds */
-void usb_mdelay (const uint32_t msec);
+#define usb_mdelay(x)   delay(x)
+// void usb_mdelay (const uint32_t msec);
 /* configures system clock after wakeup from STOP mode */
 void system_clk_config_stop(void);
 
