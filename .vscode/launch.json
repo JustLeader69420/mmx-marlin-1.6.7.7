@@ -9,6 +9,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": ".pio/build/langgo407ve/firmware.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "jlink",
+            "device": "STM32F407VE",
+            "interface": "swd",
+            "svdFile": "gd32f4xx.svd"
+            // "serialNumber": "1375262910"
+        },
+        {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",

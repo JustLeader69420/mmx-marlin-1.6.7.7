@@ -7,6 +7,7 @@ extern "C"{
 
 void gd32_usb_device_cdc_init();
 void gd32_usb_host_msc_init();
+void gd32_usb_loop();
 
 #ifdef __cplusplus
 }

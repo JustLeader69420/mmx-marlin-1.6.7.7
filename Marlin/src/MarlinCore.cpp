@@ -1329,6 +1329,7 @@ void loop() {
   do {
     idle();
 
+    gd32_usb_loop();
     // TERN_(USE_WATCHDOG, HAL_watchdog_refresh());// thermalmanager will feed dog if normal.
 
     #if ENABLED(SDSUPPORT)

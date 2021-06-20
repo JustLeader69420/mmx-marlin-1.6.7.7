@@ -67,6 +67,7 @@ void usb_fs_rcc_gpio_nvic_ll_init()
 const PinMap PinMap_USB_OTG_HS_langgo[] = {
   {PB_14, USB_OTG_HS, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF12_OTG_HS_FS)}, // USB_OTG_HS_DM
   {PB_15, USB_OTG_HS, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF12_OTG_HS_FS)}, // USB_OTG_HS_DP
+  {NC,    NP,    0},  //must have
 };
 
 void usb_hs_rcc_gpio_nvic_ll_init()
