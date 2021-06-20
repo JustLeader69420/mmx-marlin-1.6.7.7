@@ -997,6 +997,7 @@ void setup() {
   LCD_Setup();
 
   gd32_usb_device_cdc_init();
+  gd32_usb_host_msc_init();
 
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers

@@ -113,7 +113,7 @@ void gd32_usb_host_msc_init()
 
 void gd32_usb_loop()
 {
-    // usbh_core_task(&usb_host_msc);
+    usbh_core_task(&usb_host_msc);
 
     if (USBD_CONFIGURED == cdc_acm.dev.cur_status) {
         if (0U == cdc_acm_check_ready(&cdc_acm)) {

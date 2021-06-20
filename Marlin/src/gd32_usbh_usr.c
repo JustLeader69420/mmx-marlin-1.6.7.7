@@ -263,7 +263,7 @@ usbh_user_status usbh_user_userinput(void)
 #endif
     
 
-    return usbh_usr_status;
+    return USBH_USER_RESP_OK;//usbh_usr_status;
 }
 
 /*!
