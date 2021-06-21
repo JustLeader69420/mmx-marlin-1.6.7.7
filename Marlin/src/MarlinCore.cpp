@@ -950,6 +950,7 @@ inline void tmc_standby_setup() {
  *    • status LEDs
  *    • Max7219
  */
+#include "gd32_usb.h"
 
 void LCD_Setup();
 
@@ -1005,6 +1006,9 @@ void setup() {
 
   SETUP_RUN(HAL_init());
   LCD_Setup();
+
+  gd32_usb_device_cdc_init();
+  gd32_usb_host_msc_init();
 
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
@@ -1342,6 +1346,7 @@ void loop() {
   do {
     idle();
 
+    gd32_usb_loop();
     // TERN_(USE_WATCHDOG, HAL_watchdog_refresh());// thermalmanager will feed dog if normal.
 
     #if ENABLED(SDSUPPORT)

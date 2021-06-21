@@ -5,6 +5,8 @@
         "chrono": "cpp",
         "array": "cpp",
         "string": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "usbd_core.h": "c",
+        "gd32_usbd_core.h": "c"
     }
 }

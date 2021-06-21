@@ -292,9 +292,9 @@ extern "C" {
   void  DMA2_Stream5_IRQHandler() { while(1); }
   void  DMA2_Stream6_IRQHandler() { while(1); }
 
-  void  OTG_HS_EP1_OUT_IRQHandler() { while(1); }
-  void  OTG_HS_EP1_IN_IRQHandler () { while(1); }
-  void  OTG_HS_WKUP_IRQHandler   () { while(1); }
-  void  OTG_HS_IRQHandler        () { while(1); }
+  // void  OTG_HS_EP1_OUT_IRQHandler() { while(1); }
+  // void  OTG_HS_EP1_IN_IRQHandler () { while(1); }
+  // void  OTG_HS_WKUP_IRQHandler   () { while(1); }
+  // void  OTG_HS_IRQHandler        () { while(1); }
 
 }
