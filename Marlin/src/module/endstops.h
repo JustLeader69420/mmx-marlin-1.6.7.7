@@ -26,6 +26,7 @@
  */
 
 #include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/tsc/Menu/Home.h"
 #include <stdint.h>
 
 enum EndstopEnum : char {

@@ -228,7 +228,7 @@ void report_real_position() {
   report_more_positions();
 }
 
-// Report the logical current position according to the most recent G-code command
+// 根据最近的G-code命令报告逻辑当前位置
 void report_current_position() {
   report_logical_position(current_position);
   report_more_positions();
@@ -1274,6 +1274,14 @@ feedRate_t get_homing_bump_feedrate(const AxisEnum axis) {
 #endif // SENSORLESS_HOMING
 
 /**
+ * 设置步进电机的值
+ * @param axis 需要设置的轴
+ * @param distance 需要设置的位置（步数）
+ */
+void set_step_value(const AxisEnum axis, const float distance){
+  planner.set_axis_position_mm(axis, distance);
+}
+/**
  * Home an individual linear axis
  */
 void do_homing_move(const AxisEnum axis, const float distance, const feedRate_t fr_mm_s=0.0) {
@@ -1343,7 +1351,7 @@ void do_homing_move(const AxisEnum axis, const float distance, const feedRate_t 
   #endif
 
   planner.synchronize();
-
+  
   if (is_home_dir) {
 
     #if HOMING_Z_WITH_PROBE && QUIET_PROBING
@@ -1354,6 +1362,9 @@ void do_homing_move(const AxisEnum axis, const float distance, const feedRate_t 
 
     // Re-enable stealthChop if used. Disable diag1 pin on driver.
     TERN_(SENSORLESS_HOMING, end_sensorless_homing_per_axis(axis, stealth_states));
+  }
+  if(stop_home){
+    set_step_value(axis, 50.0f);    // 这里设置为0的话，得到的步进为-50左右，+50为了抵消，这需要注意
   }
 }
 
@@ -1598,7 +1609,7 @@ void homeaxis(const AxisEnum axis) {
   );
 
   // If a second homing move is configured...
-  if (bump) {
+  if (bump && !stop_home) {
     // Move away from the endstop by the axis HOMING_BUMP_MM
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Move Away:");
     do_homing_move(axis, -bump

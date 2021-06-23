@@ -804,6 +804,7 @@ class Planner {
     static void set_machine_position_mm(const float &a, const float &b, const float &c, const float &e);
     FORCE_INLINE static void set_machine_position_mm(const abce_pos_t &abce) { set_machine_position_mm(abce.a, abce.b, abce.c, abce.e); }
 
+    static void set_axis_position_mm(const AxisEnum axis, const float distance);
     /**
      * Get an axis position according to stepper position(s)
      * For CORE machines apply translation from ABC to XYZ.

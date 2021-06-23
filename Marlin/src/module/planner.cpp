@@ -71,6 +71,8 @@
 
 #include "../MarlinCore.h"
 
+#include "../lcd/extui/lib/tsc/Menu/Home.h"
+
 #if HAS_LEVELING
   #include "../feature/bedlevel/bedlevel.h"
 #endif
@@ -1607,6 +1609,15 @@ void Planner::finish_and_disable() {
 }
 
 /**
+ * 设置轴的位置
+ * @param axis 需要设置的轴
+ * @param distance 需要设置的位置（步数）
+ * 
+ */
+void Planner::set_axis_position_mm(const AxisEnum axis, const float distance){
+  stepper.set_position(axis, distance);
+}
+/**
  * Get an axis position according to stepper position(s)
  * For CORE machines apply translation from ABC to XYZ.
  */
@@ -1659,11 +1670,13 @@ float Planner::get_axis_position_mm(const AxisEnum axis) {
 }
 
 /**
- *阻塞，直到执行/清除所有缓冲步骤
+ * 阻塞，直到执行/清除所有缓冲步骤
+ * 一但发现停止电机的标志位启动，就不在阻塞，使用需注意
  */
 void Planner::synchronize() {
-  while (has_blocks_queued() || cleaning_buffer_counter
-      || TERN0(EXTERNAL_CLOSED_LOOP_CONTROLLER, CLOSED_LOOP_WAITING())
+  while ((has_blocks_queued() || cleaning_buffer_counter
+      || TERN0(EXTERNAL_CLOSED_LOOP_CONTROLLER, CLOSED_LOOP_WAITING())) 
+      && (!stop_home)
   ) idle();
 }
 

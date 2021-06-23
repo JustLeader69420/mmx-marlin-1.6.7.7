@@ -2625,7 +2625,15 @@ void Stepper::_set_position(const int32_t &a, const int32_t &b, const int32_t &c
   #endif
   count_position.e = e;
 }
-
+/**
+ * 设置轴的位置
+ * @param axis 需要设置的轴
+ * @param distance 需要设置的位置（步数）
+ * 
+ */
+void Stepper::set_position(const AxisEnum axis, const float distance){
+  count_position[axis] = distance;
+}
 /**
  * Get a stepper's position in steps.
  */
