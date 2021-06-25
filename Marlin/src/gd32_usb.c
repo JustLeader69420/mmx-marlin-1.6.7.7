@@ -115,6 +115,7 @@ void gd32_usb_host_msc_init()
 
 void gd32_usb_loop()
 {
+#if GD32_USB_ENABLE
     usbh_core_task(&usb_host_msc);
 
     if (USBD_CONFIGURED == cdc_acm.dev.cur_status) {
@@ -129,6 +130,7 @@ void gd32_usb_loop()
             cdc_acm_data_send(&cdc_acm);
         }
     }
+#endif
 }
 
 // irq 
