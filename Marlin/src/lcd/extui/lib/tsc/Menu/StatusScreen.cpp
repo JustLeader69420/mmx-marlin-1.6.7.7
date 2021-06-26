@@ -93,7 +93,7 @@ void statusMsg_GetCurMsg(STATUS_MSG *msg)
   msg->x = ExtUI::getAxisPosition_mm(ExtUI::X),
   msg->y = ExtUI::getAxisPosition_mm(ExtUI::Y),
   msg->z = ExtUI::getAxisPosition_mm(ExtUI::Z);
-} 
+}
 
 #define STATUS_START_Y (TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0)
 

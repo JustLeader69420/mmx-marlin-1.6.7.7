@@ -73,6 +73,39 @@ static void drawTemperatureInfo(void)
   GUI_SetColor(FK_COLOR);
   GUI_SetBkColor(BK_COLOR);
 }
+// 绘制有颜色的温度
+static void drawTemperatureColor(void)
+{
+  GUI_SetBkColor(WHITE);
+
+  {
+    if(ExtUI::getTargetTemp_celsius(ExtUI::getActiveTool()) == preheat_hotend_temp[0]) GUI_SetColor(ORANGE);
+    else  GUI_SetColor(BLACK);
+    GUI_ClearPrect(&info_rect[0]);
+    GUI_DispDec(info_rect[0].x0, info_rect[0].y0, preheat_hotend_temp[0], 3, LEFT);
+  }
+  {
+    if(ExtUI::getTargetTemp_celsius(ExtUI::BED) == preheat_bed_temp[0]) GUI_SetColor(ORANGE);
+    else  GUI_SetColor(BLACK);
+    GUI_ClearPrect(&info_rect[1]);
+    GUI_DispDec(info_rect[1].x0, info_rect[1].y0, preheat_bed_temp[0], 3, LEFT);
+  }
+  {
+    if(ExtUI::getTargetTemp_celsius(ExtUI::getActiveTool()) == preheat_hotend_temp[1]) GUI_SetColor(ORANGE);
+    else  GUI_SetColor(BLACK);
+    GUI_ClearPrect(&info_rect[2]);
+    GUI_DispDec(info_rect[2].x0, info_rect[2].y0, preheat_hotend_temp[1], 3, LEFT);
+  }
+  {
+    if(ExtUI::getTargetTemp_celsius(ExtUI::BED) == preheat_bed_temp[1]) GUI_SetColor(ORANGE);
+    else  GUI_SetColor(BLACK);
+    GUI_ClearPrect(&info_rect[3]);
+    GUI_DispDec(info_rect[3].x0, info_rect[3].y0, preheat_bed_temp[1], 3, LEFT);
+  }
+  
+  GUI_SetColor(FK_COLOR);
+  GUI_SetBkColor(BK_COLOR);
+}
 
 void menuCallBackPreHeat() {
   static TOOLPREHEAT nowHeater = BOTH;
@@ -88,12 +121,14 @@ void menuCallBackPreHeat() {
           break;
         case BED_PREHEAT:
           ExtUI::setTargetTemp_celsius(preheat_bed_temp[key_num],  ExtUI::BED);
+          ExtUI::setTargetTemp_celsius(preheat_hotend_temp[3],  ExtUI::getActiveTool());
           break;
         case NOZZLE0_PREHEAT:
           ExtUI::setTargetTemp_celsius(preheat_hotend_temp[key_num],  ExtUI::getActiveTool());
+          ExtUI::setTargetTemp_celsius(preheat_bed_temp[3],  ExtUI::BED);
           break;
       }
-      drawTemperatureInfo();
+      drawTemperatureColor();
       break;
       
     case KEY_ICON_2:
@@ -105,6 +140,7 @@ void menuCallBackPreHeat() {
     case KEY_ICON_3:
           ExtUI::setTargetTemp_celsius(0,  ExtUI::getActiveTool());
           ExtUI::setTargetTemp_celsius(0,  ExtUI::BED);
+          drawTemperatureColor();
           break;
     
     // #ifndef UNIFIED_MENU
@@ -123,6 +159,6 @@ void menuCallBackPreHeat() {
 void menuPreheat(void)
 {
   menuDrawPage(&preheatItems);
-  drawTemperatureInfo();
+  drawTemperatureColor();
   menuSetFrontCallBack(menuCallBackPreHeat);
 }
