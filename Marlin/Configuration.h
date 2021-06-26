@@ -40,7 +40,7 @@
   #define HAS_FSMC_TFT  1
   #define BTT_FSMC_LCD
 
-  #define USE_GD32
+  // #define USE_GD32
 #endif
 
 /**
@@ -131,7 +131,7 @@
  * Select a secondary serial port on the board to use for communication with the host.
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-// #define SERIAL_PORT_2 -1
+#define SERIAL_PORT_2 -1
 
 /**
  * This setting determines the communication speed of the printer.
