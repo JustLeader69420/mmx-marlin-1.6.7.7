@@ -7,6 +7,14 @@
         "string": "cpp",
         "string_view": "cpp",
         "usbd_core.h": "c",
-        "gd32_usbd_core.h": "c"
-    }
+        "gd32_usbd_core.h": "c",
+        "deque": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "initializer_list": "cpp",
+        "arduino.h": "c",
+        "peripheralpins.h": "c"
+    },
+    "hexdump.littleEndian": true
 }

@@ -133,6 +133,8 @@ void gd32_usb_loop()
 #endif
 }
 
+
+#if USE_GD32
 // irq 
 void OTG_FS_IRQHandler(void)
 {
@@ -143,3 +145,5 @@ void OTG_HS_IRQHandler(void)
 {
     usbd_isr(&cdc_acm);
 }
+
+#endif

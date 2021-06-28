@@ -25,7 +25,7 @@ void OnProjectLoad (void) {
   Project.AddPathSubstitute ("K:/d301_printer/Marlin", "$(ProjectDir)");
   Project.AddPathSubstitute ("k:/d301_printer/marlin", "$(ProjectDir)");
   Project.SetDevice ("STM32F407ZG");
-  Project.SetHostIF ("USB", "137526290");
+  Project.SetHostIF ("USB", "604662528");
   Project.SetTargetIF ("SWD");
   Project.SetTIFSpeed ("4 MHz");
   Project.AddSvdFile ("C:/Program Files/SEGGER/Ozone V3.10b/Config/CPU/Cortex-M4F.svd");
@@ -33,7 +33,7 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  File.Open ("$(ProjectDir)/.pio/build/langgo407ve/firmware.elf");
+  File.Open ("$(ProjectDir)/.pio/build/langgo407ve_st/firmware.elf");
 }
 
 /*********************************************************************

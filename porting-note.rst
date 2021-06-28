@@ -74,3 +74,11 @@ Bilinear Leveling Grid:
  1 -1.090 -1.408 -1.658 -1.905
  2 -1.127 -1.400 -1.652 -1.892
  3 -1.158 -1.441 -1.709 -1.926
+
+
+是否编译支持BL的app？
+ ------------------------------------
+ build_flags       = ${common_stm32.build_flags}
+  -DVECT_TAB_OFFSET=0x0     //无loader，调试测试方便 
+                            //并且; buildroot/share/PlatformIO/scripts/stm32_bootloader.py
+  -DVECT_TAB_OFFSET=0x10000 //支持bootloader

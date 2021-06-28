@@ -28,7 +28,7 @@ for define in env['CPPDEFINES']:
     # if 'firmware' in board.get("build").keys():
     #   env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", noencrypt);
         
-
+# 'offset' property defined in buildroot\share\PlatformIO\boards\langgo407ve.json
 if 'offset' in board.get("build").keys():
   LD_FLASH_OFFSET = board.get("build.offset")
 
