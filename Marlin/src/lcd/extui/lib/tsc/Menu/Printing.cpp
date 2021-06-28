@@ -137,13 +137,13 @@ static void redrawPositionZ(void)
 void reDrawTime(void)
 {
   uint32_t printedTime = getPrintTime();
-  uint8_t  hour = printedTime/3600%60,
-           min = printedTime%3600/60,
-           sec = printedTime%60;
+  uint32_t  hour = printedTime/3600%1000;   // 让小时数最大可以计数到999
+  uint8_t   min = printedTime%3600/60,
+            sec = printedTime%60;
   GUI_SetNumMode(GUI_NUMMODE_ZERO);
-  GUI_DispDec(progressRect.x0 + 2 * BYTE_WIDTH, TIME_Y, hour, 2, RIGHT);
-  GUI_DispDec(progressRect.x0 + 5 * BYTE_WIDTH, TIME_Y, min, 2, RIGHT);
-  GUI_DispDec(progressRect.x0 + 8 * BYTE_WIDTH, TIME_Y, sec, 2, RIGHT);
+  GUI_DispDecTime(progressRect.x0 + 2 * BYTE_WIDTH, TIME_Y, hour, 3, RIGHT);
+  GUI_DispDecTime(progressRect.x0 + 6 * BYTE_WIDTH, TIME_Y, min,  2, RIGHT);
+  GUI_DispDecTime(progressRect.x0 + 9 * BYTE_WIDTH, TIME_Y, sec,  2, RIGHT);
   GUI_SetNumMode(GUI_NUMMODE_SPACE);
 }
 
@@ -170,8 +170,8 @@ void printingDrawPage(void)
   //	Scroll_CreatePara(&titleScroll, infoFile.title,&titleRect);  //
   // printed time
   GUI_DispString(progressRect.x0, TIME_Y, (uint8_t* )"T:");
-  GUI_DispString(progressRect.x0+BYTE_WIDTH*4, TIME_Y, (uint8_t* )":");
-  GUI_DispString(progressRect.x0+BYTE_WIDTH*7, TIME_Y, (uint8_t* )":");
+  GUI_DispString(progressRect.x0+BYTE_WIDTH*5, TIME_Y, (uint8_t* )":");
+  GUI_DispString(progressRect.x0+BYTE_WIDTH*8, TIME_Y, (uint8_t* )":");
   // nozzle temperature 
   GUI_DispString(progressRect.x0+BYTE_WIDTH*2, TEMP_Y,(uint8_t* )":");
   GUI_DispString(progressRect.x0+BYTE_WIDTH*6, TEMP_Y,(uint8_t* )"/");
@@ -309,9 +309,9 @@ void menuCallBackStopPrinting(void)
   switch(key_num)
   {
     case KEY_POPUP_CONFIRM:
-      set_bed_leveling_enabled(false);
       can_print_flag = false;   // 不能进行打印
       ExtUI::stopPrint();
+      set_bed_leveling_enabled(false);
       break;
 
     case KEY_POPUP_CANCEL:

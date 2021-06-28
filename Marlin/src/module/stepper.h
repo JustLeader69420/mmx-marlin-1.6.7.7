@@ -425,6 +425,8 @@ class Stepper {
     // Check if the given block is busy or not - Must not be called from ISR contexts
     static bool is_block_busy(const block_t* const block);
 
+    // 手动设置位置
+    static void set_position(const AxisEnum axis, const float distance);
     // Get the position of a stepper, in steps
     static int32_t position(const AxisEnum axis);
 

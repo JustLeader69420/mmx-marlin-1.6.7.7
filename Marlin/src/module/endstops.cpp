@@ -315,9 +315,9 @@ void Endstops::not_homing() {
 }
 
 #if ENABLED(VALIDATE_HOMING_ENDSTOPS)
-  // If the last move failed to trigger an endstop, call kill
+  // 如果最后一个移动未能触发endstop，调用kill
   void Endstops::validate_homing_move() {
-    if (trigger_state()) hit_on_purpose();
+    if (trigger_state() || stop_home) hit_on_purpose();
     else kill(GET_TEXT(MSG_KILL_HOMING_FAILED));
   }
 #endif

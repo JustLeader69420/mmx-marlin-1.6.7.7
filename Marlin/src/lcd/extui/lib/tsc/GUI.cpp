@@ -673,7 +673,61 @@ void GUI_DispDec(int16_t x, int16_t y, int32_t num, uint8_t len, uint8_t leftOrR
   }
   decBuf[bufIndex] = 0;
   GUI_DispString(x, y, decBuf);
-} 
+}
+// 该函数会将小时数低于100的 百分位 显示为‘ ’
+void GUI_DispDecTime(int16_t x, int16_t y, int32_t num, uint8_t len, uint8_t leftOrRight)
+{         	
+  uint8_t i;
+  uint8_t bit_value;
+  uint8_t blank_bit_len = 0;
+  uint8_t notZero = 0;	
+  char    isNegative = 0;
+  uint8_t decBuf[64];
+  uint8_t bufIndex = 0;
+
+  if(num<0)
+  {
+    num = -num;
+    isNegative = 1;
+    len--; // Negative '-' takes up a display length
+  }
+  for(i=0;i<len;i++)
+  {
+    bit_value=(num/GUI_Pow10[len-i-1])%10;
+    if(notZero == 0)
+    {
+      if(bit_value == 0 && i<(len-1))
+      {
+        if(i==0 && len==3)
+          decBuf[bufIndex++] = ' ';
+        else if(leftOrRight==RIGHT)
+        {
+          decBuf[bufIndex++] = (guiNumMode == GUI_NUMMODE_SPACE) ? ' ' : '0';
+        }
+        else
+        {
+          blank_bit_len++;
+        }
+        continue;
+      }
+      else 
+      {
+        notZero = 1; 
+        if(isNegative)
+        {
+          decBuf[bufIndex++] = '-';
+        }
+      }
+    }
+    decBuf[bufIndex++] = bit_value + '0';
+  }
+  for(; blank_bit_len>0; blank_bit_len--)
+  {
+    decBuf[bufIndex++] = ' ';
+  }
+  decBuf[bufIndex] = 0;
+  GUI_DispString(x, y, decBuf);
+}
 
 void GUI_DispFloat(int16_t x, int16_t y, float num, uint8_t llen, uint8_t rlen, uint8_t leftOrRight)
 {    

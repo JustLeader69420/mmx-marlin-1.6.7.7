@@ -69,6 +69,7 @@
 #ifdef AUTO_BED_LEVELING_BILINEAR
   #include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
 #endif
+#include "../../lcd/extui/lib/tsc/Menu/Home.h"
 
 #if ENABLED(QUICK_HOME)
 
@@ -236,7 +237,7 @@ void GcodeSuite::G28() {
     return;
   }
 
-  planner.synchronize();          // Wait for planner moves to finish!
+  planner.synchronize();          // 等待计划者(planner)的移动完成!
 
   SET_SOFT_ENDSTOP_LOOSE(false);  // Reset a leftover 'loose' motion state
 
@@ -338,16 +339,18 @@ void GcodeSuite::G28() {
 
     #if ENABLED(QUICK_HOME)
 
-      if (doX && doY) quick_home_xy();
+      if (doX && doY && !stop_home) quick_home_xy();
 
     #endif
 
     // Home Y (before X)
-    if (ENABLED(HOME_Y_BEFORE_X) && (doY || (ENABLED(CODEPENDENT_XY_HOMING) && doX)))
+    if ((ENABLED(HOME_Y_BEFORE_X) && (doY || (ENABLED(CODEPENDENT_XY_HOMING) && doX))) && (!stop_home)){
       homeaxis(Y_AXIS);
+      // planner.position.y=0.0f;
+    }
 
     // Home X
-    if (doX || (doY && ENABLED(CODEPENDENT_XY_HOMING) && DISABLED(HOME_Y_BEFORE_X))) {
+    if ((doX || (doY && ENABLED(CODEPENDENT_XY_HOMING) && DISABLED(HOME_Y_BEFORE_X))) && (!stop_home)) {
 
       #if ENABLED(DUAL_X_CARRIAGE)
 
@@ -370,25 +373,29 @@ void GcodeSuite::G28() {
       #else
 
         homeaxis(X_AXIS);
+        // planner.position.x=0.0f;
 
       #endif
     }
 
     // Home Y (after X)
-    if (DISABLED(HOME_Y_BEFORE_X) && doY)
+    if ((DISABLED(HOME_Y_BEFORE_X) && doY) && (!stop_home)){
       homeaxis(Y_AXIS);
+      // planner.position.y=0.0f;
+    }
 
     TERN_(IMPROVE_HOMING_RELIABILITY, end_slow_homing(slow_homing));
 
     // Home Z last if homing towards the bed
     #if Z_HOME_DIR < 0
 
-      if (doZ) {
+      if (doZ && (!stop_home)) {
         TERN_(BLTOUCH, bltouch.init());
 
         TERN(Z_SAFE_HOMING, home_z_safely(), homeaxis(Z_AXIS));
 
         probe.move_z_after_homing();
+        // planner.position.z=0.0f;
 
       } // doZ
 
@@ -494,4 +501,5 @@ void GcodeSuite::G28() {
   #endif
 
   can_print_flag = true;    // 可以进入打印
+  stop_home = false;        // 关闭停止复位标志，防干扰
 }

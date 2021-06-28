@@ -19,6 +19,7 @@ enum
   // TFT_POLISH,
   // TFT_SLOVAK,
   // TFT_KOREAN,
+  TFT_TURKEY,         // 添加土耳其语
 
   LANGUAGE_NUM,
 };
