@@ -39,6 +39,8 @@
   #define MARLIN_DEV_MODE
   #define HAS_FSMC_TFT  1
   #define BTT_FSMC_LCD
+
+  #define USE_GD32
 #endif
 
 /**

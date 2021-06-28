@@ -1007,9 +1007,11 @@ void setup() {
   SETUP_RUN(HAL_init());
   LCD_Setup();
 
-  gd32_usb_device_cdc_init();
-  gd32_usb_host_msc_init();
-
+  #if ENABLED(USE_GD32)
+   gd32_usb_device_cdc_init();
+   gd32_usb_host_msc_init();
+  #endif
+  
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
   #endif
@@ -1346,7 +1348,9 @@ void loop() {
   do {
     idle();
 
-    gd32_usb_loop();
+    #if ENABLED(USE_GD32)
+      gd32_usb_loop();
+    #endif
     // TERN_(USE_WATCHDOG, HAL_watchdog_refresh());// thermalmanager will feed dog if normal.
 
     #if ENABLED(SDSUPPORT)

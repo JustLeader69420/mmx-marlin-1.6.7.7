@@ -2851,6 +2851,7 @@ void Temperature::tick() {
   #define ACCUMULATE_ADC(obj) do{ \
     if (!HAL_ADC_READY()) next_sensor_state = adc_sensor_state; \
     else obj.sample(HAL_READ_ADC()); \
+    /*rtt.printf("adc %d\n", HAL_READ_ADC());*/ \
   }while(0)
 
   ADCSensorState next_sensor_state = adc_sensor_state < SensorsReady ? (ADCSensorState)(int(adc_sensor_state) + 1) : StartSampling;

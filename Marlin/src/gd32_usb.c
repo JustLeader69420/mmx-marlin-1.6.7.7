@@ -56,11 +56,7 @@ void usb_fs_rcc_gpio_nvic_ll_init()
     __HAL_REMAPINTERRUPT_USB_ENABLE();
 #endif
 
-    /* Set USB FS Interrupt priority */
-    HAL_NVIC_SetPriority(OTG_FS_IRQn, 2, 0);
-
-    /* Enable USB FS Interrupt */
-    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
+    
 }
 
 
@@ -83,8 +79,7 @@ void usb_hs_rcc_gpio_nvic_ll_init()
     /* Enable USB HS Clock */
     __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
 
-    HAL_NVIC_SetPriority(OTG_HS_IRQn, 2, 0);
-    HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
+    
 }
 
 void gd32_usb_device_cdc_init()
@@ -108,11 +103,19 @@ void gd32_usb_host_msc_init()
               &usbh_core,
               USB_CORE_ENUM_FS,
               &usr_cb);
+
+    HAL_NVIC_SetPriority(OTG_HS_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
+
+    /* Set USB FS Interrupt priority & enable it */
+    HAL_NVIC_SetPriority(OTG_FS_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
 }
 
 
 void gd32_usb_loop()
 {
+#if GD32_USB_ENABLE
     usbh_core_task(&usb_host_msc);
 
     if (USBD_CONFIGURED == cdc_acm.dev.cur_status) {
@@ -127,6 +130,7 @@ void gd32_usb_loop()
             cdc_acm_data_send(&cdc_acm);
         }
     }
+#endif
 }
 
 // irq 

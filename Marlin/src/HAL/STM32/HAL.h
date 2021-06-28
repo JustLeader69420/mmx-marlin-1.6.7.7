@@ -161,7 +161,11 @@ inline void HAL_adc_init() {}
 #define HAL_ADC_VREF         3.3
 #define HAL_ADC_RESOLUTION  10
 #define HAL_START_ADC(pin)  HAL_adc_start_conversion(pin)
-#define HAL_READ_ADC()      (HAL_adc_result>>2) //because wrong cfg, adc still have 12b resolution
+#if !defined(USE_GD32)
+  #define HAL_READ_ADC()      (HAL_adc_result) //stm32.  adc cfg correct.
+#else
+  #define HAL_READ_ADC()      (HAL_adc_result>>2) //in GD32 ADC cfg 10, but read still 12.  
+#endif
 #define HAL_ADC_READY()     true
 
 void HAL_adc_start_conversion(const uint8_t adc_pin);
