@@ -472,7 +472,7 @@ static uint8_t cdc_acm_in (usb_dev *udev, uint8_t ep_num)
     usb_cdc_handler *cdc = (usb_cdc_handler *)udev->dev.class_data[CDC_COM_INTERFACE];
 
     if ((0U == transc->xfer_len % transc->max_len) && (0U != transc->xfer_len)) {
-        usbd_ep_send (udev, ep_num, NULL, 0U);
+        usbd_ep_send (udev, ep_num, NULL, 0U);  //包长是单包的整数倍 发空包
     } else {
         cdc->packet_sent = 1U;
     }

@@ -11,7 +11,7 @@
         {
             "name": "Cortex Debug",
             "cwd": "${workspaceRoot}",
-            "executable": ".pio/build/langgo407ve_st/firmware.elf",
+            "executable": ".pio/build/langgo407ve_gd/firmware.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "jlink",
