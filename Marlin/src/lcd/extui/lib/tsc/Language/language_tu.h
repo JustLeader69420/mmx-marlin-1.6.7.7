@@ -148,5 +148,6 @@
     #define TU_TIPS                 "Tips"
     #define TU_EEPROM_SAVE_SUCCESS  "EEPROM parametreleri başarıyla kaydedildi"
     #define TU_EEPROM_SAVE_FAILED   "EEPROM parametreleri kaydedilemedi"
+    #define TU_ELAPSED_TIME         "Geçen zaman"
 
 #endif

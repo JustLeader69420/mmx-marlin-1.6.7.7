@@ -142,11 +142,12 @@
     #define RU_WAIT_TEMP_SHUT_DOWN  "Дождитесь температуры   сопла не ниже чем " STRINGIFY(AUTO_SHUT_DOWN_MAXTEMP) "℃" // Wait for the temperature of hotend to be lower than 50℃
     #define RU_FORCE_SHUT_DOWN      "Принудительно выкл"
     #define RU_SHUTTING_DOWN        "Выключаю..."
-    #define RU_PRINTING_COMPLETED   "Printing completed!"
+    #define RU_PRINTING_COMPLETED   "Печать завершена!"
     #define RU_STATUS_INFO          "Информация"
     #define RU_ERROR                "ошибка"
     #define RU_TIPS                 "подсказка"
     #define RU_EEPROM_SAVE_SUCCESS  "EEPROM параметр успешно сохранён"
     #define RU_EEPROM_SAVE_FAILED   "EEPROM Ошибка сохранения параметра"
+    #define RU_ELAPSED_TIME         "Пройденное время"
     
 #endif

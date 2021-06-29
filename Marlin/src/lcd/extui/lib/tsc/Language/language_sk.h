@@ -143,11 +143,12 @@
     #define SK_WAIT_TEMP_SHUT_DOWN  "Počkať na teplotu trysky menej ako" STRINGIFY(AUTO_SHUT_DOWN_MAXTEMP) "℃" // Wait for the temperature of hotend to be lower than 50℃
     #define SK_FORCE_SHUT_DOWN      "Vynútené vypnutie"
     #define SK_SHUTTING_DOWN        "Vypínanie..."
-    #define SK_PRINTING_COMPLETED   "Printing completed!"
+    #define SK_PRINTING_COMPLETED   "Tlač je dokončená!"
     #define SK_STATUS_INFO          "Info"
     #define SK_ERROR                "Error"
     #define SK_TIPS                 "Tips"
     #define SK_EEPROM_SAVE_SUCCESS  "EEPROM parameters saved successfully"
     #define SK_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
+    #define SK_ELAPSED_TIME         "Uplynutý čas"
 
 #endif

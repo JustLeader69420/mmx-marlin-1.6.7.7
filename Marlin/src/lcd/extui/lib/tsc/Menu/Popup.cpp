@@ -52,7 +52,6 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
 {
   buttonNum = 0;
   windowButton = btn;
-  
   if(yes)
   {
     windowButton[buttonNum++].context = yes;
@@ -63,24 +62,7 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
   }
   
   TSC_ReDrawIcon = windowReDrawButton;
-  char *p = strtok((char*)context, "\n");
-  if(p != NULL)
-  {
-    uint8_t newcontext[37*4] = {0};
-    uint8_t i=0,j=0;
-    while(p != NULL)
-    {
-      for(i=0; i<strlen(p); i++)
-        newcontext[j*37+i] = p[i];
-      for(; i<37; i++)
-        newcontext[j*37+i] = ' ';
-      j++;
-      p = strtok(NULL, "\n");
-    }
-    GUI_DrawWindow(&window, title, newcontext);
-  }
-  else
-    GUI_DrawWindow(&window, title, context);
+  GUI_DrawWindow(&window, title, context);
   
   for(uint8_t i = 0; i < buttonNum; i++)
     GUI_DrawButton(&windowButton[i], 0);    
@@ -132,7 +114,7 @@ void menuCallBackPopup_ABL(void)
     default:
       switch(ABL_STATUS)
       {
-        case ABL_INIT    :  sprintf_P(context, "%s:%3d/150   %s:%3d/50%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::E0),
+        case ABL_INIT    :  sprintf_P(context, "%s:%3d/150   %s:%3d/50\n%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::E0),
                                                                               GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::BED),
                                                                               GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
                             popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
@@ -147,10 +129,12 @@ void menuCallBackPopup_ABL(void)
                             if(delay_ms_count >= 1000)
                             {
                               delay_ms_count = 0;
-                              sprintf_P(context, "%s:%3d/150   %s:%3d/50%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), E0_temp,
+                              sprintf_P(context, "%s:%3d/150   %s:%3d/50\n%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), E0_temp,
                                                                                   GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), BED_temp,
                                                                                   GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
-                              GUI_DrawWindow_ABL(&window, textSelect(LABEL_TIPS), (uint8_t *)context);       
+                              
+                              GUI_DrawWindow_ABL(&window, textSelect(LABEL_TIPS), (uint8_t *)context);
+
 
                               if(E0_temp >= 150 && BED_temp >= 50) ABL_STATUS = ABL_START;
                             }
@@ -161,7 +145,7 @@ void menuCallBackPopup_ABL(void)
                             storeCmd("M500");    //save ABL info
                             storeCmd("G28");
 
-                            sprintf_P(context, "%s %s         %s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+                            sprintf_P(context, "%s %s\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
                             popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)context, NULL, NULL);
 
                             temp_silent = infoSettings.silent;
@@ -169,7 +153,7 @@ void menuCallBackPopup_ABL(void)
                             ABL_STATUS = ABL_LEVELING;
                             break;
 
-        case ABL_DONE :     sprintf_P(context, "%s %s!              %s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_BUTTON_DONE), GET_TEXT(MSG_USERWAIT));
+        case ABL_DONE :     sprintf_P(context, "%s %s!\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_BUTTON_DONE), GET_TEXT(MSG_USERWAIT));
                             popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
                             setTargetTemp_celsius(0,ExtUI::E0);
                             setTargetTemp_celsius(0,ExtUI::BED);
@@ -208,7 +192,7 @@ void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_
   GUI_SetTextMode(GUI_TEXTMODE_NORMAL);
   GUI_SetBkColor(BLACK);
   GUI_SetColor(window->info.fontColor);
-  GUI_DispStringInRect(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf);
+  GUI_DispStringInRect_P(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf);
 
   GUI_SetBkColor(nowBackColor);
   GUI_SetColor(nowFontColor);

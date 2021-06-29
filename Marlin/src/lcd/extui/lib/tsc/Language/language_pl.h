@@ -142,11 +142,12 @@
     #define PL_WAIT_TEMP_SHUT_DOWN  "Czekam na schłodzenie do " STRINGIFY(AUTO_SHUT_DOWN_MAXTEMP) "℃" // Wait for the temperature of hotend to be lower than 50℃
     #define PL_FORCE_SHUT_DOWN      "Wymuś"
     #define PL_SHUTTING_DOWN        "Wyłączanie..."
-    #define PL_PRINTING_COMPLETED   "Printing completed!"
+    #define PL_PRINTING_COMPLETED   "Drukowanie zakończone!"
     #define PL_STATUS_INFO          "Info"
     #define PL_ERROR                "Error"
     #define PL_TIPS                 "Tips"
     #define PL_EEPROM_SAVE_SUCCESS  "EEPROM parameters saved successfully"
     #define PL_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
+    #define PL_ELAPSED_TIME         "Czas, który upłynął"
 
 #endif

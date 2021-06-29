@@ -143,11 +143,12 @@
     #define FR_WAIT_TEMP_SHUT_DOWN  "Veuillez, patientez que la température de la buse soit inférieure à" STRINGIFY(AUTO_SHUT_DOWN_MAXTEMP) "℃" // Wait for the temperature of hotend to be lower than 50℃
     #define FR_FORCE_SHUT_DOWN      "Forcer Extinction"
     #define FR_SHUTTING_DOWN        "Extinction en cours..."
-    #define FR_PRINTING_COMPLETED   "Printing completed!"
+    #define FR_PRINTING_COMPLETED   "Impression terminée!"
     #define FR_STATUS_INFO          "Info"
     #define FR_ERROR                "Error"
     #define FR_TIPS                 "Tips"
     #define FR_EEPROM_SAVE_SUCCESS  "EEPROM parameters saved successfully"
     #define FR_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
+    #define FR_ELAPSED_TIME         "temps écoulé"
 
 #endif

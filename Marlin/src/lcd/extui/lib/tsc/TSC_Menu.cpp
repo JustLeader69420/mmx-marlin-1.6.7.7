@@ -130,6 +130,24 @@ void LCD_Setup() {
   ExtUI::setFilamentRunoutEnabled(infoSettings.runout);
 }
 
+uint8_t *get_str(const int a, uint8_t *str){
+  if(a<10){
+    char b[4];
+    itoa(a,b,10);
+    sprintf_P((char*)str, "0%s", b);
+  }else itoa(a, (char*)str, 10);
+
+  return str;
+}
+uint8_t *get_time_str(const uint32_t hour,const uint8_t min,const uint8_t sec, uint8_t *str){
+  uint8_t hours[4], mins[4], secs[4];
+  get_str(hour, hours);
+  get_str(min, mins);
+  get_str(sec, secs);
+  sprintf_P((char*)str, "%s:%s:%s", hours, mins, secs);
+  return str;
+}
+
 static bool hasPrintingMenu = false;
 void menuUpdate(void) {
   static FP_MENU lastMenu = 0;
@@ -170,7 +188,9 @@ void menuUpdate(void) {
           uint32_t  hour = printedTime/3600%1000;   // 让小时数最大可以计数到999
           uint8_t   min = printedTime%3600/60,
                     sec = printedTime%60;
-          sprintf_P((char*)finish_show, "%s\n Elapsed time: %3d:%2d:%2d", textSelect(LABEL_PRINTING_COMPLETED), hour, min, sec);
+          uint8_t time_str[16] = {0};
+          get_time_str(hour, min, sec, time_str);
+          sprintf_P((char*)finish_show, "%s\n%s: %s", textSelect(LABEL_PRINTING_COMPLETED),textSelect(LABEL_ELAPSED_TIME), time_str);
           
           popupReminder(textSelect(LABEL_PRINT), finish_show);
         }
