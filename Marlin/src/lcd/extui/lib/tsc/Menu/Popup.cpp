@@ -52,6 +52,7 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
 {
   buttonNum = 0;
   windowButton = btn;
+  
   if(yes)
   {
     windowButton[buttonNum++].context = yes;
@@ -62,7 +63,24 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
   }
   
   TSC_ReDrawIcon = windowReDrawButton;
-  GUI_DrawWindow(&window, title, context);
+  char *p = strtok((char*)context, "\n");
+  if(p != NULL)
+  {
+    uint8_t newcontext[37*4] = {0};
+    uint8_t i=0,j=0;
+    while(p != NULL)
+    {
+      for(i=0; i<strlen(p); i++)
+        newcontext[j*37+i] = p[i];
+      for(; i<37; i++)
+        newcontext[j*37+i] = ' ';
+      j++;
+      p = strtok(NULL, "\n");
+    }
+    GUI_DrawWindow(&window, title, newcontext);
+  }
+  else
+    GUI_DrawWindow(&window, title, context);
   
   for(uint8_t i = 0; i < buttonNum; i++)
     GUI_DrawButton(&windowButton[i], 0);    

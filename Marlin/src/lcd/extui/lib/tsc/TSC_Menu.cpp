@@ -130,7 +130,6 @@ void LCD_Setup() {
   ExtUI::setFilamentRunoutEnabled(infoSettings.runout);
 }
 
-
 static bool hasPrintingMenu = false;
 void menuUpdate(void) {
   static FP_MENU lastMenu = 0;
@@ -165,8 +164,15 @@ void menuUpdate(void) {
           infoMenu.menu[++infoMenu.cur] = menuShutDown;
         } else {
           // popup print completed
+          uint8_t finish_show[64] = {0};
           Buzzer_play(sound_success);
-          popupReminder(textSelect(LABEL_PRINT), textSelect(LABEL_PRINTING_COMPLETED));
+          uint32_t printedTime = print_job_timer.duration();
+          uint32_t  hour = printedTime/3600%1000;   // 让小时数最大可以计数到999
+          uint8_t   min = printedTime%3600/60,
+                    sec = printedTime%60;
+          sprintf_P((char*)finish_show, "%s\n Elapsed time: %3d:%2d:%2d", textSelect(LABEL_PRINTING_COMPLETED), hour, min, sec);
+          
+          popupReminder(textSelect(LABEL_PRINT), finish_show);
         }
       }
     }
