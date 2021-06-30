@@ -32,9 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usbh_pipe.h"
+#include "gdusbh_pipe.h"
 #include "usbh_transc.h"
-#include "usbh_enum.h"
+#include "gdusbh_enum.h"
 
 /* local function prototypes ('static') */
 static void usbh_devdesc_parse (usb_desc_dev *dev_desc, uint8_t *buf, uint16_t len);

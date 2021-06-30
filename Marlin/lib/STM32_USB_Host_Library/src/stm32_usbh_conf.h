@@ -27,6 +27,8 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"  /* replace 'stm32xxx' with your HAL driver header filename, ex: stm32f4xx.h */
+#include "stm32f4xx_hal.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +55,12 @@ extern "C" {
 #define USBH_MAX_DATA_BUFFER                  0x200U
 #define USBH_DEBUG_LEVEL                      2U
 #define USBH_USE_OS                           0U
+
+
+/****************************************/
+/* #define for FS and HS identification */
+#define HOST_HS 		0
+#define HOST_FS 		1
 
 /** @defgroup USBH_Exported_Macros
   * @{

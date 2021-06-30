@@ -35,8 +35,8 @@ OF SUCH DAMAGE.
 #ifndef __CDC_ACM_CORE_H
 #define __CDC_ACM_CORE_H
 
-#include "usbd_enum.h"
-#include "usb_cdc.h"
+#include "gdusbd_enum.h"
+#include "gdusb_cdc.h"
 
 #define USB_CDC_RX_LEN      64
 

@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #ifndef __DRV_USB_REGS_H
 #define __DRV_USB_REGS_H
 
-#include "usb_conf.h"
+#include "gdusb_conf.h"
 
 
 #define USBHS_REG_BASE                0x40040000L   /*!< base address of USBHS registers */

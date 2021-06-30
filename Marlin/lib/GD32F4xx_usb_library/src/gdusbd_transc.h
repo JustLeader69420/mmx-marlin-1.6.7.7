@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #ifndef __USBD_TRANSC_H
 #define __USBD_TRANSC_H
 
-#include "gd32_usbd_core.h"
+#include "gdusbd_core.h"
 
 /* function declarations */
 /* USB send data in the control transaction */

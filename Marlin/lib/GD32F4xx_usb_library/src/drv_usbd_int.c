@@ -32,9 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usbd_conf.h"
+#include "gdusbd_conf.h"
 #include "drv_usbd_int.h"
-#include "usbd_transc.h"
+#include "gdusbd_transc.h"
 
 static uint32_t usbd_int_epout                 (usb_core_driver *udev);
 static uint32_t usbd_int_epin                  (usb_core_driver *udev);

@@ -33,7 +33,7 @@ OF SUCH DAMAGE.
 */
 
 #include "drv_usb_hw.h"
-#include "usbh_pipe.h"
+#include "gdusbh_pipe.h"
 #include "usbh_transc.h"
 
 /* local function prototypes ('static') */

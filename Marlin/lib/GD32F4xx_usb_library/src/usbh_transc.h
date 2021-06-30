@@ -35,8 +35,8 @@ OF SUCH DAMAGE.
 #ifndef __USBH_TRANSC_H
 #define __USBH_TRANSC_H
 
-#include "usb_conf.h"
-#include "usbh_core.h"
+#include "gdusb_conf.h"
+#include "gdusbh_core.h"
 
 /* function declarations */
 /* send the setup packet to the USB device */

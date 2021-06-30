@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usb_conf.h"
+#include "gdusb_conf.h"
 #include "diskio.h"
 #include "usbh_msc_core.h"
 

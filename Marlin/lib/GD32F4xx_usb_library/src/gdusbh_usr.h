@@ -36,9 +36,8 @@ OF SUCH DAMAGE.
 #define __USBH_USR_H
 
 #include "ff.h"
-#include "usbh_core.h"
-#include "usb_conf.h"
-#include "usbh_core.h"
+#include "gdusb_conf.h"
+#include "gdusbh_core.h"
 #include <stdio.h>
 
 #if 1 //def USE_GD32

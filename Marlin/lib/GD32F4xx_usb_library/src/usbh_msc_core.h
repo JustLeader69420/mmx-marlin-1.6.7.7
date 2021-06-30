@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #ifndef __USBH_MSC_CORE_H
 #define __USBH_MSC_CORE_H
 
-#include "usb_msc.h"
+#include "gdusb_msc.h"
 #include "usbh_msc_scsi.h"
 #include "usbh_msc_bbb.h"
 

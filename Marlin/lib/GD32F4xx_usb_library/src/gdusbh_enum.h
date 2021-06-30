@@ -35,8 +35,8 @@ OF SUCH DAMAGE.
 #ifndef __USBH_ENUM_H
 #define __USBH_ENUM_H
 
-#include "usb_conf.h"
-#include "usbh_core.h"
+#include "gdusb_conf.h"
+#include "gdusbh_core.h"
 
 #if 1 //def USE_GD32
 /* function declarations */

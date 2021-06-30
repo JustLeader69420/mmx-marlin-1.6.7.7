@@ -1,11 +1,11 @@
-#if USE_GD32
+
 
 // #include <gd32f4xx.h>
 #include "drv_usb_hw.h"
 #include "drv_usb_core.h"
-#include "gd32_usbd_core.h"
-#include "usbh_core.h"
-#include "usbh_usr.h"
+#include "gdusbd_core.h"
+#include "gdusbh_core.h"
+#include "gdusbh_usr.h"
 #include "usbh_msc_core.h"
 #include "cdc_acm_core.h"
 #include "drv_usbh_int.h"
@@ -17,12 +17,14 @@
 #include "stm32f4xx_hal_rcc.h"
 #include "gd32_cdc_queue.h"
 
+
+
 usbh_host usb_host_msc;     
 usb_core_driver usbh_core;  //usb fs as host
 usb_core_driver cdc_acm;    //usb hs as device
 usb_cdc_handler *pcdc;
 
-
+#if USE_GD32
 #include "PeripheralPins.h"
 #include "pinmap.h"
 

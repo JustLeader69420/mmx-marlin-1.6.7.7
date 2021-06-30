@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 #define __USBH_MSC_SCSI_H
 
 #include "msc_scsi.h"
-#include "usbh_enum.h"
+#include "gdusbh_enum.h"
 
 /* capacity data */
 typedef struct
