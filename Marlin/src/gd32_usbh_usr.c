@@ -31,6 +31,7 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
 OF SUCH DAMAGE.
 */
+#if USE_GD32
 
 #include <string.h>
 #include "usbh_usr.h"
@@ -400,3 +401,5 @@ void usbh_user_deinit(void)
 {
     usbh_usr_application_state = USBH_USR_FS_INIT;
 }
+
+#endif

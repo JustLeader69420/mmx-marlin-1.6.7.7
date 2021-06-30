@@ -38,6 +38,7 @@ OF SUCH DAMAGE.
 #include "usb_conf.h"
 #include "usbh_core.h"
 
+#if 1 //def USE_GD32
 /* function declarations */
 /* configure USB control status parameters */
 void usbh_ctlstate_config (usbh_host *uhost, uint8_t *buf, uint16_t len);
@@ -67,5 +68,7 @@ usbh_status usbh_interface_select (usb_dev_prop *udev, uint8_t interface);
 uint8_t usbh_interface_find (usb_dev_prop *udev, uint8_t main_class, uint8_t sub_class, uint8_t protocol);
 /* find the interface index for a specific class interface and alternate setting number */
 uint8_t usbh_interfaceindex_find (usb_dev_prop *udev, uint8_t interface_number, uint8_t alt_settings);
+
+#endif
 
 #endif /* __USBH_ENUM_H */

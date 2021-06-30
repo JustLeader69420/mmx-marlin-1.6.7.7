@@ -272,7 +272,7 @@ void menuCallStatus(void)
       infoMenu.menu[++infoMenu.cur] = menuMain;
       break;
     case KEY_ICON_7:
-      infoMenu.menu[++infoMenu.cur] = menuPrint;
+      infoMenu.menu[++infoMenu.cur] = menuChooseStorage;
       if(z_values[1][1] != 0){
         planner.leveling_active = true;
         set_bed_leveling_enabled(true);

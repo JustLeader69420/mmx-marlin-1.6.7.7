@@ -1,3 +1,4 @@
+#if USE_GD32
 
 // #include <gd32f4xx.h>
 #include "drv_usb_hw.h"
@@ -241,7 +242,7 @@ void gd32_usb_loop()
 }
 
 
-#if USE_GD32
+
 // irq 
 void OTG_FS_IRQHandler(void)
 {
