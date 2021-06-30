@@ -7,6 +7,9 @@
         "string": "cpp",
         "string_view": "cpp",
         "usbd_core.h": "c",
-        "gd32_usbd_core.h": "c"
+        "gd32_usbd_core.h": "c",
+        "usbh_ctlreq.h": "c",
+        "usbh_core.h": "c",
+        "usbh_def.h": "c"
     }
 }
