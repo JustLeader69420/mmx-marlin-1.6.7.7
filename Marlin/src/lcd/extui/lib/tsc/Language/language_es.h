@@ -148,5 +148,6 @@
     #define ES_TIPS                 "Pista"
     #define ES_EEPROM_SAVE_SUCCESS  "EEPROM Guardar parámetro"
     #define ES_EEPROM_SAVE_FAILED   "EEPROM Fallo de parámetro"
+    #define ES_ELAPSED_TIME         "Tiempo transcurrido"
 
 #endif

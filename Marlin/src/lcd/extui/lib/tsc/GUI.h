@@ -79,6 +79,7 @@ void GUI_DispString(int16_t x, int16_t y, const uint8_t *p);
 const uint8_t* GUI_DispLenString(int16_t x, int16_t y, const uint8_t *p, uint16_t pixelWidth);
 void GUI_DispStringRight(int16_t x, int16_t y, const uint8_t *p);
 void GUI_DispStringInRect(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint8_t *p);
+void GUI_DispStringInRect_P(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint8_t *inf);
 void GUI_DispStringInPrect(const GUI_RECT *rect, const uint8_t *p);
 void GUI_DispStringInRectEOL(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint8_t *p);
 

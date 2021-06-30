@@ -148,5 +148,6 @@
     #define CN_TIPS                 "提示"
     #define CN_EEPROM_SAVE_SUCCESS  "EEPROM 参数保存成功"
     #define CN_EEPROM_SAVE_FAILED   "EEPROM 参数保存失败"
+    #define CN_ELAPSED_TIME         "用时"
 
 #endif

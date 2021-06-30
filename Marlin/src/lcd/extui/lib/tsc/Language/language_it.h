@@ -142,11 +142,12 @@
     #define IT_WAIT_TEMP_SHUT_DOWN  "Wait for the temperature of hotend to be lower than " STRINGIFY(AUTO_SHUT_DOWN_MAXTEMP) "℃" // Wait for the temperature of hotend to be lower than 50℃
     #define IT_FORCE_SHUT_DOWN      "Force"
     #define IT_SHUTTING_DOWN        "Shutting down..."
-    #define IT_PRINTING_COMPLETED   "Printing completed!"
+    #define IT_PRINTING_COMPLETED   "Stampa completata!"
     #define IT_STATUS_INFO          "Info"
     #define IT_ERROR                "Error"
     #define IT_TIPS                 "Tips"
     #define IT_EEPROM_SAVE_SUCCESS  "EEPROM parameters saved successfully"
     #define IT_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
+    #define IT_ELAPSED_TIME         "Tempo trascorso"
     
 #endif

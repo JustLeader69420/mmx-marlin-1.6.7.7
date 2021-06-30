@@ -142,11 +142,12 @@
     #define JP_WAIT_TEMP_SHUT_DOWN  "Wait for the temperature of hotend to be lower than " STRINGIFY(AUTO_SHUT_DOWN_MAXTEMP) "℃" // Wait for the temperature of hotend to be lower than 50℃
     #define JP_FORCE_SHUT_DOWN      "Force"
     #define JP_SHUTTING_DOWN        "Shutting down..."
-    #define JP_PRINTING_COMPLETED   "Printing completed!"
+    #define JP_PRINTING_COMPLETED   "印刷が完了しました!"
     #define JP_STATUS_INFO          "Info"
     #define JP_ERROR                "Error"
     #define JP_TIPS                 "Tips"
     #define JP_EEPROM_SAVE_SUCCESS  "EEPROM parameters saved successfully"
     #define JP_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
+    #define JP_ELAPSED_TIME         "経過時間"
     
 #endif

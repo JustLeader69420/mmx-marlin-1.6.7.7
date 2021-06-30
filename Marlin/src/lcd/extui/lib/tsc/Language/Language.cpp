@@ -39,6 +39,7 @@
   #define CUSTOM_6_LABEL "Custom6"
 #endif
 
+// 英语
 const char *const en_pack[LABEL_NUM]={
   EN_LANGUAGE,
   EN_HEAT,
@@ -194,8 +195,10 @@ const char *const en_pack[LABEL_NUM]={
   EN_TIPS,
   EN_EEPROM_SAVE_SUCCESS,
   EN_EEPROM_SAVE_FAILED,
+  EN_ELAPSED_TIME,
 };
 
+// 中文
 const char *const cn_pack[LABEL_NUM]={
   CN_LANGUAGE,
   CN_HEAT,
@@ -351,8 +354,10 @@ const char *const cn_pack[LABEL_NUM]={
   CN_TIPS,
   CN_EEPROM_SAVE_SUCCESS,
   CN_EEPROM_SAVE_FAILED,
+  CN_ELAPSED_TIME,
 };
 
+// 俄语
 const char *const ru_pack[LABEL_NUM]={
   RU_LANGUAGE,
   RU_HEAT,
@@ -508,8 +513,10 @@ const char *const ru_pack[LABEL_NUM]={
   RU_TIPS,
   RU_EEPROM_SAVE_SUCCESS,
   RU_EEPROM_SAVE_FAILED,
+  RU_ELAPSED_TIME,
 };
 
+// 日语
 const char *const jp_pack[LABEL_NUM]={
   JP_LANGUAGE,
   JP_HEAT,
@@ -665,8 +672,10 @@ const char *const jp_pack[LABEL_NUM]={
   JP_TIPS,
   JP_EEPROM_SAVE_SUCCESS,
   JP_EEPROM_SAVE_FAILED,
+  JP_ELAPSED_TIME,
 };
 
+// 亚美尼亚语
 const char *const am_pack[LABEL_NUM]={
   AM_LANGUAGE,
   AM_HEAT,
@@ -822,8 +831,10 @@ const char *const am_pack[LABEL_NUM]={
   AM_TIPS,
   AM_EEPROM_SAVE_SUCCESS,
   AM_EEPROM_SAVE_FAILED,
+  AM_ELAPSED_TIME,
 };
 
+// 德语
 const char *const de_pack[LABEL_NUM]={
   DE_LANGUAGE,
   DE_HEAT,
@@ -979,8 +990,10 @@ const char *const de_pack[LABEL_NUM]={
   DE_TIPS,
   DE_EEPROM_SAVE_SUCCESS,
   DE_EEPROM_SAVE_FAILED,
+  DE_ELAPSED_TIME,
 };
 
+// 捷克语
 const char *const cz_pack[LABEL_NUM]={
   CZ_LANGUAGE,
   CZ_HEAT,
@@ -1136,8 +1149,10 @@ const char *const cz_pack[LABEL_NUM]={
   CZ_TIPS,
   CZ_EEPROM_SAVE_SUCCESS,
   CZ_EEPROM_SAVE_FAILED,
+  CZ_ELAPSED_TIME,
 };
 
+// 西班牙语
 const char *const es_pack[LABEL_NUM]={
   ES_LANGUAGE,
   ES_HEAT,
@@ -1293,8 +1308,10 @@ const char *const es_pack[LABEL_NUM]={
   ES_TIPS,
   ES_EEPROM_SAVE_SUCCESS,
   ES_EEPROM_SAVE_FAILED,
+  ES_ELAPSED_TIME,
 };
 
+// 法语
 const char *const fr_pack[LABEL_NUM]={
   FR_LANGUAGE,
   FR_HEAT,
@@ -1450,8 +1467,10 @@ const char *const fr_pack[LABEL_NUM]={
   FR_TIPS,
   FR_EEPROM_SAVE_SUCCESS,
   FR_EEPROM_SAVE_FAILED,
+  FR_ELAPSED_TIME,
 };
 
+// 葡萄牙语
 const char *const pt_pack[LABEL_NUM]={
   PT_LANGUAGE,
   PT_HEAT,
@@ -1607,8 +1626,10 @@ const char *const pt_pack[LABEL_NUM]={
   PT_TIPS,
   PT_EEPROM_SAVE_SUCCESS,
   PT_EEPROM_SAVE_FAILED,
+  PT_ELAPSED_TIME,
 };
 
+// 意大利语
 const char *const it_pack[LABEL_NUM]={
   IT_LANGUAGE,
   IT_HEAT,
@@ -1764,8 +1785,10 @@ const char *const it_pack[LABEL_NUM]={
   IT_TIPS,
   IT_EEPROM_SAVE_SUCCESS,
   IT_EEPROM_SAVE_FAILED,
+  IT_ELAPSED_TIME,
 };
 
+// 波兰语
 const char *const pl_pack[LABEL_NUM]={
   PL_LANGUAGE,
   PL_HEAT,
@@ -1921,8 +1944,10 @@ const char *const pl_pack[LABEL_NUM]={
   PL_TIPS,
   PL_EEPROM_SAVE_SUCCESS,
   PL_EEPROM_SAVE_FAILED,
+  PL_ELAPSED_TIME,
 };
 
+// 斯洛伐克语
 const char *const sk_pack[LABEL_NUM]={
   SK_LANGUAGE,
   SK_HEAT,
@@ -2078,8 +2103,10 @@ const char *const sk_pack[LABEL_NUM]={
   SK_TIPS,
   SK_EEPROM_SAVE_SUCCESS,
   SK_EEPROM_SAVE_FAILED,
+  SK_ELAPSED_TIME,
 };
 
+// 韩语
 const char *const kr_pack[LABEL_NUM]={
   KR_LANGUAGE,
   KR_HEAT,
@@ -2235,8 +2262,10 @@ const char *const kr_pack[LABEL_NUM]={
   KR_TIPS,
   KR_EEPROM_SAVE_SUCCESS,
   KR_EEPROM_SAVE_FAILED,
+  KR_ELAPSED_TIME,
 };
 
+// 土耳其语
 const char *const tu_pack[LABEL_NUM]={
   TU_LANGUAGE,
   TU_HEAT,

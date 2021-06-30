@@ -589,6 +589,47 @@ void GUI_DispStringInRect(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const 
     y += BYTE_HEIGHT;
   }   
 }
+void GUI_DispStringInRect_P(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint8_t *inf)
+{
+  uint16_t width = ex - sx;
+  uint16_t height = ey - sy;
+
+  uint8_t pi = 0, nline = 0;
+  uint16_t stringlen[6];
+  uint8_t info[6][64] = {0};
+  uint8_t infolen[6] = {0};
+  
+  char *p = strtok((char*)inf, "\n");
+  while(p != NULL)
+  {
+    stringlen[pi] = GUI_StrPixelWidth((const uint8_t *)p);
+    strcpy((char*)info[pi], p);
+    nline += (stringlen[pi]+width-1)/width;
+    infolen[pi] = (stringlen[pi]+width-1)/width;
+    p = strtok(NULL, "\n");
+    pi++;
+  }
+
+  if(nline > height/BYTE_HEIGHT)
+    nline = height/BYTE_HEIGHT;
+
+  uint16_t x_offset, y_offset, x, y;
+  uint8_t i=0,j=0;
+
+  y_offset = (nline*BYTE_HEIGHT) >= height ? 0 : (( height - (nline*BYTE_HEIGHT) )>>1);
+  y = sy + y_offset;
+  for(j=0; j<=pi; j++){
+    const uint8_t *pj = info[j];
+    for(i=0; i<infolen[j]; i++)
+    {  
+      x_offset = stringlen[j] >= width ? 0 : ( width-stringlen[j])>>1;
+      x = sx + x_offset;
+
+      pj = GUI_DispLenString(x, y, pj, width);
+      y += BYTE_HEIGHT;
+    }
+  }
+}
 
 void GUI_DispStringInPrect(const GUI_RECT *rect, const uint8_t *p)
 {    
@@ -1020,7 +1061,7 @@ void GUI_DrawWindow(const WINDOW *window, const uint8_t *title, const uint8_t *i
   //    GUI_DispStringInRect(rect.x0, rect.y0, rect.x1, rect.y0+titleHeight,title,0);
   GUI_DispString(sx+radius, sy+8, title);
   GUI_SetColor(window->info.fontColor);
-  GUI_DispStringInRect(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf); 
+  GUI_DispStringInRect_P(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf);
 
   GUI_SetBkColor(nowBackColor);
   GUI_SetColor(nowFontColor);
