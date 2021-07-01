@@ -16,7 +16,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_rcc.h"
 #include "gd32_cdc_queue.h"
-
+#include "usb_common_init.h"
 
 
 usbh_host usb_host_msc;     
@@ -24,71 +24,12 @@ usb_core_driver usbh_core;  //usb fs as host
 usb_core_driver cdc_acm;    //usb hs as device
 usb_cdc_handler *pcdc;
 
-#if USE_GD32
-#include "PeripheralPins.h"
-#include "pinmap.h"
-
-void usb_fs_rcc_gpio_nvic_ll_init()
-{
-  const PinMap *map = NULL;
-#if defined(PWR_CR2_USV)
-  /* Enable VDDUSB on Pwrctrl CR2 register*/
-#if !defined(STM32WBxx)
-  if (__HAL_RCC_PWR_IS_CLK_DISABLED()) {
-    __HAL_RCC_PWR_CLK_ENABLE();
-    HAL_PWREx_EnableVddUSB();
-    __HAL_RCC_PWR_CLK_DISABLE();
-  } else
-#endif
-  {
-    HAL_PWREx_EnableVddUSB();
-  }
-#endif
-
-    /* 1. Configure USB FS GPIOs */
-    map = PinMap_USB_OTG_FS;
-    while (map->pin != NC) {
-      pin_function(map->pin, map->function);
-      map++;
-    }
-
-    /* Enable USB FS Clock */
-    __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
-
-#if defined (USE_USB_INTERRUPT_REMAPPED)
-    /*USB interrupt remapping enable */
-    __HAL_REMAPINTERRUPT_USB_ENABLE();
-#endif
-
-    
-}
 
 
-const PinMap PinMap_USB_OTG_HS_langgo[] = {
-  {PB_14, USB_OTG_HS, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF12_OTG_HS_FS)}, // USB_OTG_HS_DM
-  {PB_15, USB_OTG_HS, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF12_OTG_HS_FS)}, // USB_OTG_HS_DP
-  {NC,    NP,    0},  //must have
-};
-
-void usb_hs_rcc_gpio_nvic_ll_init()
-{
-    const PinMap *map = NULL;
-    /* 2. Configure USB HS GPIOs */
-    map = PinMap_USB_OTG_HS_langgo;
-    while (map->pin != NC) {
-        pin_function(map->pin, map->function);
-        map++;
-    }
-
-    /* Enable USB HS Clock */
-    __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
-
-    
-}
 
 void gd32_usb_device_cdc_init()
 {
-    usb_hs_rcc_gpio_nvic_ll_init();
+    common_usb_hs_rcc_gpio_ll_init();
     //usb device cdc on USB_HS
     usbd_init (&cdc_acm,
               USB_CORE_ENUM_HS,
@@ -98,7 +39,7 @@ void gd32_usb_device_cdc_init()
 
 void gd32_usb_host_msc_init()
 {
-    usb_fs_rcc_gpio_nvic_ll_init();
+    common_usb_fs_rcc_gpio_ll_init();
     /* register device class */
     usbh_class_register(&usb_host_msc, &usbh_msc);
 
@@ -108,12 +49,7 @@ void gd32_usb_host_msc_init()
               USB_CORE_ENUM_FS,
               &usr_cb);
 
-    HAL_NVIC_SetPriority(OTG_HS_IRQn, 2, 0);
-    HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
-
-    /* Set USB FS Interrupt priority & enable it */
-    HAL_NVIC_SetPriority(OTG_FS_IRQn, 2, 0);
-    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
+    common_usb_fs_hs_nvic_init();
 }
 
 void cdc_write(usb_dev *udev, uint8_t *buf, uint32_t len)
@@ -243,7 +179,7 @@ void gd32_usb_loop()
     }
 }
 
-
+#if USE_GD32
 
 // irq 
 void OTG_FS_IRQHandler(void)

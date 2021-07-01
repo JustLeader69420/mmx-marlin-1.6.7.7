@@ -147,13 +147,13 @@ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
     LOGI("mount deinit fail.");
   }
   FATFS_UnLinkDriver(USBHPath);
-  
+  LOGI("usbh disconnect");
   // usb_printf("usb device disconnected. \r\n");
   break;
 
   case HOST_USER_CLASS_ACTIVE:
   Appli_state = APPLICATION_READY;
-  // usb_printf("usb device active. \r\n");
+  LOGI("usb class active. ");
   break;
 
   case HOST_USER_CONNECTION:
