@@ -73,6 +73,7 @@
 #endif
 
 #include "../../../lcd/extui/lib/tsc/Menu/Popup.h"
+#include "../../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
 
 #if ABL_GRID
   #if ENABLED(PROBE_Y_FIRST)
@@ -900,7 +901,7 @@ G29_TYPE GcodeSuite::G29() {
   report_current_position();
 
   ABL_STATUS = ABL_DONE;
-
+  oldLevelingOffset = 0;
   G29_RETURN(isnan(measured_z));
 }
 
