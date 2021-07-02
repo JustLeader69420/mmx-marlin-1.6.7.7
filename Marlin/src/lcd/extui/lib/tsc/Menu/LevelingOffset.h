@@ -4,6 +4,7 @@
 #include "stdint.h"
 
 extern float LevelingOffset;
+extern float oldLevelingOffset; 
 
 void menuLevelingOffset(void);
 void setLevelingOffset(float offset);
