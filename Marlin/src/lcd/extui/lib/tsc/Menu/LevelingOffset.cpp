@@ -1,6 +1,8 @@
 #include "../TSC_Menu.h"
 #include "../../../../../module/settings.h"
 
+
+
 //1 titl, ITEM_PER_PAGE item
 MENUITEMS LevelingOffsetItems = {
 // title
@@ -34,7 +36,7 @@ const ITEM itemProbeOffsetUnit[ITEM_LEVELING_OFFSET_UNIT_NUM] = {
 const float item_LevelingOffset_unit[ITEM_LEVELING_OFFSET_UNIT_NUM] = {0.01f, 0.1f, 1};
 
 static ELEMENTS elementsUnit;
-float LevelingOffset = 0.0f;    // 当前值
+float LevelingOffset = LODEVA;    // 当前值,默认0.6
 float oldLevelingOffset = 0.0f; // 上一个值
 
 static void initElements(uint8_t position)
