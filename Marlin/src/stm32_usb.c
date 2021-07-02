@@ -30,8 +30,7 @@ typedef enum {
 MSC_Demo_State msc_demo;
 MSC_LUNTypeDef msc_info;
 USBH_HandleTypeDef hUsbHostFS;
-FATFS USBH_fatfs;
-// BYTE working_buffer[FF_MAX_SS]; /* Work area (larger is better for process time) */
+// FATFS USBH_fatfs;
 
 ApplicationTypeDef Appli_state = APPLICATION_IDLE;
 
@@ -51,24 +50,22 @@ void MSC_MenuProcess(void)
     /* Read and Write File Here */
     if(Appli_state == APPLICATION_READY)
     {
-      MSC_File_Operations();
-
-      msc_demo = MSC_DEMO_EXPLORER;
-
-      USBH_MSC_GetLUNInfo(&hUsbHostFS, 0, &msc_info);
-      LOGI("usb disk vid %s", msc_info.inquiry.vendor_id);
-      LOGI("usb disk pid %s", msc_info.inquiry.product_id);
-      LOGI("usb disk cap block nbr %d ", msc_info.capacity.block_nbr);
-      LOGI("usb disk cap block size %d ", msc_info.capacity.block_size);
-      uint64_t total_size = (uint64_t)msc_info.capacity.block_size * msc_info.capacity.block_nbr;
-      uint32_t size_kb = total_size / 1024;
-      uint32_t size_mb = size_kb / 1024;
-      uint32_t size_gb = size_mb / 1024;
-      LOGI("usb disk cap size %d MB, %d GB", size_mb, size_gb);
-      LOGI("usb disk cap size %d kBytes", size_kb);
+        msc_demo = MSC_DEMO_EXPLORER;
+        MSC_File_Operations();
+    //   USBH_MSC_GetLUNInfo(&hUsbHostFS, 0, &msc_info);
+    //   LOGI("usb disk vid %s", msc_info.inquiry.vendor_id);
+    //   LOGI("usb disk pid %s", msc_info.inquiry.product_id);
+    //   LOGI("usb disk cap block nbr %d ", msc_info.capacity.block_nbr);
+    //   LOGI("usb disk cap block size %d ", msc_info.capacity.block_size);
+    //   uint64_t total_size = (uint64_t)msc_info.capacity.block_size * msc_info.capacity.block_nbr;
+    //   uint32_t size_kb = total_size / 1024;
+    //   uint32_t size_mb = size_kb / 1024;
+    //   uint32_t size_gb = size_mb / 1024;
+    //   LOGI("usb disk cap size %d MB, %d GB", size_mb, size_gb);
+    //   LOGI("usb disk cap size %d kBytes", size_kb);
 
       /* Prevent debounce effect for user key */
-      HAL_Delay(400);
+    //   HAL_Delay(400);
     }
     break;
 
@@ -80,7 +77,7 @@ void MSC_MenuProcess(void)
       msc_demo = MSC_DEMO_STOP;
 
       /* Prevent debounce effect for user key */
-      HAL_Delay(400);
+    //   HAL_Delay(400);
     }
     break;
     
@@ -168,7 +165,7 @@ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 
   // LOGI("format fs result:%d", res);
 
-  if (f_mount(&USBH_fatfs, "", 0) != FR_OK) {
+  if (f_mount(&USBHFatFS, "", 0) != FR_OK) {
     // usb_printf("ERROR: mount usb fatfs fail");
     LOGE("usbh connect mount fail");
   }
@@ -187,10 +184,10 @@ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 
 void stm32_usbh_msc_init()
 {
-    common_usb_fs_rcc_gpio_ll_init();
-    common_usb_fs_hs_nvic_init();
-    MX_FATFS_Init();
+    // common_usb_fs_rcc_gpio_ll_init();
+    // common_usb_fs_hs_nvic_init();
     MX_USB_HOST_Init();
+    MX_FATFS_Init();
 }
 
 // irq 

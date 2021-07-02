@@ -49,7 +49,7 @@
 #include "log.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-extern FATFS USBH_fatfs;
+// extern FATFS USBHFatFS;
 FIL MyFile;
 FRESULT res;
 uint32_t bytesWritten;
@@ -72,13 +72,11 @@ void MSC_File_Operations(void)
 
   LOGI("INFO : FatFs Initialized \n");
   uint32_t fs_cluster;
-  FATFS* pfatfs = &USBH_fatfs;
-
-  if (FR_OK == f_getfree("0:", &fs_cluster, &pfatfs) ) {
-    LOGI("disk free space %d clusters ", fs_cluster);
-    LOGI("disk cluster size=%d ", pfatfs->csize * 512);
-    
-  }
+  // FATFS* pfatfs = &USBH_fatfs;
+  // if (FR_OK == f_getfree("0:", &fs_cluster, &pfatfs) ) {
+  //   LOGI("disk free space %d clusters ", fs_cluster);
+  //   LOGI("disk cluster size=%d ", pfatfs->csize * 512);
+  // }
 
   if(f_open(&MyFile, "0:USBHost.txt",FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
   {

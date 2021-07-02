@@ -21,15 +21,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "ff_gen_drv.h"
-// #include "usbh_diskio.h"
-// #include "usbh_core.h"
-#include "usbh_msc.h"
+#include "usbh_diskio.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-extern const Diskio_drvTypeDef  USBH_Driver;
+
 #define USB_DEFAULT_BLOCK_SIZE 512
-#define hUSB_Host   hUsbHostFS
+#define hUSB_Host hUsbHostFS
 /* Private variables ---------------------------------------------------------*/
 extern USBH_HandleTypeDef  hUSB_Host;
 
