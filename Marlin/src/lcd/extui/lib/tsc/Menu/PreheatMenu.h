@@ -2,7 +2,7 @@
 #define _PREHEATMENU_H_
 
 //                       PLA       ABS   "CUSTOM2" "SHUTDOWN" "CUSTOM3"
-#define PREHEAT_BED      {50,      80,       55,       0,       55}
+#define PREHEAT_BED      {60,      80,       55,       0,       55}
 #define PREHEAT_HOTEND   {190,     230,      200,      0,      200}
 
 #define INFO_OFFSET_X0  54
