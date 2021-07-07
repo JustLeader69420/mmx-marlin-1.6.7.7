@@ -1318,6 +1318,7 @@ void setup() {
   #endif
 
   marlin_state = MF_RUNNING;
+  oldLevelingOffset = LevelingOffset;
 
   setCurrentOffset(-0.2);//init z probe offset
   settings.save();

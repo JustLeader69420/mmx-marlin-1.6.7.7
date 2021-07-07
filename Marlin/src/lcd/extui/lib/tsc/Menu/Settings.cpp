@@ -106,7 +106,7 @@ LABEL_SETTINGS,
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_SCREEN_INFO,          LABEL_SCREEN_INFO},
   // {ICON_BACKGROUND,           LABEL_BACKGROUND},
-  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  {ICON_BABYSTEP,           LABEL_BABYSTEP},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACK,                 LABEL_BACK},}
@@ -167,6 +167,9 @@ void menuCallBackSettings(void)
     
     case KEY_ICON_3:
       infoMenu.menu[++infoMenu.cur] = menuInfo;
+      break;
+    case KEY_ICON_4:
+      infoMenu.menu[++infoMenu.cur] = menuBabyStep;
       break;
 
     case KEY_ICON_7:

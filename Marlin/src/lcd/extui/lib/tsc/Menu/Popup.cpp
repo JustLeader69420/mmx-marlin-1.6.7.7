@@ -73,7 +73,7 @@ void menuCallBackPopup(void)
   uint16_t key_num = KEY_GetValue(BUTTON_NUM, &singleBtnRect);
   switch(key_num)
   {            
-    case KEY_POPUP_CONFIRM: 
+    case KEY_POPUP_CONFIRM:
       infoMenu.cur--;
       //if no filament, load extruder menu
       if(filament_runout_flag){
@@ -82,6 +82,20 @@ void menuCallBackPopup(void)
         pause_extrude_flag = true;  // 暂停状态启动挤出界面
         infoMenu.menu[++infoMenu.cur] = menuExtrude;
       }
+      break;
+    
+    default:
+      break;            
+  }
+}
+void menuCallBackPopup_B(void)
+{
+  uint16_t key_num = KEY_GetValue(BUTTON_NUM, &singleBtnRect);
+  switch(key_num)
+  {            
+    case KEY_POPUP_CONFIRM:
+      infoMenu.cur--;
+      autoCloseBabysetp = true;
       break;
     
     default:
@@ -204,6 +218,11 @@ void menuPopup(void)
   menuSetFrontCallBack(menuCallBackPopup);
 }
 
+void menuPopup_B(void)
+{
+  menuSetFrontCallBack(menuCallBackPopup_B);
+}
+
 void menuPopup_ABL(void)
 {
   ABL_STATUS = ABL_INIT;
@@ -217,6 +236,15 @@ void popupReminder_p(uint8_t* info, uint8_t* context)
   if(infoMenu.menu[infoMenu.cur] != menuPopup)
   {
     infoMenu.menu[++infoMenu.cur] = menuPopup;
+  }
+}
+
+void popupReminder_B(uint8_t* info, uint8_t* context)
+{
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  if(infoMenu.menu[infoMenu.cur] != menuPopup_B)
+  {
+    infoMenu.menu[++infoMenu.cur] = menuPopup_B;
   }
 }
 

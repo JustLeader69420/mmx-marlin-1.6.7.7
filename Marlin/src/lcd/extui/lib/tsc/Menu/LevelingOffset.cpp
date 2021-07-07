@@ -113,6 +113,7 @@ void menuCallBackLevelingOffset(void)
       break;
     case KEY_ICON_4:
       saveOffset();
+      popupReminder(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_SUCCESS));
       break;
     case KEY_ICON_5:
       elementsUnit.cur = (elementsUnit.cur + 1) % elementsUnit.totaled;
@@ -138,7 +139,7 @@ void menuCallBackLevelingOffset(void)
 
 void menuLevelingOffset()
 {
-  oldLevelingOffset = LevelingOffset;
+  // oldLevelingOffset = LevelingOffset;
   initElements(KEY_ICON_5);
   menuDrawPage(&LevelingOffsetItems);
   showLevelingOffset();
