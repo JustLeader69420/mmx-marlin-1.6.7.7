@@ -80,7 +80,7 @@ void saveOffset(){
         z_values[px][py] += newLevelingOffset;
       }
     }
-    SERIAL_PRINTF("6666666");
+    // SERIAL_PRINTF("6666666");
     oldLevelingOffset = LevelingOffset;
     settings.save();
   }
@@ -138,7 +138,7 @@ void menuCallBackLevelingOffset(void)
 
 void menuLevelingOffset()
 {
-  oldLevelingOffset = LevelingOffset;
+  // oldLevelingOffset = LevelingOffset;
   initElements(KEY_ICON_5);
   menuDrawPage(&LevelingOffsetItems);
   showLevelingOffset();
