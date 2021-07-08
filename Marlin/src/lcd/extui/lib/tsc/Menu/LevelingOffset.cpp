@@ -80,7 +80,7 @@ void saveOffset(){
         z_values[px][py] += newLevelingOffset;
       }
     }
-    SERIAL_PRINTF("6666666");
+    // SERIAL_PRINTF("6666666");
     oldLevelingOffset = LevelingOffset;
     settings.save();
   }

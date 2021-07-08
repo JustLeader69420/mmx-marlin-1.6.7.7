@@ -1324,7 +1324,7 @@ void setup() {
   settings.save();
 
   stop_home = false;  // 关闭停止复位标志，防干扰
-
+  oldLevelingOffset = LevelingOffset;
   SETUP_LOG("setup() completed.");
 }
 
