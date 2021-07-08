@@ -36,6 +36,8 @@ WINDOW window = {
 static BUTTON *windowButton =  NULL;
 static uint16_t buttonNum = 0;
 static bool filament_runout_flag = false;   //no filament start
+static bool SF_popup = false;               // 是否为提示成功或失败的窗口
+static bool SOF = true;                     //success or failed
 
 void windowReDrawButton(uint8_t positon, uint8_t pressed)
 {
@@ -62,7 +64,12 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
   }
   
   TSC_ReDrawIcon = windowReDrawButton;
-  GUI_DrawWindow(&window, title, context);
+  if(SF_popup){
+    SF_popup = false;
+    GUI_DrawWindow_SF(&window, title, context, SOF);
+  }
+  else
+    GUI_DrawWindow(&window, title, context);
   
   for(uint8_t i = 0; i < buttonNum; i++)
     GUI_DrawButton(&windowButton[i], 0);    
@@ -238,7 +245,6 @@ void popupReminder_p(uint8_t* info, uint8_t* context)
     infoMenu.menu[++infoMenu.cur] = menuPopup;
   }
 }
-
 void popupReminder_B(uint8_t* info, uint8_t* context)
 {
   popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
@@ -247,7 +253,16 @@ void popupReminder_B(uint8_t* info, uint8_t* context)
     infoMenu.menu[++infoMenu.cur] = menuPopup_B;
   }
 }
-
+void popupReminder_SF(uint8_t* info, uint8_t* context, bool _SOF)
+{
+  SF_popup = true;
+  SOF = _SOF;
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  if(infoMenu.menu[infoMenu.cur] != menuPopup)
+  {
+    infoMenu.menu[++infoMenu.cur] = menuPopup;
+  }
+}
 void popupReminder(uint8_t* info, uint8_t* context)
 {
   popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    

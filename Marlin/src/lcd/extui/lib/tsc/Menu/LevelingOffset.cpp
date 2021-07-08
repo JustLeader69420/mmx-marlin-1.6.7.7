@@ -72,7 +72,7 @@ void resetLevelingOffset(){
   LevelingOffset = 0.0f;
 }
 // 将数据保存到存储器
-void saveOffset(){
+bool saveOffset(){
   float newLevelingOffset = LevelingOffset - oldLevelingOffset; // 求变化量
   if (leveling_is_valid() && ((int)(newLevelingOffset*100) != 0)) {   // 判断调平数据有效 且 变化不小于0.01
     LOOP_L_N(py, GRID_MAX_POINTS_Y) {
@@ -82,8 +82,9 @@ void saveOffset(){
     }
     // SERIAL_PRINTF("6666666");
     oldLevelingOffset = LevelingOffset;
-    settings.save();
+    return settings.save(); //判断是否保存成功
   }
+  return false; // 没触发保存，保存失败
 }
 
 void showLevelingOffset(void)
@@ -112,8 +113,11 @@ void menuCallBackLevelingOffset(void)
       leveling_offset_value_change = true;
       break;
     case KEY_ICON_4:
-      saveOffset();
-      popupReminder(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_SUCCESS));
+      if(saveOffset())
+        popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_SUCCESS), true);
+      else
+        popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_FAILED), false);
+      
       break;
     case KEY_ICON_5:
       elementsUnit.cur = (elementsUnit.cur + 1) % elementsUnit.totaled;

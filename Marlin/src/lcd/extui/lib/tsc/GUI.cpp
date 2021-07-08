@@ -1056,11 +1056,76 @@ void GUI_DrawWindow(const WINDOW *window, const uint8_t *title, const uint8_t *i
   GUI_FillRect(sx + lineWidth,          sy + titleHeight + infoHeight, ex - lineWidth,          ey - lineWidth - radius);
   GUI_FillRect(sx + lineWidth + radius, ey - lineWidth - radius,       ex - lineWidth - radius, ey - lineWidth);
 
+  // 显示标题
   GUI_SetTextMode(GUI_TEXTMODE_TRANS);
   GUI_SetColor(window->title.fontColor);
   //    GUI_DispStringInRect(rect.x0, rect.y0, rect.x1, rect.y0+titleHeight,title,0);
   GUI_DispString(sx+radius, sy+8, title);
+  // 显示窗口内容
   GUI_SetColor(window->info.fontColor);
+  GUI_DispStringInRect_P(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf);
+
+  GUI_SetBkColor(nowBackColor);
+  GUI_SetColor(nowFontColor);
+  GUI_SetTextMode(nowTextMode);
+}
+// 绘制提示成功或者失败的弹窗
+void GUI_DrawWindow_SF(const WINDOW *window, const uint8_t *title, const uint8_t *inf, bool SOF)
+{
+  const uint16_t titleHeight = window->title.height;
+  const uint16_t infoHeight = window->info.height;
+  const uint16_t radius = window->radius;
+  const uint16_t lineWidth = window->lineWidth;
+  const uint16_t lineColor = window->lineColor;
+  const uint16_t infoBackColor = window->info.backColor;
+  const uint16_t bottomBackColor = window->bottom.backColor;
+  const int16_t  sx = window->rect.x0,
+  sy = window->rect.y0,
+  ex = window->rect.x1,
+  ey = window->rect.y1;
+  const uint16_t nowBackColor = GUI_GetBkColor();
+  const uint16_t nowFontColor = GUI_GetColor();
+  const GUI_TEXT_MODE nowTextMode = GUI_GetTextMode();
+
+  GUI_SetColor(lineColor);
+  GUI_FillCircle(sx + radius,      sy + radius,  radius);
+  GUI_FillCircle(ex - radius - 1,  sy + radius,  radius);
+  GUI_FillRect(sx + radius,  sy,         ex-radius, sy+radius);
+  GUI_FillRect(sx,           sy+radius,  ex,        sy+titleHeight);
+  for(uint16_t i=0; i<lineWidth ;i++)
+  {
+    GUI_VLine(sx + i,      sy + titleHeight, ey - radius);
+    GUI_VLine(ex - 1 - i,  sy + titleHeight, ey - radius);
+    GUI_HLine(sx + radius, ey - 1 - i,       ex - radius);
+  }
+  GUI_FillCircle(sx + radius,     ey - radius - 1, radius);
+  GUI_FillCircle(ex - radius - 1, ey - radius - 1, radius);
+
+  GUI_SetColor(infoBackColor);
+  GUI_FillRect(sx + lineWidth, sy + titleHeight, ex - lineWidth, sy + titleHeight + infoHeight);
+  GUI_SetColor(bottomBackColor);
+  GUI_FillCircle(sx + radius,     ey - radius - 1, radius - lineWidth);
+  GUI_FillCircle(ex - radius - 1, ey - radius - 1, radius - lineWidth);
+  GUI_FillRect(sx + lineWidth,          sy + titleHeight + infoHeight, ex - lineWidth,          ey - lineWidth - radius);
+  GUI_FillRect(sx + lineWidth + radius, ey - lineWidth - radius,       ex - lineWidth - radius, ey - lineWidth);
+
+ 
+  // 显示标题
+  GUI_SetTextMode(GUI_TEXTMODE_TRANS); 
+  // GUI_SetColor(window->title.fontColor);
+  // 判断是否为“成功”，或者“失败”
+  if(SOF)
+    GUI_SetColor(GREEN);
+  else
+    GUI_SetColor(RED);
+  //    GUI_DispStringInRect(rect.x0, rect.y0, rect.x1, rect.y0+titleHeight,title,0);
+  GUI_DispString(sx+radius, sy+8, title);
+
+  // 显示窗口内容
+  if(SOF)
+    GUI_SetColor(window->info.fontColor);
+  else
+    GUI_SetColor(RED);
   GUI_DispStringInRect_P(sx+lineWidth+BYTE_WIDTH, sy+titleHeight, ex-lineWidth-BYTE_WIDTH, sy+titleHeight+infoHeight, inf);
 
   GUI_SetBkColor(nowBackColor);
