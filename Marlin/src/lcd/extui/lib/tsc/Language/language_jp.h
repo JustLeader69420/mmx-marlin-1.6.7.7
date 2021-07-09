@@ -149,5 +149,7 @@
     #define JP_EEPROM_SAVE_SUCCESS  "EEPROM parameters saved successfully"
     #define JP_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
     #define JP_ELAPSED_TIME         "経過時間"
+    #define JP_SAVE_POPUP           "設定を保存する"
+    #define JP_SYCHRONZIED_VALUE    "この値はzオフセットと組み合わされます"
     
 #endif
