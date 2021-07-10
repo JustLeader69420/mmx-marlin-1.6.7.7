@@ -1,5 +1,7 @@
 #include "PrintUdisk.h"
 #include "../TSC_Menu.h"
+// #include "stm32_usb.h"
+#include "ff.h"
 
 static ExtUI::FileList filelistUdisk;
 
@@ -29,27 +31,123 @@ GUI_RECT titleRectUdisk={10, (TITLE_END_Y - 10 - BYTE_HEIGHT) / 2, LCD_WIDTH_PIX
 
 SCROLL   gcodeScrollUdisk;
 uint8_t curPageUdisk = 0;
+char gUdiskPath[1024];
 
-char titleUdisk[1024] = "UDisk:";
+char titleUdisk[128] = "UDisk:";
 bool EnterDirUdisk(const char *nextdir)
 {
   // if(strlen(infoFile.title)+strlen(nextdir)+2>=MAX_PATH_LEN) return 0;
-  strcat(titleUdisk, "/");
-  strcat(titleUdisk, nextdir);
+  strcat(gUdiskPath, "/");
+  strcat(gUdiskPath, nextdir);
   return 1;
 }
 void ExitDirUdisk(void)
 {
-  int i = strlen(titleUdisk);
-  for(; i > 0 && titleUdisk[i] != '/';i--)
+  int i = strlen(gUdiskPath);
+  for(; i > 0 && gUdiskPath[i] != '/';i--)//从右往左找/
   {	
   }
-  titleUdisk[i]=0;
+  gUdiskPath[i]=0;
+}
+enum {
+  FTYPE_GCODE = 0,
+  FTYPE_DIR,
+};
+// typedef struct
+// {
+//   int isDir;
+//   char fname[255]; //store short fname
+// }ufl_t;
+FILINFO ufilelist[NUM_PER_PAGE];
+int udisk_cwd_fcount; //when change dir, need update
+bool udisk_at_root = true;
+
+static inline bool is_dir_or_gcode(FILINFO *fno)
+{
+  return !( fno->fattrib &  AM_SYS ) &&
+         (fno->fattrib & AM_DIR ) ||
+          strstr(fno->altname, ".GCO") ;
+}
+//
+// Get the number of (compliant) items in the folder
+//
+int udisk_file_count_dir_and_gcode(char *path) {
+  DIR dir;
+  int c = 0;
+  FRESULT res;
+  FILINFO fileinfo;
+  res = f_opendir(&dir, path);
+  while (1) {
+    res = f_readdir(&dir, &fileinfo);
+    if (res != FR_OK || fileinfo.fname[0] == 0) break;
+    if ( fileinfo.fattrib &  AM_SYS ) continue; //ignore system file
+    if (  (fileinfo.fattrib & AM_DIR ) ||
+          strstr(fileinfo.altname, ".GCO") )
+    {
+      c++;
+      rtt.printf("-%s/%s \n", path, fileinfo.fname);
+    }
+  }
+  f_closedir(&dir);
+    // c += is_dir_or_gcode(p);
+    // flag.filenameIsDir                                  // All Directories are ok
+    // || (p.name[8] == 'G' && p.name[9] != '~')           // Non-backup *.G* files are accepted
+  return c;
 }
 
+DIR workDir;
+FILINFO workFileinfo;
+
+//
+// Get file/folder info for an item by index
+//
+// void CardReader::selectByIndex(SdFile dir, const uint8_t index) {
+//   dir_t p;
+//   for (uint8_t cnt = 0; dir.readDir(&p, longFilename) > 0;) {
+//     if (is_dir_or_gcode(p)) {
+//       if (cnt == index) {
+//         createFilename(filename, p);  //save short fname
+//         return;  // 0 based index
+//       }
+//       cnt++;
+//     }
+//   }
+// }
+
+// void selectFileByIndex(const char *path, const uint8_t index)
+// {
+//   static DIR d;
+//   f_opendir(&d, path);
+//   int cnt = 0;
+//   FRESULT res;
+//   while (1) {
+//     res = f_readdir(&d, &workFileinfo);
+//     if (workFileinfo.fname[0])
+//   }
+
+//true if read valid in current pos
+bool udisk_seek(const uint16_t pos) {
+    if ( (pos + 1) > udisk_cwd_fcount )
+      return false;
+    
+    f_opendir(&workDir, gUdiskPath);
+    for (int c=0; c < udisk_cwd_fcount;) {
+      f_readdir(&workDir, &workFileinfo);
+      // rtt.printf("list file:%s\n", workFileinfo.fname);
+      if (is_dir_or_gcode(&workFileinfo)) {
+        c++;
+        if (c == pos) {
+          rtt.printf("chose file:%s\n", workFileinfo.fname);
+          return true;
+        }
+      }
+    }
+}
 
 void gocdeListDrawUdisk(void)
 {
+  memset(titleUdisk, 0, sizeof(titleUdisk));
+  strncpy(titleUdisk, gUdiskPath, sizeof(titleUdisk));
   Scroll_CreatePara(&titleScrollUdisk, (uint8_t* )titleUdisk, &titleRectUdisk);
   printItemsUdisk.title.address = (uint8_t* )titleUdisk;
   GUI_SetBkColor(TITLE_COLOR);
@@ -57,16 +155,17 @@ void gocdeListDrawUdisk(void)
   GUI_SetBkColor(BK_COLOR);
 
   uint8_t i = 0;
-
-  for(i=0;(i + curPageUdisk * NUM_PER_PAGE < filelistUdisk.count())
-          &&(i < NUM_PER_PAGE)                                  ; i++)                  // folder
+  udisk_cwd_fcount =  udisk_file_count_dir_and_gcode(gUdiskPath);
+  rtt.printf("found udisk cnt %d\n", udisk_cwd_fcount);
+  for(i=0; (i + curPageUdisk * NUM_PER_PAGE < udisk_cwd_fcount)
+          && (i < NUM_PER_PAGE); i++)                  // folder
   {
-    if (!filelistUdisk.seek(i + curPageUdisk * NUM_PER_PAGE)) continue;
-    if (filelistUdisk.isDir()) 
+    if (!udisk_seek(i + curPageUdisk * NUM_PER_PAGE)) continue;
+    if (workFileinfo.fattrib & AM_DIR) 
       printItemsUdisk.items[i].icon = CHAR_FOLDER;
     else 
       printItemsUdisk.items[i].icon = CHAR_FILE;
-    printItemsUdisk.items[i].label = (uint8_t* )filelistUdisk.filename();
+    printItemsUdisk.items[i].label = (uint8_t* )workFileinfo.fname;
     menuDrawListItem(&printItemsUdisk.items[i], i);
   }
 
@@ -105,7 +204,7 @@ void menuCallBackPrintUdisk(void)
       break;
 
     case KEY_ICON_6:	
-      if(curPageUdisk+1 < (filelistUdisk.count()+(NUM_PER_PAGE-1))/NUM_PER_PAGE)
+      if(curPageUdisk+1 < (udisk_cwd_fcount+(NUM_PER_PAGE-1))/NUM_PER_PAGE)
       {
         curPageUdisk++;
         update=1;
@@ -114,17 +213,21 @@ void menuCallBackPrintUdisk(void)
 
     case KEY_ICON_7:
       curPageUdisk = 0;
-      if(filelistUdisk.isAtRootDir())
+      if(udisk_at_root)
       {
-       // clearInfoFile();
+       // clearInfoFile();//如果是根目录就退回到UI
         infoMenu.cur--;
         break;
       }
       else
       {
-        ExitDirUdisk();
-       // scanPrintFiles();	
-        filelistUdisk.upDir();
+        ExitDirUdisk(); //返回上级目录
+        // filelistUdisk.upDir();
+        f_opendir(&workDir, gUdiskPath);
+        // f_getcwd(gUdiskPath, sizeof(gUdiskPath));
+        if (gUdiskPath[0] == 0) {
+          udisk_at_root = true;
+        }
         update = 1;
       }
       break;
@@ -135,15 +238,17 @@ void menuCallBackPrintUdisk(void)
     default:                   
       if(key_num <= KEY_ICON_4)
       {	
-        if (filelistUdisk.seek(curPageUdisk * NUM_PER_PAGE + key_num))
+        if (udisk_seek(curPageUdisk * NUM_PER_PAGE + key_num))
         {
-          if (filelistUdisk.isDir()) {
-            if(EnterDirUdisk(filelistUdisk.longFilename()) == false) break;
+          if (workFileinfo.fattrib & AM_DIR) {
+            EnterDirUdisk(workFileinfo.fname);
+            if(FR_OK != f_opendir(&workDir, gUdiskPath)) break;
             update = 1;
             curPageUdisk = 0;
-            filelistUdisk.changeDir(filelistUdisk.shortFilename());
+            udisk_at_root = false;
           } else { //gcode
-            ExtUI::printFile(filelistUdisk.shortFilename());
+            rtt.printf("FIXME: print:%s\n", workFileinfo.fname);
+            // ExtUI::printFile(filelistUdisk.shortFilename());
           }
         }
       }

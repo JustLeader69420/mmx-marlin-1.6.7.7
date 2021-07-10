@@ -93,7 +93,7 @@ FRESULT Explore_Disk(char *path, uint8_t recu_level)
       }
       else if(recu_level == 2)
       {
-        LOGW("   |   |__");
+        LOG("   |   |__");
       }
       if((fno.fattrib & AM_DIR) == AM_DIR)
       {

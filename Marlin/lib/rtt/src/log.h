@@ -19,14 +19,14 @@ extern "C" {
 
 
 #define LOG_PROTO(type,color,format,...)            \
-        SEGGER_RTT_printf(0,"%s%s"format"\r\n%s", \
+        SEGGER_RTT_printf(0,"%s%s"format"%s", \
                           color,                    \
                           type,                     \
                           ##__VA_ARGS__,            \
                           RTT_CTRL_RESET)
 
 #define LOG_STR( x )                                    \
-        SEGGER_RTT_printf(0, "%s%s\r\n",                \
+        SEGGER_RTT_printf(0, "%s%s",                \
                           RTT_CTRL_TEXT_BRIGHT_GREEN,   \
                           x ,                           \
                           RTT_CTRL_RESET)

@@ -96,7 +96,7 @@ void menuCallBackPrint(void)
   lock = true;
   switch(key_num)
   {
-    case KEY_ICON_5:			
+    case KEY_ICON_5:  //up
       if(curPage > 0)
       {
         curPage--;
@@ -104,7 +104,7 @@ void menuCallBackPrint(void)
       }
       break;
 
-    case KEY_ICON_6:	
+    case KEY_ICON_6:	//down
       if(curPage+1 < (filelist.count()+(NUM_PER_PAGE-1))/NUM_PER_PAGE)
       {
         curPage++;
@@ -112,7 +112,7 @@ void menuCallBackPrint(void)
       }
       break;
 
-    case KEY_ICON_7:
+    case KEY_ICON_7:  //back
       curPage = 0;
       if(filelist.isAtRootDir())
       {
@@ -133,8 +133,8 @@ void menuCallBackPrint(void)
       break;
 
     default:                   
-      if(key_num <= KEY_ICON_4)
-      {	
+      if(key_num <= KEY_ICON_4) //0~4 = 5 file
+      {	//seek用于定位到该文件，gc或者目录返回true
         if (filelist.seek(curPage * NUM_PER_PAGE + key_num))
         {
           if (filelist.isDir()) {
