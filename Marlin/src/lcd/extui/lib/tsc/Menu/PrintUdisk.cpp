@@ -98,33 +98,6 @@ int udisk_file_count_dir_and_gcode(char *path) {
 DIR workDir;
 FILINFO workFileinfo;
 
-//
-// Get file/folder info for an item by index
-//
-// void CardReader::selectByIndex(SdFile dir, const uint8_t index) {
-//   dir_t p;
-//   for (uint8_t cnt = 0; dir.readDir(&p, longFilename) > 0;) {
-//     if (is_dir_or_gcode(p)) {
-//       if (cnt == index) {
-//         createFilename(filename, p);  //save short fname
-//         return;  // 0 based index
-//       }
-//       cnt++;
-//     }
-//   }
-// }
-
-// void selectFileByIndex(const char *path, const uint8_t index)
-// {
-//   static DIR d;
-//   f_opendir(&d, path);
-//   int cnt = 0;
-//   FRESULT res;
-//   while (1) {
-//     res = f_readdir(&d, &workFileinfo);
-//     if (workFileinfo.fname[0])
-//   }
-
 //true if read valid in current pos
 bool udisk_seek(const uint16_t pos) {
     if ( (pos + 1) > udisk_cwd_fcount )
@@ -142,6 +115,23 @@ bool udisk_seek(const uint16_t pos) {
         }
       }
     }
+}
+
+void copy_file_to_sdcard(char* path)
+{
+  uint8_t buffer[512];
+  FIL fp;
+  FRESULT res;
+  UINT rd_cnt;
+  f_open(&fp, path,  FA_READ | FA_OPEN_ALWAYS);
+  card.openFileWrite(path);
+  while (1) {
+    res = f_read(&fp, buffer, sizeof(buffer), &rd_cnt);
+    card.write(buffer, rd_cnt);
+    if (rd_cnt == 0) break;
+  }
+  f_close(&fp);
+  card.closefile();
 }
 
 void gocdeListDrawUdisk(void)
@@ -248,7 +238,15 @@ void menuCallBackPrintUdisk(void)
             udisk_at_root = false;
           } else { //gcode
             rtt.printf("FIXME: print:%s\n", workFileinfo.fname);
-            // ExtUI::printFile(filelistUdisk.shortFilename());
+            //card use short filename
+            if (!card.getroot().exists(workFileinfo.altname)) {
+              //copy a file to sd card.
+              copy_file_to_sdcard(workFileinfo.altname);
+              ExtUI::printFile(workFileinfo.altname);
+            }
+            else {
+              ExtUI::printFile(workFileinfo.altname);
+            }
           }
         }
       }
