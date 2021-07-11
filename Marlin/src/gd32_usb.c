@@ -50,6 +50,8 @@ void gd32_usb_host_msc_init()
               &usr_cb);
 
     common_usb_fs_hs_nvic_init();
+
+    MX_FATFS_Init();
 }
 
 void cdc_write(usb_dev *udev, uint8_t *buf, uint32_t len)
@@ -163,7 +165,7 @@ uint8_t gd32_cdc_is_connected()
 void gd32_usb_loop()
 {
     usbh_core_task(&usb_host_msc);
-
+#if 0
     if (USBD_CONFIGURED == cdc_acm.dev.cur_status) {
       if (0U == cdc_acm_check_ready(&cdc_acm)) {
         cdc_usr_rx(&cdc_acm);
@@ -177,6 +179,7 @@ void gd32_usb_loop()
             // cdc_acm_data_send(&cdc_acm);
         // }
     }
+#endif
 }
 
 

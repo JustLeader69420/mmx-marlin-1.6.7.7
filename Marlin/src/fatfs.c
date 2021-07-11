@@ -30,8 +30,11 @@ FIL USBHFile;       /* File object for USBH */
 void MX_FATFS_Init(void) 
 {
   /*## FatFS: Link the USBH driver ###########################*/
-  retUSBH = FATFS_LinkDriver(&USBH_Driver, USBHPath);
-
+  #ifdef USE_GD32
+    retUSBH = FATFS_LinkDriver(&GDUSBH_Driver, USBHPath);
+  #else
+    retUSBH = FATFS_LinkDriver(&USBH_Driver, USBHPath);
+  #endif
   /* USER CODE BEGIN Init */
   /* additional user code for init */     
   /* USER CODE END Init */

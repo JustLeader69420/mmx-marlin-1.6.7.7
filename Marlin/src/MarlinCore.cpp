@@ -998,11 +998,11 @@ void setup() {
   LCD_Setup();
 
   #if ENABLED(USE_GD32)
-   gd32_usb_device_cdc_init();
-   gd32_usb_host_msc_init();
+    gd32_usb_device_cdc_init();
+    gd32_usb_host_msc_init();
+  #else
+    MX_USB_HOST_Init();
   #endif
-
-  MX_USB_HOST_Init();
   
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
@@ -1337,11 +1337,10 @@ void loop() {
 
     #if ENABLED(USE_GD32)
       gd32_usb_loop();
+    #else
+      MX_USB_HOST_Process();
+      MSC_MenuProcess();
     #endif
-
-    MX_USB_HOST_Process();
-    MSC_MenuProcess();
-
     // MYSERIAL1.write("fuck usb", 9);
     // TERN_(USE_WATCHDOG, HAL_watchdog_refresh());// thermalmanager will feed dog if normal.
 

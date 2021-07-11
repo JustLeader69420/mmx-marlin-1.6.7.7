@@ -190,6 +190,7 @@ void stm32_usbh_msc_init()
     MX_FATFS_Init();
 }
 
+#ifndef USE_GD32
 // irq 
 void OTG_FS_IRQHandler()
 {
@@ -200,4 +201,4 @@ void OTG_FS_IRQHandler()
 // {
 //     HAL_PCD_IRQHandler(&hhcd_USB_OTG_HS);
 // }
-
+#endif
