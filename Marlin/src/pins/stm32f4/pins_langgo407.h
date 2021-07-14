@@ -34,7 +34,8 @@
 #endif
 
 #ifndef BOARD_INFO_NAME
-  #define BOARD_INFO_NAME "BC.DZ.PC000007.02"
+  #define BOARD_INFO_NAME "BC.DZ.PC000007.03"
+  #define ROBOT_NAME "(S)"
 #endif
 
 #define DEFAULT_MACHINE_NAME "HP STM32F407VE"
