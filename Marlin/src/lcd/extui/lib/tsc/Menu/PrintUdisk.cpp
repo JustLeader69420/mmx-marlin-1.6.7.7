@@ -240,7 +240,7 @@ void menuCallBackPrintUdisk(void)
             rtt.printf("FIXME: print:%s\n", workFileinfo.fname);
             //card use short filename
             if (!card.getroot().exists(workFileinfo.altname)) {
-              //copy a file to sd card.
+              //copy a file to sd card. FIXME: check if filesize = 0.
               copy_file_to_sdcard(workFileinfo.altname);
               ExtUI::printFile(workFileinfo.altname);
             }
