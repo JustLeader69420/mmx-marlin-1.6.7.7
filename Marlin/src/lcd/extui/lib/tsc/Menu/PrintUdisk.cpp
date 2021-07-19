@@ -4,7 +4,7 @@
 #include "ff.h"
 
 static ExtUI::FileList filelistUdisk;
-
+static const GUI_RECT RecProgress = {60,150,316,175};
 
 LISTITEMS printItemsUdisk = {
 //  title
@@ -108,30 +108,62 @@ bool udisk_seek(const uint16_t pos) {
       f_readdir(&workDir, &workFileinfo);
       // rtt.printf("list file:%s\n", workFileinfo.fname);
       if (is_dir_or_gcode(&workFileinfo)) {
-        c++;
+        
         if (c == pos) {
           rtt.printf("chose file:%s\n", workFileinfo.fname);
           return true;
-        }
+        }c++;
       }
     }
 }
-
+#define copysize 1024*2
 void copy_file_to_sdcard(char* path)
 {
-  uint8_t buffer[512];
+  // uint8_t buffer[512];
+  uint8_t *buffer= new uint8_t [copysize];
+  if(buffer == NULL) return;
   FIL fp;
   FRESULT res;
   UINT rd_cnt;
-  f_open(&fp, path,  FA_READ | FA_OPEN_ALWAYS);
-  card.openFileWrite(path);
-  while (1) {
-    res = f_read(&fp, buffer, sizeof(buffer), &rd_cnt);
-    card.write(buffer, rd_cnt);
-    if (rd_cnt == 0) break;
-  }
-  f_close(&fp);
-  card.closefile();
+  FILINFO info;
+  uint32_t fsize=0;//文件大小
+  uint8_t i=0, j=0, str[6] = {0};
+  long size_r = 0;
+  float size_p = 0;  // 读取的大小，和进度条每格大小
+  
+  f_stat(path, &info);          // 获取文件信息
+  fsize = info.fsize;
+  SERIAL_ECHOLNPAIR("file size:", fsize);
+  size_p = fsize/30.0f;
+
+  popupDrawPage(NULL , (const uint8_t *)info.fname, NULL, NULL, NULL);
+
+  #if 1
+    f_open(&fp, path,  FA_READ | FA_OPEN_ALWAYS);
+    card.openFileWrite(path);
+    GUI_SetColor(GANTRYLBL_COLOR);
+    GUI_SetBkColor(BLACK);
+    while (1) {
+      HAL_watchdog_refresh();
+      res = f_read(&fp, buffer, copysize, &rd_cnt);
+      card.write(buffer, rd_cnt);
+      if (rd_cnt == 0) break;
+      // 绘制进度条
+      size_r += rd_cnt;
+      if(i*size_p < size_r){
+        i += (copysize>size_p ? copysize/size_p : 1);
+        for(;j<i;j++)
+          GUI_DispString(120+j*8, 120, (const uint8_t *)"█");
+      }
+      // 绘制百分比
+      sprintf_P((char*)str, "%d%%", (size_r*100/fsize));
+      GUI_DispString(220, 155, str);
+    }
+    
+    delete [] buffer;
+    f_close(&fp);
+    card.closefile();
+  #endif
 }
 
 void gocdeListDrawUdisk(void)
@@ -240,7 +272,7 @@ void menuCallBackPrintUdisk(void)
             rtt.printf("FIXME: print:%s\n", workFileinfo.fname);
             //card use short filename
             if (!card.getroot().exists(workFileinfo.altname)) {
-              //copy a file to sd card. FIXME: check if filesize = 0.
+              // copy a file to sd card. FIXME: check if filesize = 0.
               copy_file_to_sdcard(workFileinfo.altname);
               ExtUI::printFile(workFileinfo.altname);
             }
