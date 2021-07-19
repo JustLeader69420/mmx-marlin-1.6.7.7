@@ -34,7 +34,7 @@
     #define RU_BLTOUCH_DEPLOY       "BLT вниз"
     #define RU_BLTOUCH_STOW         "BLT вверх"
     #define RU_BLTOUCH_REPEAT       "Точность Z"
-    #define RU_PROBE_OFFSET         "Отступ Z"
+    #define RU_PROBE_OFFSET         "z-смещением"
     #define RU_EEPROM_SAVE          "Сохранить"
     #define RU_INC                  "Увеличить"
     #define RU_DEC                  "Уменьшить"
@@ -149,5 +149,7 @@
     #define RU_EEPROM_SAVE_SUCCESS  "EEPROM параметр успешно сохранён"
     #define RU_EEPROM_SAVE_FAILED   "EEPROM Ошибка сохранения параметра"
     #define RU_ELAPSED_TIME         "Пройденное время"
+    #define RU_SAVE_POPUP           "Сохранить настройки"
+    #define RU_SYCHRONZIED_VALUE    "Это значение комбинируется с z-смещением."
     
 #endif

@@ -149,5 +149,7 @@
     #define TU_EEPROM_SAVE_SUCCESS  "EEPROM parametreleri başarıyla kaydedildi"
     #define TU_EEPROM_SAVE_FAILED   "EEPROM parametreleri kaydedilemedi"
     #define TU_ELAPSED_TIME         "Geçen zaman"
+    #define TU_SAVE_POPUP           "ayarı kaydet"
+    #define TU_SYCHRONZIED_VALUE    "Bu değer z ofset ile birleştirilir."
 
 #endif

@@ -149,5 +149,7 @@
     #define CN_EEPROM_SAVE_SUCCESS  "EEPROM 参数保存成功"
     #define CN_EEPROM_SAVE_FAILED   "EEPROM 参数保存失败"
     #define CN_ELAPSED_TIME         "用时"
+    #define CN_SAVE_POPUP           "保存设置"
+    #define CN_SYCHRONZIED_VALUE    "已将值同步到Z-offset"
 
 #endif

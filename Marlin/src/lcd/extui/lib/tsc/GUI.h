@@ -156,3 +156,4 @@ typedef struct
 }WINDOW;
 
 void GUI_DrawWindow(const WINDOW *window, const uint8_t *title, const uint8_t *inf);
+void GUI_DrawWindow_SF(const WINDOW *window, const uint8_t *title, const uint8_t *inf, bool SOF);

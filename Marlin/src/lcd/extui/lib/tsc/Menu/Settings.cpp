@@ -6,6 +6,7 @@ SETTINGS infoSettings, // Settings para
          lastSettings; // Last Settings para
 extern uint32_t TSC_Para[7]; 
 uint32_t lastTSC_Para[7];
+static bool needSave = false;
 
 
 #ifdef FIL_RUNOUT_PIN
@@ -64,7 +65,7 @@ void menuCallBackInfo(void)
 
 void menuInfo(void)
 {
-  const char* hardware = "Board   : " BOARD_INFO_NAME;
+  const char* hardware = "Board   : " BOARD_INFO_NAME ROBOT_NAME;
   const char* firmware = "Firmware: " SHORT_BUILD_VERSION " " __DATE__;
   
   uint16_t HW_X = (LCD_WIDTH_PIXEL - GUI_StrPixelWidth((uint8_t *)hardware))/2;
@@ -105,8 +106,8 @@ LABEL_SETTINGS,
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_SCREEN_INFO,          LABEL_SCREEN_INFO},
-  // {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  // {ICON_BABYSTEP,           LABEL_BABYSTEP},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACK,                 LABEL_BACK},}
@@ -157,19 +158,27 @@ void menuCallBackSettings(void)
 
     #ifdef FIL_RUNOUT_PIN
     case KEY_ICON_2:
-      item_runout_i = (item_runout_i + 1) % ITEM_RUNOUT_NUM;                
+      item_runout_i = (item_runout_i + 1) % ITEM_RUNOUT_NUM;
       settingsItems.items[key_num] = itemRunout[item_runout_i];
       menuDrawItem(&settingsItems.items[key_num], key_num);
       infoSettings.runout = item_runout[item_runout_i];
       ExtUI::setFilamentRunoutEnabled(infoSettings.runout);
+      needSave = true;
       break;
     #endif
     
     case KEY_ICON_3:
       infoMenu.menu[++infoMenu.cur] = menuInfo;
       break;
+    // case KEY_ICON_4:
+    //   infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+    //   break;
 
     case KEY_ICON_7:
+      if(needSave){
+        needSave = false;
+        settings.save();
+      }
       infoMenu.cur--;
       break;
     

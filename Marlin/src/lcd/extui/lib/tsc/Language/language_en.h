@@ -150,5 +150,7 @@
     #define EN_EEPROM_SAVE_FAILED   "EEPROM parameters saved failed"
     #define EN_ELAPSED_TIME         "Elapsed Time"
     #define EN_CHOOSE_STORAGE       "Choose a storage device:"
+    #define EN_SAVE_POPUP           "Seting Save"
+    #define EN_SYCHRONZIED_VALUE    "This value is combined with the z-offset"
 
 #endif

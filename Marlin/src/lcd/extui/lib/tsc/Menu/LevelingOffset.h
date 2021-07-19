@@ -10,6 +10,6 @@ extern float oldLevelingOffset;
 
 void menuLevelingOffset(void);
 void setLevelingOffset(float offset);
-void saveOffset();
+bool saveOffset();
 
 #endif

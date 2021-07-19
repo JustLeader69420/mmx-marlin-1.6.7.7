@@ -1327,12 +1327,13 @@ void setup() {
   #endif
 
   marlin_state = MF_RUNNING;
+  oldLevelingOffset = LevelingOffset;
 
   setCurrentOffset(-0.2);//init z probe offset
   settings.save();
 
   stop_home = false;  // 关闭停止复位标志，防干扰
-
+  oldLevelingOffset = LevelingOffset;
   SETUP_LOG("setup() completed.");
 }
 
