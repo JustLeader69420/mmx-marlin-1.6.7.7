@@ -35,8 +35,8 @@ OF SUCH DAMAGE.
 #ifndef __USBD_ENUM_H
 #define __USBD_ENUM_H
 
-#include "gd32_usbd_core.h"
-#include "usbd_conf.h"
+#include "gdusbd_core.h"
+#include "gdusbd_conf.h"
 #include <wchar.h>
 
 #ifndef NULL

@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usbd_enum.h"
+#include "gdusbd_enum.h"
 #include "usb_ch9_std.h"
 
 #ifdef WINUSB_EXEMPT_DRIVER

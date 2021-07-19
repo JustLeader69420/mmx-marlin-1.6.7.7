@@ -33,9 +33,9 @@ OF SUCH DAMAGE.
 */
 
 #include "drv_usb_hw.h"
-#include "usbh_pipe.h"
-#include "usbh_enum.h"
-#include "usbh_core.h"
+#include "gdusbh_pipe.h"
+#include "gdusbh_enum.h"
+#include "gdusbh_core.h"
 #include "drv_usbh_int.h"
 #include <string.h>
 

@@ -131,8 +131,9 @@
  * Select a secondary serial port on the board to use for communication with the host.
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT_2 -1
-
+#ifndef USE_GD32
+  #define SERIAL_PORT_2 -1
+#endif
 /**
  * This setting determines the communication speed of the printer.
  *

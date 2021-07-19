@@ -77,8 +77,26 @@ Bilinear Leveling Grid:
 
 
 是否编译支持BL的app？
- ------------------------------------
+-------------------------------------
  build_flags       = ${common_stm32.build_flags}
   -DVECT_TAB_OFFSET=0x0     //无loader，调试测试方便 
                             //并且; buildroot/share/PlatformIO/scripts/stm32_bootloader.py
   -DVECT_TAB_OFFSET=0x10000 //支持bootloader
+
+
+
+
+usb serial 原装的CDC QUEUE解读笔记
+-------------------------------------------
+
+1. 首先分别初始化2个ring queue。分别给tx和rx用
+2. 读对列和写队列区别是读可以读到r==w即下标相等，但写最多写到w=r-1否则就会丢失第一个字节
+3. 入队时根据需要入队的大小分2种情况讨论（当前到末尾 和 是否有过圈后的一段）
+4. 读取时，调用readBlock尽可能多的读取,但此时还没处理读指针rp
+5. readblock返回buffer地址和size 需要自己memcpy去读出来。
+6. 读完调用commitRead移动rp,读操作完成。
+7. ########接收队列 rx queue ########
+8. dequeue读取1byte。 peek只读取不出队
+9. rx queue read仍然是分2种情况，最大可读取不过圈
+10. 接收数据前用rxq_resvBlock准备好位置。重点是找到一个足够放maxpack大小的位置
+11. 接收后仍然用commintBlock更新写位置

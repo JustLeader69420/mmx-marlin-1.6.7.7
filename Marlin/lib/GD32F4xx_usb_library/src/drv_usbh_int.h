@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 #define __DRV_USBH_INT_H
 
 #include "drv_usb_host.h"
-#include "usbh_core.h"
+#include "gdusbh_core.h"
 
 typedef struct _usbh_int_cb
 {

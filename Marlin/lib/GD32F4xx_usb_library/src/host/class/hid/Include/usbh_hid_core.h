@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 #define __USBH_HID_CORE_H
 
 #include "usb_hid.h"
-#include "usbh_enum.h"
+#include "gdusbh_enum.h"
 #include "usbh_transc.h"
 
 #define HID_MIN_POLL                                    10U

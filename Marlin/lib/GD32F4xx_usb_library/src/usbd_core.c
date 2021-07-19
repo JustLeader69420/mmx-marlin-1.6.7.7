@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "gd32_usbd_core.h"
-#include "usbd_enum.h"
+#include "gdusbd_core.h"
+#include "gdusbd_enum.h"
 #include "drv_usb_hw.h"
 
 /* endpoint type */

@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #ifndef __USBH_MSC_BBB_H
 #define __USBH_MSC_BBB_H
 
-#include "usbh_enum.h"
+#include "gdusbh_enum.h"
 #include "msc_bbb.h"
 
 typedef union {

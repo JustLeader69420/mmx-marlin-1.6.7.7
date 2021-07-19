@@ -29,7 +29,6 @@
   #ifndef SD_DETECT_PIN
     #define SD_DETECT_PIN PE3
   #endif
-
 #if BOTH(SDCARD_SORT_ALPHA, SDSORT_DYNAMIC_RAM)
   #define SD_RESORT 1
 #endif

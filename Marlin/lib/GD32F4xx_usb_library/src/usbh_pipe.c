@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usbh_pipe.h"
+#include "gdusbh_pipe.h"
 
 /* local function prototypes ('static') */
 static uint16_t usbh_freepipe_get (usb_core_driver *udev);

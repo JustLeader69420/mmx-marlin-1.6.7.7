@@ -36,10 +36,11 @@ OF SUCH DAMAGE.
 #define __USBH_USR_H
 
 #include "ff.h"
-#include "usbh_core.h"
-#include "usb_conf.h"
-#include "usbh_core.h"
+#include "gdusb_conf.h"
+#include "gdusbh_core.h"
 #include <stdio.h>
+
+#if 1 //def USE_GD32
 
 extern usbh_user_cb usr_cb;
 extern uint8_t USBH_USR_ApplicationState;
@@ -90,5 +91,7 @@ void usbh_user_device_not_supported          (void);
 void usbh_user_unrecovered_error             (void);
 /* demo application for mass storage */
 int usbh_usr_msc_application                 (void);
+
+#endif
 
 #endif /*__USBH_USR_H */

@@ -31,15 +31,17 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
 OF SUCH DAMAGE.
 */
+#if USE_GD32
 
 #include <string.h>
-#include "usbh_usr.h"
+#include "gdusbh_usr.h"
 #include "drv_usb_hw.h"
 #include "ff.h"
 #include "usbh_msc_core.h"
 #include "usbh_msc_scsi.h"
 #include "usbh_msc_bbb.h"
 #include "log.h"
+// #include "fatfs.h"
 
 extern usb_core_driver usbh_core;
 extern usbh_host usb_host;
@@ -103,6 +105,7 @@ void usbh_user_init(void)
 void usbh_user_device_connected(void)
 {
     LOGI("dev connected.");
+    // FATFS_LinkDriver(&GDUSBH_Driver, USBHPath);
 }
 
 /*!
@@ -125,6 +128,7 @@ void usbh_user_unrecovered_error (void)
 void usbh_user_device_disconnected (void)
 {
     LOGI("dev disconnected.");
+    // FATFS_UnLinkDriver(USBHPath);
 }
 
 /*!
@@ -323,7 +327,7 @@ int usbh_usr_msc_application(void)
 
                 /* close file and file system */
                 f_close(&file);
-                f_mount(NULL, "0:/", 1);
+                // f_mount(NULL, "0:/", 1);
             } else {
             }
 
@@ -354,7 +358,7 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
     FILINFO fno;
     DIR dir;
     char *fn;
-
+    char tmp[256];  //for LFN feature.
     res = f_opendir(&dir, path);
 
     if (res == FR_OK) {
@@ -368,13 +372,24 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
                 continue;
             }
 
+            
+
             fn = fno.fname;
-            LOGI("%s",fn);
-
-            line_idx++;
-
-            if (line_idx > 4) {
-                line_idx = 0;
+            strcpy(tmp, fn);
+            // LOGW("%s\n",fn);
+            //深度优先递归
+            if (1 == recu_level)
+                LOGW("  |__");
+            else if (2 == recu_level)
+                LOGW("  |  |__");
+            if (fno.fattrib & AM_DIR) {
+                strcat(tmp, "\n");
+                LOGW("%s", tmp);
+                explore_disk(fn, 2);
+            }
+            else {
+                strcat(tmp, "\n");
+                LOGW("%s", tmp);
             }
 
             if (AM_DIR == fno.fattrib) {
@@ -400,3 +415,5 @@ void usbh_user_deinit(void)
 {
     usbh_usr_application_state = USBH_USR_FS_INIT;
 }
+
+#endif

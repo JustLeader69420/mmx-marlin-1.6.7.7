@@ -58,6 +58,8 @@
 #include "Menu/leveling.h"
 #include "Menu/ProbeOffset.h"
 #include "Menu/LevelingOffset.h"
+#include "Menu/PrintUdisk.h"
+#include "Menu/ChooseStorage.h"
 
 typedef enum
 {
@@ -80,6 +82,7 @@ typedef struct
 }MENU;
 
 extern MENU  infoMenu;  // Menu structure
+extern TSCBoot boot;
 
 void menuUpdate(void);
 void menuSetFrontCallBack(FP_MENU cb);

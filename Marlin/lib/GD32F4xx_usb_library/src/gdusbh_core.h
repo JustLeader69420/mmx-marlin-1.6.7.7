@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #ifndef __USBH_CORE_H
 #define __USBH_CORE_H
 
-#include "usbh_conf.h"
+#include "gdusbh_conf.h"
 #include "drv_usb_host.h"
 
 #define MSC_CLASS                                       0x08U

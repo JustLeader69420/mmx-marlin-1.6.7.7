@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usbh_pipe.h"
+#include "gdusbh_pipe.h"
 #include "usbh_hid_core.h"
 #include "usbh_hid_mouse.h"
 #include "usbh_hid_keybd.h"

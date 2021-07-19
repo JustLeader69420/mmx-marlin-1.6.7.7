@@ -32,13 +32,40 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usb_conf.h"
+#include "gdusb_conf.h"
 #include "diskio.h"
 #include "usbh_msc_core.h"
+#include "ff_gen_drv.h"
 
-static volatile DSTATUS state = STA_NOINIT; /* disk status */
+// static volatile DSTATUS state = STA_NOINIT; /* disk status */
 
 extern usbh_host usb_host_msc;
+
+/* Private function prototypes -----------------------------------------------*/
+DSTATUS GDUSBH_initialize (BYTE);
+DSTATUS GDUSBH_status (BYTE);
+DRESULT GDUSBH_read (BYTE, BYTE*, DWORD, UINT);
+
+#if _USE_WRITE == 1
+  DRESULT GDUSBH_write (BYTE, const BYTE*, DWORD, UINT);
+#endif /* _USE_WRITE == 1 */
+
+#if _USE_IOCTL == 1
+  DRESULT GDUSBH_ioctl (BYTE, BYTE, void*);
+#endif /* _USE_IOCTL == 1 */
+
+const Diskio_drvTypeDef  GDUSBH_Driver =
+{
+  GDUSBH_initialize,
+  GDUSBH_status,
+  GDUSBH_read,
+#if  _USE_WRITE == 1
+  GDUSBH_write,
+#endif /* _USE_WRITE == 1 */
+#if  _USE_IOCTL == 1
+  GDUSBH_ioctl,
+#endif /* _USE_IOCTL == 1 */
+};
 
 /*!
     \brief      initialize the disk drive
@@ -46,15 +73,19 @@ extern usbh_host usb_host_msc;
     \param[out] none
     \retval     operation status
 */
-DSTATUS disk_initialize (BYTE drv)
+DSTATUS GDUSBH_initialize (BYTE drv)
 {
+#if 0
     usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
 
     if (udev->host.connect_status) {
-        state &= ~STA_NOINIT;
+        return RES_OK;
     }
 
-    return state;
+    return RES_NOTRDY;
+#else
+    return RES_OK;
+#endif
 }
 
 /*!
@@ -63,13 +94,16 @@ DSTATUS disk_initialize (BYTE drv)
     \param[out] none
     \retval     operation status
 */
-DSTATUS disk_status (BYTE drv)
+DSTATUS GDUSBH_status (BYTE drv)
 {
     if (drv) {
         return STA_NOINIT; /* supports only single drive */
     }
+    // uint8_t res = RES_ERROR;
+    // usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
+    // if (udev->host.) {
 
-    return state;
+    return RES_OK;
 }
 
 /*!
@@ -81,7 +115,7 @@ DSTATUS disk_status (BYTE drv)
     \param[out] none
     \retval     operation status
 */
-DRESULT disk_read (BYTE drv, BYTE *buff, DWORD sector, UINT count)
+DRESULT GDUSBH_read (BYTE drv, BYTE *buff, DWORD sector, UINT count)
 {
     BYTE status = USBH_OK;
     usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
@@ -90,9 +124,9 @@ DRESULT disk_read (BYTE drv, BYTE *buff, DWORD sector, UINT count)
         return RES_PARERR;
     }
 
-    if (state & STA_NOINIT) {
-        return RES_NOTRDY;
-    }
+    // if (state & STA_NOINIT) {
+    //     return RES_NOTRDY;
+    // }
 
     if (udev->host.connect_status) {
         do {
@@ -122,7 +156,7 @@ DRESULT disk_read (BYTE drv, BYTE *buff, DWORD sector, UINT count)
     \param[out] none
     \retval     operation status
 */
-DRESULT disk_write (BYTE drv, const BYTE *buff, DWORD sector, UINT count)
+DRESULT GDUSBH_write (BYTE drv, const BYTE *buff, DWORD sector, UINT count)
 {
     BYTE status = USBH_OK;
     usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
@@ -131,13 +165,13 @@ DRESULT disk_write (BYTE drv, const BYTE *buff, DWORD sector, UINT count)
         return RES_PARERR;
     }
 
-    if (state & STA_NOINIT) {
-        return RES_NOTRDY;
-    }
+    // if (state & STA_NOINIT) {
+    //     return RES_NOTRDY;
+    // }
 
-    if (state & STA_PROTECT) {
-        return RES_WRPRT;
-    }
+    // if (state & STA_PROTECT) {
+    //     return RES_WRPRT;
+    // }
 
     if (udev->host.connect_status) {
         do {
@@ -166,7 +200,7 @@ DRESULT disk_write (BYTE drv, const BYTE *buff, DWORD sector, UINT count)
     \param[out] none
     \retval     operation status
 */
-DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff)
+DRESULT GDUSBH_ioctl (BYTE drv, BYTE ctrl, void *buff)
 {
     DRESULT res = RES_OK;
     msc_lun info;
@@ -177,9 +211,9 @@ DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff)
 
     res = RES_ERROR;
 
-    if (state & STA_NOINIT) {
-        return RES_NOTRDY;
-    }
+    // if (state & STA_NOINIT) {
+    //     return RES_NOTRDY;
+    // }
 
     switch (ctrl) {
     /* make sure that no pending write process */
@@ -224,7 +258,7 @@ DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff)
 */
 DWORD get_fattime(void) {
 
-    return    ((DWORD)(2019U - 1980U) << 25U)   /* year 2019 */
+    return    ((DWORD)(2021U - 1980U) << 25U)   /* year 2019 */
             | ((DWORD)1U << 21U)                /* month 1 */
             | ((DWORD)1U << 16U)                /* day 1 */
             | ((DWORD)0U << 11U)                /* hour 0 */

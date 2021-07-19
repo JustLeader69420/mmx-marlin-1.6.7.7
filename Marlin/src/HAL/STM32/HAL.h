@@ -39,7 +39,9 @@
 #ifdef USBCON
   #include <USBSerial.h>
 #endif
-
+#if defined (USE_GD32)
+  #include "../../GD32_USBSerial.h"
+#endif
 // ------------------------
 // Defines
 // ------------------------

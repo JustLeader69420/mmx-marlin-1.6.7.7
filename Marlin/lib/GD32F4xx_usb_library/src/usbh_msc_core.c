@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #include "usbh_msc_core.h"
 #include "usbh_msc_scsi.h"
 #include "usbh_msc_bbb.h"
-#include "usbh_pipe.h"
+#include "gdusbh_pipe.h"
 #include "usbh_transc.h"
 #include <stdlib.h>
 #include <string.h>

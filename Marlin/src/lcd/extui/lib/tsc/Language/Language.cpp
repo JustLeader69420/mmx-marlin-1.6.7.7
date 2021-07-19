@@ -196,6 +196,7 @@ const char *const en_pack[LABEL_NUM]={
   EN_EEPROM_SAVE_SUCCESS,
   EN_EEPROM_SAVE_FAILED,
   EN_ELAPSED_TIME,
+  EN_CHOOSE_STORAGE,
 };
 
 // 中文
@@ -2454,9 +2455,9 @@ uint8_t *textSelect(uint8_t sel)
   switch(infoSettings.language)
   {
     case TFT_ENGLISH:     return (uint8_t *)en_pack[sel];
-    case TFT_CHINESE:     return (uint8_t *)cn_pack[sel];
-    case TFT_RUSSIAN:     return (uint8_t *)ru_pack[sel];
-    case TFT_JAPANESE:    return (uint8_t *)jp_pack[sel];
+    // case TFT_CHINESE:     return (uint8_t *)cn_pack[sel];
+    // case TFT_RUSSIAN:     return (uint8_t *)ru_pack[sel];
+    // case TFT_JAPANESE:    return (uint8_t *)jp_pack[sel];
     // case TFT_ARMENIAN:    return (uint8_t *)am_pack[sel];
     case TFT_GERMAN:      return (uint8_t *)de_pack[sel];
     // case TFT_CZECH:       return (uint8_t *)cz_pack[sel];
