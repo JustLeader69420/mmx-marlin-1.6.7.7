@@ -330,6 +330,6 @@ void menuStatus()
   drawStatus();
   drawStatusScreenMsg();
   msgNeedUpdate = false;
-
+  UDiskPrint = false;
   menuSetFrontCallBack(menuCallStatus);
 }

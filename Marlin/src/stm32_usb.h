@@ -7,6 +7,8 @@ extern "C"{
 void MX_USB_HOST_Init(void);
 void MX_USB_HOST_Process(void);
 void MSC_MenuProcess(void);
+short mountUdisk(void);
+short umountUdisk(void);
 
 #ifdef __cplusplus
 }

@@ -222,6 +222,11 @@
   #include "feature/password/password.h"
 #endif
 
+#ifdef HAS_UDISK
+  #include "lcd/extui/lib/tsc/Menu/PrintUdisk.h"
+  #include "ff.h"
+#endif
+
 
 
 /********************parameter***************************/
@@ -451,7 +456,10 @@ void startOrResumeJob() {
 
   inline void abortSDPrinting() {
     float rz;
-    card.endFilePrint(TERN_(SD_RESORT, true));
+    if(UDiskPrint)
+      f_close(&udisk_fp);
+    else
+      card.endFilePrint(TERN_(SD_RESORT, true));
     queue.clear();        // 清空队列
     quickstop_stepper();  // 快速停下电机
     print_job_timer.stop();// 打印定时器停止
@@ -473,6 +481,7 @@ void startOrResumeJob() {
     #endif
 
     card.flag.abort_sd_printing = false;  // 结束停止打印状态
+    UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;
 
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
   }
@@ -1367,6 +1376,31 @@ void loop() {
       card.checkautostart();
       if (card.flag.abort_sd_printing) abortSDPrinting();     // 如果停止SD卡打印标志为真，就停止SD卡打印
       if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
+    #endif
+
+    #ifdef HAS_UDISK
+      if(UDiskPrint && !UDiskPausePrint && queue.length <= 3){
+        static TCHAR rbuf[128] = {0};
+        static int rres = 0;
+
+        rres = f_gets_p(rbuf, sizeof(rbuf), &udisk_fp);
+        if(rres == 0){
+          UDiskPrint = false;
+          UDiskPrintFinish = true;
+          f_close(&udisk_fp);
+          finishSDPrinting();
+          SERIAL_ECHOLNPAIR("Finsish!!!");
+        }
+        else if(rbuf[0]=='G' || rbuf[0]=='M'){
+          SERIAL_ECHOLNPAIR("the gcode:", rbuf);
+          queue.enqueue_now_P((const char *)rbuf);
+        }
+        UDiskPrintSize += rres;
+      }
+      // if(UDiskStopPrint){
+      //   UDiskStopPrint = false;
+      //   abortSDPrinting();
+      // }
     #endif
 
     queue.advance();

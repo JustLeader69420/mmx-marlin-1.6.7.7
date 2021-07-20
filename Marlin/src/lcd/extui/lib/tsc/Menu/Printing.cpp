@@ -1,4 +1,5 @@
 #include "../TSC_Menu.h"
+#include "ff.h"
 
 //1title, ITEM_PER_PAGE item(icon + label) 
 MENUITEMS printingItems = {
@@ -24,7 +25,7 @@ const ITEM itemIsPause[2] = {
 //
 bool isPrinting(void)
 {
-  return ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing;
+  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) || (UDiskPrint && !UDiskStopPrint);
 }
 
 //
@@ -35,7 +36,12 @@ bool isPaused(void)
 
 uint8_t getPrintProgress(void)
 {
-  return card.percentDone();
+  if(UDiskPrint)  return UDiskPrintSize*100/UDiskFileSize;
+  else            return card.percentDone();
+}
+uint8_t getUDiskPrintProgress(void)
+{
+  
 }
 
 uint32_t getPrintTime(void)
@@ -90,6 +96,32 @@ bool setPrintPause(bool is_pause)
 
   }
   pauseLock = false;
+  return true;
+}
+bool setUDiskPrintPause(){
+  static bool UDiskPauseLock = false;
+  if(UDiskPauseLock)  return false;
+  UDiskPauseLock = true;
+  if(!UDiskPausePrint){ // 处于非暂停状态就暂停
+    ExtUI::pausePrint();
+  } else {              // 处于暂停状态就恢复
+
+    #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+      if(READ(FIL_RUNOUT_PIN) != FIL_RUNOUT_STATE){   // 检测是否有耗材
+        ExtUI::setFilamentRunoutState(false);
+    #endif
+    
+        ExtUI::setUserConfirmed();
+        ExtUI::resumePrint();
+
+    #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+      }
+      else
+        TERN_(EXTENSIBLE_UI, ExtUI::onFilamentRunout(ExtUI::getActiveTool()));  // 跳出filament runout弹窗
+    #endif
+
+  }
+  UDiskPauseLock = false;
   return true;
 }
 
@@ -165,7 +197,11 @@ extern GUI_RECT titleRect;
 
 void printingDrawPage(void)
 {
+ #ifdef HAS_UDISK
+  printingItems.title.address = (uint8_t *)workFileinfo.fname;
+ #else
   printingItems.title.address = (uint8_t *)card.longest_filename(); //getCurGcodeName(infoFile.title);
+ #endif
   menuDrawPage(&printingItems);
   //	Scroll_CreatePara(&titleScroll, infoFile.title,&titleRect);  //
   // printed time
@@ -200,6 +236,7 @@ void printingDrawPage(void)
 
 static uint8_t lastProgress = 0;
 static uint8_t printPaused = 0;
+static uint8_t printPaused2 = 0;
 static uint32_t printedTime = 0;
 void menuCallBackPrinting(void)	
 {
@@ -249,9 +286,15 @@ void menuCallBackPrinting(void)
   }
 
   // Printing status
-  if (printPaused != isPaused()) {
-    printPaused = isPaused();
-    resumeToPause(printPaused);
+  if ((printPaused != isPaused()) || (printPaused2 != UDiskPausePrint)) {
+    if(UDiskPrint){
+      printPaused2 = UDiskPausePrint;
+      resumeToPause(printPaused2);
+    }
+    else{
+      printPaused = isPaused();
+      resumeToPause(printPaused);
+    }
   }
   if (lastProgress != getPrintProgress())
   {
@@ -267,7 +310,10 @@ void menuCallBackPrinting(void)
   switch(key_num)
   {
     case KEY_ICON_0:
-      setPrintPause(!isPaused());
+      if(UDiskPrint)
+        setUDiskPrintPause();
+      else
+        setPrintPause(!isPaused());
       break;
     
     case KEY_ICON_3:
@@ -293,13 +339,16 @@ void menuCallBackPrinting(void)
     
     default :break;
   }
+ 
 }
 
 void menuPrinting(void)
 {
+  printPaused2 = UDiskPausePrint;
   printPaused = isPaused();
   printingItems.items[KEY_ICON_0] = itemIsPause[printPaused];
   printingDrawPage();
+  
   menuSetFrontCallBack(menuCallBackPrinting);
 }
 
@@ -310,6 +359,13 @@ void menuCallBackStopPrinting(void)
   {
     case KEY_POPUP_CONFIRM:
       can_print_flag = false;   // 不能进行打印
+      
+      /*if(UDiskPrint){
+        // UDiskPrint = false;
+        
+      }
+      else*/ 
+      UDiskStopPrint = true;
       ExtUI::stopPrint();
       set_bed_leveling_enabled(false);
       break;
