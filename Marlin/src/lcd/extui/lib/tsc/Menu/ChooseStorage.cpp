@@ -8,7 +8,7 @@ const MENUITEMS chooseStorageItems = {
 LABEL_CUSTOM_2,
 // icon                 label
  {{ICON_SD_SOURCE,      LABEL_TFTSD},
-  {ICON_U_DISK,         LABEL_U_DISK},
+  {ICON_UDISK,          LABEL_U_DISK},
   {ICON_BACKGROUND,     LABEL_BACKGROUND},
   {ICON_BACKGROUND,     LABEL_BACKGROUND},
   {ICON_BACKGROUND,     LABEL_BACKGROUND},

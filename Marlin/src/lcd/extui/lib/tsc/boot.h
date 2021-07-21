@@ -5,15 +5,17 @@
 #include "stdint.h"
 
 #define W25QXX_PAGE_SIZE (0x100) // 256
-#define W25QXX_SECTOR_SIZE (0x1000) // 4096-4K
+#define W25QXX_SECTOR_SIZE (0x1000) // 0x1000=4096=4K
 
 //address in spiflash W25Qxx
-#define LOGO_ADDR               0x0
-#define ICON_ADDR(num)          ((num)*0x5000+0x4B000)
-
-//
+#define LOGO_ADDR               0x0   //0xC6000
+// #define ICON_ADDR(num)          ((num)*0x5000+0x4B000)
+//预留18张150*150的logo图片位置（每张占0xb000）
+#define ICON_ADDR(num)          ((num)*0x5000+0xC6000)
+// 预留88张95*95的图标位置（每张占0x5000）
 #define WORD_UNICODE            0x280000 // unicode (+0x480000 4.5M)
-#define BYTE_ASCII_ADDR         0x700000 // ascii (+0x1000 4K)
+// 预留0x480000位置给字体文件，大约4.6M
+#define BYTE_ASCII_ADDR         0x700000 // ascii (+0x1000=4K=4096)
 //#define BYTE_RESERVE_ADDR      0x710000
 
 
@@ -25,7 +27,7 @@
 #define BMP_ROOT_DIR ROOT_DIR "/bmp"
 #define FONT_ROOT_DIR ROOT_DIR "/font"
 #define TFT_RESET_FILE "reset.txt"
-
+/*
 enum
 {
   ICON_HEAT = 0,
@@ -150,6 +152,89 @@ enum
 // Preview should be in the last place
   ICON_PREVIEW,
 // Back ground sign
+  ICON_BACKGROUND,
+};*/
+enum{
+  ICON_SCREEN_INFO = 0,
+  ICON_BABYSTEP,
+  ICON_BACK,
+  ICON_BOTH,
+  ICON_DEC,
+  ICON_X_DEC,
+  ICON_Y_DEC,
+  ICON_Z_DEC,
+  ICON_DOWN,
+  ICON_EEPROM_SAVE,
+  ICON_EM_STOP,
+  ICON_E_1_MM,
+  ICON_E_5_MM,
+  ICON_E_10_MM,
+  ICON_EXTRUDE,
+  ICON_FAN,
+  ICON_FAST_SPEED,
+  ICON_FAN_FULL_SPEED,
+  ICON_FAN_HALF_SPEED,
+  ICON_HEAT,
+  ICON_HOME,
+  ICON_X_HOME,
+  ICON_Y_HOME,
+  ICON_Z_HOME,
+  ICON_BED,
+  ICON_INC,
+  ICON_X_INC,
+  ICON_Y_INC,
+  ICON_Z_INC,
+  ICON_LANGUAGE,
+  ICON_LEVELING,
+  ICON_LOAD,
+  ICON_MAINMENU,
+  ICON_001_MM,
+  ICON_01_MM,
+  ICON_1_MM,
+  ICON_10_MM,
+  ICON_MORE,
+  ICON_MOVE,
+  ICON_NORMAL_SPEED,
+  ICON_NOZZLE,
+  ICON_PAUSE,
+  ICON_PERCENTAGE,
+  ICON_PREHEAT,
+  ICON_PRINT,
+  ICON_PROBE_OFFSET,
+  ICON_RESUME,
+  ICON_RUNOUT,
+  ICON_SD_SOURCE,
+  ICON_SETTINGS,
+  ICON_SILENT_OFF,
+  ICON_SILENT_ON,
+  ICON_SLOW_SPEED,
+  ICON_START,
+  ICON_STATUSBED,
+  ICON_STATUSFAN,
+  ICON_STATUSNOZZLE,
+  ICON_STATUS_SPEED,
+  ICON_STOP,
+  ICON_1_DEGREE,
+  ICON_5_DEGREE,
+  ICON_10_DEGREE,
+  ICON_UDISK,
+  ICON_UNLOAD,
+  ICON_UP,
+
+  // 未加载图片
+  ICON_POWER_SUPPLY,
+  ICON_RGB_RED,
+  ICON_RGB_GREEN,
+  ICON_RGB_BLUE,
+  ICON_RGB_WHITE,
+  ICON_RGB_OFF,
+  ICON_RGB_SETTINGS,
+  ICON_BLTOUCH_DEPLOY,
+  ICON_BLTOUCH_STOW,
+  ICON_BLTOUCH_TEST,
+  // Preview should be in the last place
+  ICON_PREVIEW,
+  // Back ground sign
   ICON_BACKGROUND,
 };
 

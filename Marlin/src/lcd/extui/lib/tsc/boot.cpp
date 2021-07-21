@@ -8,19 +8,43 @@ const GUI_RECT iconUpdateRect = {(LCD_WIDTH_PIXEL - ICON_WIDTH)/2,              
 const GUI_RECT labelUpdateRect = {0,              (LCD_HEIGHT_PIXEL - ICON_HEIGHT)/2 + ICON_HEIGHT, 
                                  LCD_WIDTH_PIXEL, (LCD_HEIGHT_PIXEL - ICON_HEIGHT)/2 + ICON_HEIGHT + BYTE_HEIGHT};
 
-const char iconBmpName[][35]={
-"Heat", "Move", "Home", "Print", "Extrude", "Fan", "Settings", "Leveling", "Inc", "Dec",
-"Nozzle", "Hotbed", "Temp_1", "Temp_5", "Temp_10", "Stop", "Back", "Inc_X", "Inc_Y", "Inc_Z",
-"Mmm_01", "Mmm_1", "Mmm_10", "Dec_X", "Dec_Y","Dec_Z", "Home_X", "Home_Y", "Home_Z",//"Folder","File", 
-"Page_up", "Page_d~1", "Pause", "Resume", "Load", "Unload", "Slow", "Normal", "Fast",  
-"Emm_1", "Emm_5", "Emm_10", "Full", "Half", "Rotate", "Language", "TP_Adj~1", "More", "About",
-"BackGroundColor", "FontColor", "Disconnect", "BaudRate", "Percen~1", "BabyStep", "Mmm_001", "OnBoardSD", "OnTFTSD", "U_Disk",
-"Runout", "Point_1", "Point_2", "Point_3", "Point_4", "Marlin", "BigTreeTech", "Gcode", "BLTouch", "BLTouc~1",
-"BLTouc~2", "BLTouc~3", "BLTouchRepeat", "TSCSet~1", "Machin~1", "Featur~1", "ProbeO~1", "EEPROM~1", "SilentOn", "ShutDown",
+// const char iconBmpName[][35]={
+// "Heat", "Move", "Home", "Print", "Extrude", "Fan", "Settings", "Leveling", "Inc", "Dec",
+// "Nozzle", "Hotbed", "Temp_1", "Temp_5", "Temp_10", "Stop", "Back", "Inc_X", "Inc_Y", "Inc_Z",
+// "Mmm_01", "Mmm_1", "Mmm_10", "Dec_X", "Dec_Y","Dec_Z", "Home_X", "Home_Y", "Home_Z",//"Folder","File", 
+// "Page_up", "Page_d~1", "Pause", "Resume", "Load", "Unload", "Slow", "Normal", "Fast",  
+// "Emm_1", "Emm_5", "Emm_10", "Full", "Half", "Rotate", "Language", "TP_Adj~1", "More", "About",
+// "BackGroundColor", "FontColor", "Disconnect", "BaudRate", "Percen~1", "BabyStep", "Mmm_001", "OnBoardSD", "OnTFTSD", "U_Disk",
+// "Runout", "Point_1", "Point_2", "Point_3", "Point_4", "Marlin", "BigTreeTech", "Gcode", "BLTouch", "BLTouc~1",
+// "BLTouc~2", "BLTouc~3", "BLTouchRepeat", "TSCSet~1", "Machin~1", "Featur~1", "ProbeO~1", "EEPROM~1", "SilentOn", "ShutDown",
+// "RGB_Se~1", "RGB_Red", "RGB_Gr~1", "RGB_Blue", "RGB_Wh~1", "RGB_Off", //"Preheat_Both", "Preheat_PLA", "Preheat_PETG", "Preheat_ABS",
+// "PowerS~1", "Custom", "Custom0", "Custom1", "Custom2", "Custom3", "Custom4", "Custom5", "Custom6", "Home_Move", "Heat_Fan",
+// "ManualLevel", "CoolDown", "Silent~1","Status~3","Status~1","Status~2","MainMenu","Status~4","StatusFlow","InfoBox_part1", "InfoBox_part2", "EM_Stop",
+// "Up","Down", "Start","Preheat","Both"
+// };
+const char iconBmpName[][16]={
+ "About", 
+ "BabyStep", "Back", "Both", 
+ "Dec", "Dec_X", "Dec_Y","Dec_Z", "Down",
+ "EEPROM~1", "EM_Stop", "Emm_1", "Emm_5", "Emm_10", "Extrude", 
+ "Fan", "Fast", "Full",
+ "Half", "Heat", "Home", "Home_X", "Home_Y", "Home_Z", "Hotbed", 
+ "Inc", "Inc_X", "Inc_Y", "Inc_Z",
+ "Language", "Leveling", "Load", 
+ "MainMenu", "Mmm_001","Mmm_01", "Mmm_1", "Mmm_10", "More", "Move",
+ "Normal", "Nozzle", 
+ "Pause", "Percen~1", "Preheat", "Print", "ProbeO~1",
+ "Resume", "Runout", 
+ "SD", "Settings", "Silent~1", "SilentOn", "Slow", "Start","Status~1","Status~2","Status~3","Status~4", "Stop",
+ "Temp_1", "Temp_5", "Temp_10", 
+ "Udisk", "Unload","Up",
+/* "Folder","File", "Rotate",  "TP_Adj~1", 
+"BackGroundColor", "FontColor", "Disconnect", "BaudRate",  "OnBoardSD", "OnTFTSD", "U_Disk",
+"Page_down", "Page_up", "Point_1", "Point_2", "Point_3", "Point_4", "Marlin", "BigTreeTech", "Gcode", "BLTouch", "BLTouc~1",
+"BLTouc~2", "BLTouc~3", "BLTouchRepeat", "TSCSet~1", "Machin~1", "Featur~1",  "ShutDown",
 "RGB_Se~1", "RGB_Red", "RGB_Gr~1", "RGB_Blue", "RGB_Wh~1", "RGB_Off", //"Preheat_Both", "Preheat_PLA", "Preheat_PETG", "Preheat_ABS",
 "PowerS~1", "Custom", "Custom0", "Custom1", "Custom2", "Custom3", "Custom4", "Custom5", "Custom6", "Home_Move", "Heat_Fan",
-"ManualLevel", "CoolDown", "Silent~1","Status~3","Status~1","Status~2","MainMenu","Status~4","StatusFlow","InfoBox_part1", "InfoBox_part2", "EM_Stop",
-"Up","Down", "Start","Preheat","Both"
+"ManualLevel", "CoolDown", "Silent~1","StatusFlow","InfoBox_part1", "InfoBox_part2", */
 };
 
 #define LCD_DMA_MAX_TRANS	(65535)		// DMA 65535 bytes one frame

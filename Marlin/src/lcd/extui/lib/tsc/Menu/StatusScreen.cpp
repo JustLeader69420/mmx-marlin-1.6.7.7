@@ -32,11 +32,11 @@ const ITEM ToolItems[3] = {
 //{ICON_BED_STATUS,           LABEL_BACKGROUND},
 //{ICON_FAN_STATUS,           LABEL_BACKGROUND},
 };
-const ITEM SpeedItems[2] = {
-// icon                       label
-  {ICON_STATUS_SPEED,         LABEL_BACKGROUND},
-  {ICON_STATUS_FLOW,          LABEL_BACKGROUND},
-};
+// const ITEM SpeedItems[2] = {
+// // icon                       label
+//   {ICON_STATUS_SPEED,         LABEL_BACKGROUND},
+//   {ICON_STATUS_FLOW,          LABEL_BACKGROUND},
+// };
 
 SCROLL     msgScroll;
 static const uint8_t *msgbody;

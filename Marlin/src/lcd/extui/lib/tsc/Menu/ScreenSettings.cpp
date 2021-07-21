@@ -1,5 +1,5 @@
 #include "../TSC_Menu.h"
-
+#if 0
 MENUITEMS screenSettingsItems = {
 // title
 LABEL_SCREEN_SETTINGS,
@@ -83,4 +83,4 @@ void menuScreenSettings(void)
   menuDrawPage(&screenSettingsItems);
   menuSetFrontCallBack(menuCallBackScreenSettings);
 }
-
+#endif
