@@ -1,10 +1,16 @@
 #include "PrintUdisk.h"
 #include "../TSC_Menu.h"
 // #include "stm32_usb.h"
-#include "ff.h"
 
 static ExtUI::FileList filelistUdisk;
 static const GUI_RECT RecProgress = {60,150,316,175};
+bool UDiskPrint = false;
+bool UDiskPausePrint = false;
+bool UDiskStopPrint = false;
+bool UDiskPrintFinish = false;
+uint64_t UDiskFileSize = 0;
+uint64_t UDiskPrintSize = 0;
+FIL udisk_fp;
 
 LISTITEMS printItemsUdisk = {
 //  title
@@ -269,7 +275,9 @@ void menuCallBackPrintUdisk(void)
             curPageUdisk = 0;
             udisk_at_root = false;
           } else { //gcode
-            rtt.printf("FIXME: print:%s\n", workFileinfo.fname);
+            // rtt.printf("FIXME: print:%s\n", workFileinfo.fname);
+           #if 0
+            
             //card use short filename
             if (!card.getroot().exists(workFileinfo.altname)) {
               // copy a file to sd card. FIXME: check if filesize = 0.
@@ -279,6 +287,27 @@ void menuCallBackPrintUdisk(void)
             else {
               ExtUI::printFile(workFileinfo.altname);
             }
+           #else
+            if(can_print_flag){ // 如果可以打印就开始打印，否则跳过
+            
+              #ifdef AUTO_BED_LEVELING_BILINEAR
+                set_bed_leveling_enabled(true);
+              #endif
+              #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+                ExtUI::setFilamentRunoutState(false);   // 重置断料检测
+              #endif
+
+              
+              f_open(&udisk_fp, workFileinfo.altname,  FA_READ | FA_OPEN_ALWAYS);
+              // print_job_timer.reset();
+              print_job_timer.start();
+              UDiskPrintSize = 0;
+              UDiskFileSize = workFileinfo.fsize;
+              UDiskPrint = true;UDiskPrintFinish = false;UDiskStopPrint=false;
+              // infoMenu.menu[++infoMenu.cur] = menuPrinting;
+
+            }
+           #endif
           }
         }
       }
@@ -291,11 +320,11 @@ void menuCallBackPrintUdisk(void)
     gocdeListDrawUdisk();
   }
   
-  if(!IS_SD_INSERTED())
-  {
-   // resetInfoFile();
-    infoMenu.cur--;
-  }
+  // if(!IS_SD_INSERTED())
+  // {
+  //  // resetInfoFile();
+  //   infoMenu.cur--;
+  // }
   lock = false;
 }
 // menuPrintFromSource
@@ -303,7 +332,7 @@ void menuPrintUdisk(void)
 {
   GUI_Clear(BK_COLOR);
   GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_LOADING));
-  if (ExtUI::isMediaInserted())
+  // if (ExtUI::isMediaInserted())
   {
     filelistUdisk.refresh();
     for(uint8_t i = 0; i < NUM_PER_PAGE; i++) printItemsUdisk.items[i].icon = NULL;
@@ -311,10 +340,10 @@ void menuPrintUdisk(void)
     gocdeListDrawUdisk();
     menuSetFrontCallBack(menuCallBackPrintUdisk);
   }
-  else
-  {
-    GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_READ_U_DISK_ERROR));
-    ExtUI::delay_ms(1000);
-    infoMenu.cur--;
-  }
+  // else
+  // {
+  //   GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_READ_U_DISK_ERROR));
+  //   ExtUI::delay_ms(1000);
+  //   infoMenu.cur--;
+  // }
 }

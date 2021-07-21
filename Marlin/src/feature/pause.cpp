@@ -414,6 +414,12 @@ bool pause_print(const float &retract, const xyz_pos_t &park_point, const float 
       ++did_pause_print; // Indicate SD pause also
     }
   #endif
+  #if ENABLED(HAS_UDISK)
+    if(UDiskPrint){
+      UDiskPausePrint = true; // 暂停U盘打印
+      ++did_pause_print;
+    }
+  #endif
 
   print_job_timer.pause();
 
@@ -745,7 +751,11 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
   TERN_(HOST_PROMPT_SUPPORT, host_prompt_open(PROMPT_INFO, PSTR("Resuming"), DISMISS_STR));
 
   #if ENABLED(SDSUPPORT)
-    if (did_pause_print) { card.startFileprint(); --did_pause_print; }
+    if (did_pause_print) {
+      if(UDiskPrint) UDiskPausePrint = false;
+      else card.startFileprint(); 
+      --did_pause_print; 
+    }
   #endif
 
   #if ENABLED(ADVANCED_PAUSE_FANS_PAUSE) && HAS_FAN

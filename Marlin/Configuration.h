@@ -43,6 +43,8 @@
   // #define USE_GD32
 #endif
 
+#define HAS_UDISK
+
 /**
  * Configuration.h
  *
