@@ -5,21 +5,21 @@
 
 enum
 {
-  TFT_ENGLISH = 0,
-  TFT_CHINESE,
-  TFT_RUSSIAN,
-  TFT_JAPANESE,
-  // TFT_ARMENIAN,
-  TFT_GERMAN,
-  // TFT_CZECH,
-  TFT_SPAIN,
-  TFT_FRENCH,
-  // TFT_PORTUGUESE,
-  TFT_ITALIAN,
-  // TFT_POLISH,
-  // TFT_SLOVAK,
-  // TFT_KOREAN,
-  TFT_TURKEY,         // 添加土耳其语
+  TFT_ENGLISH = 0,  //英
+  TFT_CHINESE,      //中
+  TFT_RUSSIAN,      //俄
+  TFT_JAPANESE,     //日
+  // TFT_ARMENIAN,  //亚美尼亚语
+  TFT_GERMAN,       //德
+  // TFT_CZECH,     //捷克语
+  TFT_SPAIN,        //西班牙语
+  TFT_FRENCH,       //法
+  // TFT_PORTUGUESE,//葡萄牙语
+  TFT_ITALIAN,      //意大利语
+  // TFT_POLISH,    //波兰语
+  // TFT_SLOVAK,    //斯洛伐克语
+  TFT_KOREAN,       //韩语
+  TFT_TURKEY,       //土耳其语
 
   LANGUAGE_NUM,
 };

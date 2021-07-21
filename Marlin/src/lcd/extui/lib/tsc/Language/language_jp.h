@@ -112,7 +112,7 @@
     #define JP_WARNING              "注意"
     #define JP_STOP_PRINT           "プリントを中止しますか?"
     #define JP_CONFIRM              "OK"    
-    #define JP_TFTSD                "TFT SD"
+    #define JP_TFTSD                "SDカード"
     #define JP_READ_TFTSD_ERROR     "TFT SDカードの読み取りがエラー発生しました!"
     #define JP_TFTSD_INSERTED       "SDカード入りました!"
     #define JP_TFTSD_REMOVED        "SDカード出しました!"    

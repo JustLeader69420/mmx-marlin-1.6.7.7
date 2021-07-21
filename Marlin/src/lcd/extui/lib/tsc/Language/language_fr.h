@@ -112,7 +112,7 @@
     #define FR_WARNING              "Attention!"
     #define FR_STOP_PRINT           "Arrêter l’impression ?"
     #define FR_CONFIRM              "Confirmer ?"
-    #define FR_TFTSD                "SD TFT"
+    #define FR_TFTSD                "Carte SD"
     #define FR_READ_TFTSD_ERROR     "Erreur de lecture de la carte SD écran !"
     #define FR_TFTSD_INSERTED       "Carte insérée !"
     #define FR_TFTSD_REMOVED        "Carte retirée !"

@@ -2474,9 +2474,9 @@ uint8_t *textSelect(uint8_t sel)
   switch(infoSettings.language)
   {
     case TFT_ENGLISH:     return (uint8_t *)en_pack[sel];
-    // case TFT_CHINESE:     return (uint8_t *)cn_pack[sel];
-    // case TFT_RUSSIAN:     return (uint8_t *)ru_pack[sel];
-    // case TFT_JAPANESE:    return (uint8_t *)jp_pack[sel];
+    case TFT_CHINESE:     return (uint8_t *)cn_pack[sel];
+    case TFT_RUSSIAN:     return (uint8_t *)ru_pack[sel];
+    case TFT_JAPANESE:    return (uint8_t *)jp_pack[sel];
     // case TFT_ARMENIAN:    return (uint8_t *)am_pack[sel];
     case TFT_GERMAN:      return (uint8_t *)de_pack[sel];
     // case TFT_CZECH:       return (uint8_t *)cz_pack[sel];
@@ -2486,7 +2486,7 @@ uint8_t *textSelect(uint8_t sel)
     case TFT_ITALIAN:     return (uint8_t *)it_pack[sel];
     // case TFT_POLISH:      return (uint8_t *)pl_pack[sel];
     // case TFT_SLOVAK:      return (uint8_t *)sk_pack[sel];
-    // case TFT_KOREAN:     return (uint8_t *)kr_pack[sel];
+    case TFT_KOREAN:     return (uint8_t *)kr_pack[sel];
     case TFT_TURKEY:      return (uint8_t *)tu_pack[sel];
 
     default:        return (uint8_t *)en_pack[sel];

@@ -93,8 +93,8 @@
     #define KR_STOP_PRINT           "인쇄를 중지 하시겠습니까?"
     #define KR_CONFIRM              "확인"
 
-    #define KR_TFTSD                "TFT SD"
-    #define KR_READ_TFTSD_ERROR     "TFT SD 카드를 읽는 중 오류가 발생했습니다!"
+    #define KR_TFTSD                "SD 카드"
+    #define KR_READ_TFTSD_ERROR     "SD 카드를 읽는 중 오류가 발생했습니다!"
     #define KR_TFTSD_INSERTED       "SD 카드가 삽입되었습니다!"
     #define KR_TFTSD_REMOVED        "SD 카드가 제거되었습니다"
     

@@ -112,7 +112,7 @@
     #define RU_WARNING              "Внимание"
     #define RU_STOP_PRINT           "Остановить печать?"
     #define RU_CONFIRM              "OK"
-    #define RU_TFTSD                "SD экрана"
+    #define RU_TFTSD                "SD карты"
     #define RU_READ_TFTSD_ERROR     "Ошибка чтения SD карты!"
     #define RU_TFTSD_INSERTED       "SD карта вставлена!"
     #define RU_TFTSD_REMOVED        "SD карта извлечена!"    
