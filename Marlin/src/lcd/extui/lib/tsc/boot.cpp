@@ -27,7 +27,7 @@ const char iconBmpName[][16]={
  "BabyStep", "Back", "Both", 
  "Dec", "Dec_X", "Dec_Y","Dec_Z", "Down",
  "EEPROM~1", "EM_Stop", "Emm_1", "Emm_5", "Emm_10", "Extrude", 
- "Fan", "Fast", "Full",
+ "Fan", "Fast", "Featur~1", "Full",
  "Half", "Heat", "Home", "Home_X", "Home_Y", "Home_Z", "Hotbed", 
  "Inc", "Inc_X", "Inc_Y", "Inc_Z",
  "Language", "Leveling", "Load", 
