@@ -42,9 +42,12 @@ OF SUCH DAMAGE.
 #include "usbh_msc_bbb.h"
 #include "log.h"
 // #include "fatfs.h"
+#include "gd32_usbh_diskio.h"
 
 extern usb_core_driver usbh_core;
 extern usbh_host usb_host;
+extern char USBHPath[4]; /* USBH logical drive path */
+extern FATFS USBHFatFS; /* File system object for USBH logical drive */
 
 FATFS fatfs;
 FIL file;
@@ -105,7 +108,9 @@ void usbh_user_init(void)
 void usbh_user_device_connected(void)
 {
     LOGI("dev connected.");
-    // FATFS_LinkDriver(&GDUSBH_Driver, USBHPath);
+    extern const Diskio_drvTypeDef  GDUSBH_Driver;
+    FATFS_LinkDriver(&GDUSBH_Driver, USBHPath);
+    f_mount(&USBHFatFS, USBHPath, 0);
 }
 
 /*!
@@ -128,7 +133,9 @@ void usbh_user_unrecovered_error (void)
 void usbh_user_device_disconnected (void)
 {
     LOGI("dev disconnected.");
-    // FATFS_UnLinkDriver(USBHPath);
+    // f_mount(NULL, "", 0);
+    f_unmount("");
+    FATFS_UnLinkDriver(USBHPath);
 }
 
 /*!
