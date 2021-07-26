@@ -128,6 +128,7 @@
     #define JP_PREHEAT_PLA          "PLA"
     #define JP_PREHEAT_PETG         "PETG"
     #define JP_PREHEAT_ABS          "ABS"
+    #define JP_PREHEAT_TPU          "TPU"
     #define JP_PREHEAT_CUSTOM1      "CUSTOM1"
     #define JP_PREHEAT_CUSTOM2      "CUSTOM2"
     #define JP_IS_PAUSE             "Unable to extrude when printing, Pause printing?"

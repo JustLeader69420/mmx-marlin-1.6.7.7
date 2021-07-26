@@ -128,6 +128,7 @@
     #define PL_PREHEAT_PLA          "PLA"
     #define PL_PREHEAT_PETG         "PETG"
     #define PL_PREHEAT_ABS          "ABS"
+    #define PL_PREHEAT_TPU          "TPU"
     #define PL_PREHEAT_CUSTOM1      "WŁASNE1"
     #define PL_PREHEAT_CUSTOM2      "WŁASNE2"
     #define PL_IS_PAUSE             "Operacja niedostępna w trakcie drukowania, wstrzymać drukowanie?"

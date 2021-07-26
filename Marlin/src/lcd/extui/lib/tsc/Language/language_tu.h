@@ -128,6 +128,7 @@
     #define TU_PREHEAT_PLA          "PLA"
     #define TU_PREHEAT_PETG         "PETG"
     #define TU_PREHEAT_ABS          "ABS"
+    #define TU_PREHEAT_TPU          "TPU"
     #define TU_PREHEAT_CUSTOM1      "CUSTOM1"
     #define TU_PREHEAT_CUSTOM2      "CUSTOM2"
     #define TU_IS_PAUSE             "Yazdırma sırasında ekstrüzyon yapılamıyor, Yazdırmayı duraklat?"

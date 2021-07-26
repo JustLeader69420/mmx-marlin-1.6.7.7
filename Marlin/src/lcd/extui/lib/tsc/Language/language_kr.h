@@ -137,6 +137,7 @@
     #define KR_PREHEAT_PLA          "PLA"
     #define KR_PREHEAT_PETG         "히팅"
     #define KR_PREHEAT_ABS          "ABS"
+    #define KR_PREHEAT_TPU          "TPU"
     #define KR_PREHEAT_CUSTOM1      "CUSTOM1"
     #define KR_PREHEAT_CUSTOM2      "CUSTOM2"
     #define KR_IS_PAUSE             "인쇄 중에 소모품을 짜낼 수 없습니다. 인쇄를 일시 중지 하시겠습니까?"

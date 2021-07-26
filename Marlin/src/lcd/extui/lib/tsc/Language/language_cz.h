@@ -129,6 +129,7 @@
     #define CZ_PREHEAT_PLA          "PLA"
     #define CZ_PREHEAT_PETG         "PETG"
     #define CZ_PREHEAT_ABS          "ABS"
+    #define CZ_PREHEAT_TPU          "TPU"
     #define CZ_PREHEAT_CUSTOM1      "CUSTOM1"
     #define CZ_PREHEAT_CUSTOM2      "CUSTOM2"
     #define CZ_IS_PAUSE             "Unable to extrude when printing, Pause printing?"

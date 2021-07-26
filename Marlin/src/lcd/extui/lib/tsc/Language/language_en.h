@@ -128,6 +128,7 @@
     #define EN_PREHEAT_PLA          "PLA"
     #define EN_PREHEAT_PETG         "PETG"
     #define EN_PREHEAT_ABS          "ABS"
+    #define EN_PREHEAT_TPU          "TPU"
     #define EN_PREHEAT_CUSTOM1      "CUSTOM1"
     #define EN_PREHEAT_CUSTOM2      "CUSTOM2"
     #define EN_IS_PAUSE             "Unable to extrude when printing, Pause printing?"

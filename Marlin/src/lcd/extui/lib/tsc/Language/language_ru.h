@@ -128,6 +128,7 @@
     #define RU_PREHEAT_PLA          "PLA"
     #define RU_PREHEAT_PETG         "PETG"
     #define RU_PREHEAT_ABS          "ABS"
+    #define RU_PREHEAT_TPU          "TPU"
     #define RU_PREHEAT_CUSTOM1      "CUSTOM1"
     #define RU_PREHEAT_CUSTOM2      "CUSTOM2"
     #define RU_IS_PAUSE             "Невозможна экструзия при печати, поставить на паузу?"

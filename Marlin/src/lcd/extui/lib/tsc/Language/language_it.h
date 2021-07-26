@@ -128,6 +128,7 @@
     #define IT_PREHEAT_PLA          "PLA"
     #define IT_PREHEAT_PETG         "PETG"
     #define IT_PREHEAT_ABS          "ABS"
+    #define IT_PREHEAT_TPU          "TPU"
     #define IT_PREHEAT_CUSTOM1      "CUSTOM1"
     #define IT_PREHEAT_CUSTOM2      "CUSTOM2"
     #define IT_IS_PAUSE             "Impossibile estrudere durante la stampa, vuoi sospendere?"

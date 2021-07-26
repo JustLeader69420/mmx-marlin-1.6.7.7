@@ -36,7 +36,6 @@ const ITEM itemStartStop[2] = {
   {ICON_START,                LABEL_HEAT},
 };
 
-#define ITEM_DEGREE_NUM 3
 const ITEM itemDegree[ITEM_DEGREE_NUM] = {
 // icon                       label
   {ICON_1_DEGREE,             LABEL_1_DEGREE},

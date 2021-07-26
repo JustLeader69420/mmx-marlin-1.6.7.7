@@ -128,6 +128,7 @@
     #define PT_PREHEAT_PLA          "PLA"
     #define PT_PREHEAT_PETG         "PETG"
     #define PT_PREHEAT_ABS          "ABS"
+    #define PT_PREHEAT_TPU          "TPU"
     #define PT_PREHEAT_CUSTOM1      "PERSONALIZADO1"
     #define PT_PREHEAT_CUSTOM2      "PERSONALIZADO2"
     #define PT_IS_PAUSE             "Nao e possível a extrusão durante a impressao, pausar a impressao?"

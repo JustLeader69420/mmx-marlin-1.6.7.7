@@ -128,6 +128,7 @@
     #define CN_PREHEAT_PLA          "PLA"
     #define CN_PREHEAT_PETG         "PETG"
     #define CN_PREHEAT_ABS          "ABS"
+    #define CN_PREHEAT_TPU          "TPU"
     #define CN_PREHEAT_CUSTOM1      "CUSTOM1"
     #define CN_PREHEAT_CUSTOM2      "CUSTOM2"
     #define CN_IS_PAUSE             "打印中无法挤出耗材, 是否暂停打印?"

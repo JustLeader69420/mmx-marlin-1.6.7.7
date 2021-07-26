@@ -129,6 +129,7 @@
     #define SK_PREHEAT_PLA          "PLA"
     #define SK_PREHEAT_PETG         "PETG"
     #define SK_PREHEAT_ABS          "ABS"
+    #define SK_PREHEAT_TPU          "TPU"
     #define SK_PREHEAT_CUSTOM1      "Vlastné1"
     #define SK_PREHEAT_CUSTOM2      "Vlastné2"
     #define SK_IS_PAUSE             "Nemožné extrúdovať počas tlače, Pozastaviť tlač?"

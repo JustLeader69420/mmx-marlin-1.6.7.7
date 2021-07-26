@@ -159,6 +159,7 @@
 // #if ENABLED(BABYSTEPPING)
 //   #include "../../src/feature/babystep.h"
 // #endif
+#include "../lcd/extui/lib/tsc/Menu/PreheatMenu.h"
 
 #pragma pack(push, 1) // No padding between variables
 
@@ -449,6 +450,7 @@ typedef struct SettingsDataStruct {
   // #if ENABLED(BABYSTEPPING)
   //   int16_t babystep_z_steps;
   // #endif
+  uint16_t Preheat_Temp[THE_MATERIAL_NUM][2];
   float leveling_offset;
 
 } SettingsData;
@@ -1411,9 +1413,16 @@ void MarlinSettings::postprocess() {
     // #endif
 
     //
+    // Preheat
+    //
+    EEPROM_WRITE(PreheatTemp);
+
+    //
     // Leveling Offset
     //
     EEPROM_WRITE(LevelingOffset);
+
+    
 
     //
     // Validate CRC and Data Size
@@ -2278,9 +2287,15 @@ void MarlinSettings::postprocess() {
       // #endif
 
       //
+      // Preheat
+      //
+      EEPROM_READ(PreheatTemp);
+
+      //
       // Leveling Offset
       //
       EEPROM_READ(LevelingOffset);
+
 
       eeprom_error = size_error(eeprom_index - (EEPROM_OFFSET));
       if (eeprom_error) {
@@ -2895,6 +2910,14 @@ void MarlinSettings::reset() {
   // #if ENABLED(BABYSTEPPING)
   //   babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
   // #endif
+
+  //
+  // Preheat
+  //
+  uint8_t phi=0;uint8_t phj=0;
+  for(phi=0;phi<THE_MATERIAL_NUM;phi++)
+    for(phj=0;phj<2;phj++)
+      PreheatTemp[phi][phj] = originalPreheatTemp[phi][phj];
 
   //
   // Leveling Offset
@@ -3828,6 +3851,14 @@ void MarlinSettings::reset() {
         #endif
       );
     #endif
+
+    //
+    // Preheat
+    //
+    CONFIG_ECHO_HEADING("preheat:");CONFIG_ECHO_START();
+    SERIAL_ECHOLNPAIR("  PLA:",PreheatTemp[0][0], ",", PreheatTemp[0][1]);
+    SERIAL_ECHOLNPAIR("       ABS:",PreheatTemp[1][0], ",", PreheatTemp[1][1]);
+    SERIAL_ECHOLNPAIR("       TPU:",PreheatTemp[2][0], ",", PreheatTemp[2][1]);
 
     CONFIG_ECHO_HEADING("The Leveling Offset:");
     CONFIG_ECHO_START();
