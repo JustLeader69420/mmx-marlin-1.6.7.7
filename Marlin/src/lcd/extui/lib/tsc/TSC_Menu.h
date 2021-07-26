@@ -10,6 +10,7 @@
 #include "../../../../gcode/queue.h"
 #include "../../../../module/planner.h"
 #include "../../../../sd/cardreader.h"
+#include "../../../../udisk/udiskPrint.h"
 #include "../../../../libs/duration_t.h"
 #include "../../../../module/printcounter.h"
 
@@ -60,6 +61,7 @@
 #include "Menu/LevelingOffset.h"
 #include "Menu/PrintUdisk.h"
 #include "Menu/ChooseStorage.h"
+#include "Menu/PreheatSet.h"
 
 typedef enum
 {

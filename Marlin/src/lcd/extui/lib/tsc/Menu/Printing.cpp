@@ -25,7 +25,7 @@ const ITEM itemIsPause[2] = {
 //
 bool isPrinting(void)
 {
-  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) || (UDiskPrint && !UDiskStopPrint);
+  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) || (udisk.isUdiskPrint() && !UDiskStopPrint);
 }
 
 //
@@ -36,7 +36,7 @@ bool isPaused(void)
 
 uint8_t getPrintProgress(void)
 {
-  if(UDiskPrint)  return UDiskPrintSize*100/UDiskFileSize;
+  if(UDiskPrint)  return udisk.getPrintProgress();
   else            return card.percentDone();
 }
 uint8_t getUDiskPrintProgress(void)

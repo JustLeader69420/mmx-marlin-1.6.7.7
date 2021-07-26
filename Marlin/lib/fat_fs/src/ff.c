@@ -6301,7 +6301,7 @@ int f_gets_p (
 		f_read(fp, s, 1, &rc);
 		if (rc != 1) break;
 		dc = s[0];
-		if (FF_USE_STRFUNC == 2 && dc == '\r') continue;
+		// if (FF_USE_STRFUNC == 2 && dc == '\r') continue;
 		*p++ = (TCHAR)dc; nc++;
 		if (dc == '\n') break;
 	}

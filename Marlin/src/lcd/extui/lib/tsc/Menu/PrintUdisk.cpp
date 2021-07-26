@@ -209,6 +209,7 @@ const int16_t labelVolumeError[] = {LABEL_READ_TFTSD_ERROR, LABEL_READ_U_DISK_ER
 void menuCallBackPrintUdisk(void)
 {
   static bool lock = false;
+  static TCHAR filePath[256] = {0};
   uint8_t update = 0;
   KEY_VALUES key_num = menuKeyGetValue();
 
@@ -297,15 +298,16 @@ void menuCallBackPrintUdisk(void)
                 ExtUI::setFilamentRunoutState(false);   // 重置断料检测
               #endif
 
-              
-              f_open(&udisk_fp, workFileinfo.altname,  FA_READ | FA_OPEN_ALWAYS);
+              memset(filePath, 0, sizeof(filePath));
+              sprintf_P(filePath, "%s/%s", gUdiskPath, workFileinfo.altname);
+              f_open(&udisk_fp, filePath,  FA_READ | FA_OPEN_ALWAYS);
               // print_job_timer.reset();
-              print_job_timer.start();
-              UDiskPrintSize = 0;
-              UDiskFileSize = workFileinfo.fsize;
+              // print_job_timer.start();
+              // UDiskPrintSize = 0;
+              // udisk.setFileSize();
               UDiskPrint = true;UDiskPrintFinish = false;UDiskStopPrint=false;
+              udisk.startUdiskPrint(workFileinfo.fsize);
               // infoMenu.menu[++infoMenu.cur] = menuPrinting;
-
             }
            #endif
           }

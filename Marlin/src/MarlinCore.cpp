@@ -225,6 +225,7 @@
 #ifdef HAS_UDISK
   #include "lcd/extui/lib/tsc/Menu/PrintUdisk.h"
   #include "ff.h"
+  #include "udisk/udiskPrint.h"
 #endif
 
 
@@ -456,9 +457,9 @@ void startOrResumeJob() {
 
   inline void abortSDPrinting() {
     float rz;
-    if(UDiskPrint)
-      f_close(&udisk_fp);
-    else
+    if(udisk.isUdiskPrint())
+      udisk.abortUdiskPrint(&udisk_fp);
+    if(IS_SD_PRINTING())
       card.endFilePrint(TERN_(SD_RESORT, true));
     queue.clear();        // 清空队列
     quickstop_stepper();  // 快速停下电机
@@ -959,8 +960,11 @@ inline void tmc_standby_setup() {
  *    • status LEDs
  *    • Max7219
  */
-#include "gd32_usb.h"
-#include "stm32_usb.h"
+#ifdef USE_GD32
+  #include "gd32_usb.h"
+#else
+  #include "stm32_usb.h"
+#endif
 
 void LCD_Setup();
 
@@ -1378,7 +1382,7 @@ void loop() {
       if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
     #endif
 
-    #ifdef HAS_UDISK
+    #if 0
       if(UDiskPrint && !UDiskPausePrint && queue.length <= 3){
         static TCHAR rbuf[128] = {0};
         static int rres = 0;

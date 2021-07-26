@@ -156,6 +156,9 @@ private:
   #if ENABLED(SDSUPPORT)
     static void get_sdcard_commands();
   #endif
+  #if ENABLED(HAS_UDISK)
+    static void get_udisk_commands();
+  #endif
 
   static void _commit_command(bool say_ok
     #if HAS_MULTI_SERIAL
