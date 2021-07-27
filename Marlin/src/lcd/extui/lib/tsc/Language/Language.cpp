@@ -2501,7 +2501,7 @@ uint8_t *textSelect(uint8_t sel)
     case TFT_ITALIAN:     return (uint8_t *)it_pack[sel];
     // case TFT_POLISH:      return (uint8_t *)pl_pack[sel];
     // case TFT_SLOVAK:      return (uint8_t *)sk_pack[sel];
-    case TFT_KOREAN:     return (uint8_t *)kr_pack[sel];
+    // case TFT_KOREAN:     return (uint8_t *)kr_pack[sel];
     case TFT_TURKEY:      return (uint8_t *)tu_pack[sel];
 
     default:        return (uint8_t *)en_pack[sel];

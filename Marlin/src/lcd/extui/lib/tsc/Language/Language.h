@@ -18,7 +18,7 @@ enum
   TFT_ITALIAN,      //意大利语
   // TFT_POLISH,    //波兰语
   // TFT_SLOVAK,    //斯洛伐克语
-  TFT_KOREAN,       //韩语
+  // TFT_KOREAN,       //韩语
   TFT_TURKEY,       //土耳其语
 
   LANGUAGE_NUM,
