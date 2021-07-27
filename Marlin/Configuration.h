@@ -21,12 +21,32 @@
  */
 #pragma once
 
-// 230*230*260
-// 320*320*400
-// 420*420*400
-#define X_BED_SIZE 230
-#define Y_BED_SIZE 230
-#define Z_BED_SIZE 260
+// 选择机器型号
+// #define R3_PRO    // R3_pro:max
+// #define R4_PRO    // R4_pro:pro
+
+// 使用了st芯片
+#define ST32_SHIP
+// #define USE_GD32
+
+/* D2:230*230*260
+ * R3:320*320*400
+ * R4:420*420*400 */
+#if ENABLED(R3_PRO)
+  #define X_BED_SIZE 320
+  #define Y_BED_SIZE 320
+  #define Z_BED_SIZE 400
+#elif ENABLED(R4_PRO)
+  #define X_BED_SIZE 400
+  #define Y_BED_SIZE 400
+  #define Z_BED_SIZE 400
+#else
+  #define X_BED_SIZE 230
+  #define Y_BED_SIZE 230
+  #define Z_BED_SIZE 260
+#endif
+
+
 
 #define D301_AUTO_LEVELING
 
@@ -40,7 +60,6 @@
   #define HAS_FSMC_TFT  1
   #define BTT_FSMC_LCD
 
-  // #define USE_GD32
 #endif
 
 #define HAS_UDISK
@@ -1309,8 +1328,14 @@
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 4 //调平点阵4*4
-  #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+  #if ENABLED(R4_PRO)
+    #define GRID_MAX_POINTS_X 6 //调平点阵6*6
+    #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+  #else
+    #define GRID_MAX_POINTS_X 4 //调平点阵4*4
+    #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+  #endif
+
 
   // Probe along the Y axis, advancing X after each column
   //#define PROBE_Y_FIRST

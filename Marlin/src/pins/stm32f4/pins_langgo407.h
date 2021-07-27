@@ -36,10 +36,18 @@
 #ifndef BOARD_INFO_NAME
   #define BOARD_INFO_NAME "BC.DZ.PC000007.03"
 
-  #if ENABLED(USE_GD32)
-    #define ROBOT_NAME " "
+  #ifdef ST32_SHIP
+    #define CHIP_NAME "(S)"
   #else
-    #define ROBOT_NAME "(S)"
+    #define CHIP_NAME ""
+  #endif
+
+  #if ENABLED(R3_PRO)
+    #define ROBOT_NAME "-MAX"
+  #elif ENABLED(R4_PRO)
+    #define ROBOT_NAME "-PRO"
+  #else
+    #define ROBOT_NAME ""
   #endif
 #endif
 

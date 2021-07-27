@@ -65,7 +65,7 @@ void menuCallBackInfo(void)
 
 void menuInfo(void)
 {
-  const char* hardware = "Board   : " BOARD_INFO_NAME ROBOT_NAME;
+  const char* hardware = "Board   : " BOARD_INFO_NAME ROBOT_NAME CHIP_NAME;
   const char* firmware = "Firmware: " SHORT_BUILD_VERSION " " __DATE__;
   
   uint16_t HW_X = (LCD_WIDTH_PIXEL - GUI_StrPixelWidth((uint8_t *)hardware))/2;

@@ -634,11 +634,11 @@ void GCodeQueue::get_serial_commands() {
         else break;
       }
       if(*rbuf_p == 'G' || *rbuf_p == 'M'){  //只挑G和M命令入队
-        // enqueue_now_P(rbuf_p);
-        SERIAL_ECHOLNPAIR("file:", rbuf_p);
+        enqueue_now_P(rbuf_p);
+        // SERIAL_ECHOLNPAIR("file:", rbuf_p);
         // SERIAL_ECHOLNPAIR("fsize:", (int)udisk.getFileSize());
         // SERIAL_ECHOLNPAIR("psize:", (int)udisk.getPrintSize());
-        break;
+        // break;
       }
     }
   }
