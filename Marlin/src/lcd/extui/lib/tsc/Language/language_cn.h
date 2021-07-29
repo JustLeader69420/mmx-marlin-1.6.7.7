@@ -152,5 +152,6 @@
     #define CN_ELAPSED_TIME         "用时"
     #define CN_SAVE_POPUP           "保存设置"
     #define CN_SYCHRONZIED_VALUE    "已将值同步到Z-offset"
+    #define CN_CHOOSE_STORAGE       "选择存储设备:"
 
 #endif

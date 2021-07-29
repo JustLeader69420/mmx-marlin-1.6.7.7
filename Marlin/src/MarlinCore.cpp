@@ -459,8 +459,9 @@ void startOrResumeJob() {
     float rz;
     if(udisk.isUdiskPrint())
       udisk.abortUdiskPrint(&udisk_fp);
-    if(IS_SD_PRINTING())
+    if(card.isFileOpen())
       card.endFilePrint(TERN_(SD_RESORT, true));
+    SERIAL_ECHOLNPAIR("close end");
     queue.clear();        // 清空队列
     quickstop_stepper();  // 快速停下电机
     print_job_timer.stop();// 打印定时器停止

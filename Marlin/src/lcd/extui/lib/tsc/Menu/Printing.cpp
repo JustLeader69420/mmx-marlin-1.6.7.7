@@ -198,7 +198,10 @@ extern GUI_RECT titleRect;
 void printingDrawPage(void)
 {
  #ifdef HAS_UDISK
-  printingItems.title.address = (uint8_t *)workFileinfo.fname;
+  if(udisk.isUdiskPrint())
+    printingItems.title.address = (uint8_t *)workFileinfo.fname;
+  else
+    printingItems.title.address = (uint8_t *)card.longest_filename(); //getCurGcodeName(infoFile.title);
  #else
   printingItems.title.address = (uint8_t *)card.longest_filename(); //getCurGcodeName(infoFile.title);
  #endif
@@ -286,16 +289,16 @@ void menuCallBackPrinting(void)
   }
 
   // Printing status
-  if ((printPaused != isPaused()) || (printPaused2 != UDiskPausePrint)) {
-    if(UDiskPrint){
-      printPaused2 = UDiskPausePrint;
-      resumeToPause(printPaused2);
-    }
-    else{
-      printPaused = isPaused();
-      resumeToPause(printPaused);
-    }
+  if (printPaused2 != UDiskPausePrint) {
+    printPaused2 = UDiskPausePrint;
+    resumeToPause(printPaused2);
   }
+
+  if (printPaused != isPaused()) {
+    printPaused = isPaused();
+    resumeToPause(printPaused);
+  }
+  
   if (lastProgress != getPrintProgress())
   {
     lastProgress = getPrintProgress();
@@ -346,7 +349,10 @@ void menuPrinting(void)
 {
   printPaused2 = UDiskPausePrint;
   printPaused = isPaused();
-  printingItems.items[KEY_ICON_0] = itemIsPause[printPaused];
+  if(udisk.isUdiskPrint())
+    printingItems.items[KEY_ICON_0] = itemIsPause[printPaused2];
+  else
+    printingItems.items[KEY_ICON_0] = itemIsPause[printPaused];
   printingDrawPage();
   
   menuSetFrontCallBack(menuCallBackPrinting);
