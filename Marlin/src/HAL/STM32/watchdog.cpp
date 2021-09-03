@@ -43,5 +43,10 @@
     #endif
   }
 
+  int c_func(){
+    HAL_watchdog_refresh();
+    return 1;
+  }
+
 #endif // USE_WATCHDOG
 #endif // ARDUINO_ARCH_STM32 && !STM32GENERIC

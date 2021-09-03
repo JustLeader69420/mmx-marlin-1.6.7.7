@@ -47,6 +47,8 @@
 #include "usbh_def.h"
 #include "ff.h"
 #include "log.h"
+#include "HAL/STM32/watchdog.h"
+// #include <IWatchdog.h>
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -73,6 +75,7 @@ FRESULT Explore_Disk(char *path, uint8_t recu_level)
   {
     while(USBH_MSC_IsReady(&hUsbHostFS))
     {
+      c_func();   // 重置看门狗
       res = f_readdir(&dir, &fno);
       if(res != FR_OK || fno.fname[0] == 0)
       {
@@ -99,7 +102,10 @@ FRESULT Explore_Disk(char *path, uint8_t recu_level)
       {
         strcat(tmp, "\n");
         LOGW("%s", (void *)tmp);
-        Explore_Disk(fn, 2);
+        // Explore_Disk(fn, 2);
+        char newPath[256] = {0};
+        sprintf(newPath, "%s/%s", path, fn);    // 将旧的路径与新的文件名合并
+        Explore_Disk(newPath, 2);
       }
       else
       {

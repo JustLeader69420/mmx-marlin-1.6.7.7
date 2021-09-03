@@ -23,3 +23,12 @@
 
 void watchdog_init();
 void HAL_watchdog_refresh();
+
+#ifdef __cplusplus
+// int cpp_func(int input);
+extern "C" {
+#endif
+int c_func();
+#ifdef __cplusplus
+}
+#endif
