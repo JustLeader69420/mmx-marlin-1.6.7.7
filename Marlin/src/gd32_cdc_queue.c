@@ -37,6 +37,8 @@
 
 #ifdef USE_GD32
 
+#if 0
+
 #include "gd32_cdc_queue.h"
 
 // Initialize read and write position of queue
@@ -256,3 +258,4 @@ bool CDC_ReceiveQueue_ReadUntil(CDC_ReceiveQueue_TypeDef *queue,
   return false;
 }
 #endif /*  */
+#endif

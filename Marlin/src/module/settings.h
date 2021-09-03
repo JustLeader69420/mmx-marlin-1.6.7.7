@@ -20,7 +20,7 @@
  *
  */
 #pragma once
-#define EEPROM_VERSION "V18"
+#define EEPROM_VERSION "V19"
 #define EEPROM_OFFSET 100
 
 //

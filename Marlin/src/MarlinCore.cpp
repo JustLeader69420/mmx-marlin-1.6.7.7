@@ -1023,7 +1023,7 @@ void setup() {
   LCD_Setup();
 
   #if ENABLED(USE_GD32)
-    gd32_usb_device_cdc_init();
+    // gd32_usb_device_cdc_init();
     gd32_usb_host_msc_init();
   #else
     MX_USB_HOST_Init();

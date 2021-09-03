@@ -49,6 +49,8 @@
 extern "C" {
 #endif
 
+#if 0
+
 // #if USE_USB_HS
 // #define CDC_QUEUE_MAX_PACKET_SIZE 64
 // #else
@@ -93,6 +95,8 @@ extern CDC_ReceiveQueue_TypeDef ReceiveQueue;
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif // __CDC_QUEUE_H

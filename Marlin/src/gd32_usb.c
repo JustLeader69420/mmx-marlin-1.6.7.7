@@ -53,7 +53,8 @@ void gd32_usb_host_msc_init()
 
     MX_FATFS_Init();
 }
-
+#if 0 
+//du
 void cdc_write(usb_dev *udev, uint8_t *buf, uint32_t len)
 {
   usbd_ep_send (udev, CDC_DATA_IN_EP, buf, len);
@@ -156,7 +157,7 @@ uint8_t gd32_cdc_is_connected()
 {
   return USBD_CONFIGURED == cdc_acm.dev.cur_status;
 }
-
+#endif
 
 
 
@@ -189,10 +190,11 @@ void OTG_FS_IRQHandler(void)
 {
     usbh_isr(&usbh_core);
 }
-
+/* du
 void OTG_HS_IRQHandler(void)
 {
     usbd_isr(&cdc_acm);
 }
+*/
 
 #endif

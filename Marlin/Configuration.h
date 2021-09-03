@@ -26,8 +26,8 @@
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
-#define ST32_SHIP
-// #define USE_GD32
+// #define ST32_SHIP
+#define USE_GD32
 
 /* D2:230*230*260
  * R3:320*320*400
@@ -152,9 +152,9 @@
  * Select a secondary serial port on the board to use for communication with the host.
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#ifndef USE_GD32
+// #ifndef USE_GD32
   #define SERIAL_PORT_2 -1
-#endif
+// #endif
 /**
  * This setting determines the communication speed of the printer.
  *
@@ -795,6 +795,7 @@
  */
 // #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 45 }
 #define DEFAULT_MAX_FEEDRATE          { 200, 200, 5, 45 }
+// #define DEFAULT_MAX_FEEDRATE          { 1000, 1000, 1000, 1000 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1040,7 +1041,11 @@
 #define PROBING_MARGIN 30
 
 // 探针在X轴和Y轴之间的移动速度(mm/min)
-#define XY_PROBE_SPEED 8000 //(133*60)
+#if ENABLED(R4_PRO)
+  #define XY_PROBE_SPEED 5000 //(83*60)
+#else
+  #define XY_PROBE_SPEED 8000 //(133*60)
+#endif
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z

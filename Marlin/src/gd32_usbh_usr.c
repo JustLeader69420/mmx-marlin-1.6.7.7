@@ -43,7 +43,9 @@ OF SUCH DAMAGE.
 #include "log.h"
 // #include "fatfs.h"
 #include "gd32_usbh_diskio.h"
-
+#include "HAL/STM32/watchdog.h"
+// #include <IWatchdog.h>
+// #include "stm32yyxx_ll_iwdg.h"
 extern usb_core_driver usbh_core;
 extern usbh_host usb_host;
 extern char USBHPath[4]; /* USBH logical drive path */
@@ -370,6 +372,8 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
 
     if (res == FR_OK) {
         while (usbh_core.host.connect_status) {
+            c_func();   // 重置看门狗
+            // memset(&fno, 0, sizeof(fno));
             res = f_readdir(&dir, &fno);
             if (FR_OK != res || 0U == fno.fname[0]) {
                 break;
@@ -390,9 +394,12 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
             else if (2 == recu_level)
                 LOGW("  |  |__");
             if (fno.fattrib & AM_DIR) {
+                
                 strcat(tmp, "\n");
                 LOGW("%s", tmp);
-                explore_disk(fn, 2);
+                char newPath[256] = {0};
+                sprintf(newPath, "%s/%s", path, fn);    // 将旧的路径与新的文件名合并
+                explore_disk(newPath, 2);
             }
             else {
                 strcat(tmp, "\n");
