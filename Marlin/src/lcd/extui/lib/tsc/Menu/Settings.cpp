@@ -1,13 +1,14 @@
 #include "Settings.h"
 #include "../TSC_Menu.h"
 #include "../../../../../module/settings.h"
+#include "../../../../../feature/powerloss.h"
 
 SETTINGS infoSettings, // Settings para
          lastSettings; // Last Settings para
 extern uint32_t TSC_Para[7]; 
 uint32_t lastTSC_Para[7];
 static bool needSave = false;
-
+// extern PrintJobRecovery recovery;
 
 #ifdef FIL_RUNOUT_PIN
   #define ITEM_RUNOUT_NUM 2
@@ -171,7 +172,8 @@ void menuCallBackSettings(void)
       infoMenu.menu[++infoMenu.cur] = menuInfo;
       break;
     // case KEY_ICON_4:
-    //   infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+    //   // infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+    //   recovery.save(true);
     //   break;
 
     case KEY_ICON_7:

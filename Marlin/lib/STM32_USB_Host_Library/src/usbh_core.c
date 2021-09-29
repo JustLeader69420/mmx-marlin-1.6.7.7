@@ -85,6 +85,11 @@ static void USBH_Process_OS(void *argument);
 #endif
 #endif
 
+typedef char bool;
+
+uint8_t udiskMounted = 0;
+extern uint16_t plr_num;
+extern bool plr_flag;
 
 /**
   * @brief  HCD_Init
@@ -447,7 +452,7 @@ USBH_StatusTypeDef USBH_ReEnumerate(USBH_HandleTypeDef *phost)
   return USBH_OK;
 }
 
-
+        // static uint64_t pty = 0;
 /**
   * @brief  USBH_Process
   *         Background process of the USB Core.
@@ -724,6 +729,10 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
         if (status == USBH_OK)
         {
           phost->gState = HOST_CLASS;
+          udiskMounted = 1;
+          // pty++;
+          delay(1000);
+          delay(1000);
         }
         else if (status == USBH_FAIL)
         {
@@ -787,6 +796,10 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       {
         /* Device Disconnection Completed, start USB Driver */
         USBH_LL_Start(phost);
+        udiskMounted = 0;
+        plr_num = 0;
+        plr_flag = 0;
+        // pty=0;
       }
 
 #if (USBH_USE_OS == 1U)

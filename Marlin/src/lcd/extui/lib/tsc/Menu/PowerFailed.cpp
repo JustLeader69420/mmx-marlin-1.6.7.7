@@ -13,11 +13,14 @@ void menuCallBackPowerFailed(void)
       break;
     
     case KEY_POPUP_CANCEL:
-      card.removeJobRecoveryFile();
+      if(sd_or_udisk)
+        f_unlink(recovery.filename1);
+      else
+        card.removeJobRecoveryFile();
       infoMenu.cur--;
-      break;        
+      break;
   }
-  if(!IS_SD_INSERTED())
+  if(!IS_SD_INSERTED() && !plr_flag)
   {
     infoMenu.cur--;
   }

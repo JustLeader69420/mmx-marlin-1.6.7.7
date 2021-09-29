@@ -324,21 +324,21 @@ int usbh_usr_msc_application(void)
 
             /* register work area for logical drives */
             f_mount(&fatfs, "0:/", 1);
+            
+            // if (FR_OK == f_open(&file, "0:GD32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) {
+            //     /* write buffer to file */
+            //     bytesToWrite = sizeof(WriteTextBuff); 
+            //     res = f_write (&file, WriteTextBuff, bytesToWrite, (void *)&bytesWritten);   
+            //     /* EOF or error */
+            //     if ((0U == bytesWritten) || (FR_OK != res)) {
+            //     } else {
+            //     }
 
-            if (FR_OK == f_open(&file, "0:GD32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) {
-                /* write buffer to file */
-                bytesToWrite = sizeof(WriteTextBuff); 
-                res = f_write (&file, WriteTextBuff, bytesToWrite, (void *)&bytesWritten);   
-                /* EOF or error */
-                if ((0U == bytesWritten) || (FR_OK != res)) {
-                } else {
-                }
-
-                /* close file and file system */
-                f_close(&file);
-                // f_mount(NULL, "0:/", 1);
-            } else {
-            }
+            //     /* close file and file system */
+            //     f_close(&file);
+            //     // f_mount(NULL, "0:/", 1);
+            // } else {
+            // }
 
             usbh_usr_application_state = USBH_USR_FS_DEMOEND;
             break;

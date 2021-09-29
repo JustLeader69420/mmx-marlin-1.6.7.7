@@ -65,6 +65,8 @@ void GcodeSuite::M24() {
     startOrResumeJob();               // Start (or resume) the print job timer
     TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
   }
+  if(UDiskPrint)
+    TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
 
   #if ENABLED(HOST_ACTION_COMMANDS)
     #ifdef ACTION_ON_RESUME

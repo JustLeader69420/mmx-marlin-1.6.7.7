@@ -59,6 +59,7 @@ extern "C" {
 #define HOST_USER_DISCONNECTION                 0x05U
 #define HOST_USER_UNRECOVERED_ERROR             0x06U
 
+extern uint8_t udiskMounted;
 
 /**
   * @}

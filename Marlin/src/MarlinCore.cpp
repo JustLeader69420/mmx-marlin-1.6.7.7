@@ -223,9 +223,17 @@
 #endif
 
 #ifdef HAS_UDISK
+
   #include "lcd/extui/lib/tsc/Menu/PrintUdisk.h"
   #include "ff.h"
   #include "udisk/udiskPrint.h"
+
+  #ifdef USE_GD32
+    #include "gd32_usb.h"
+  #else
+    #include "stm32_usb.h"
+  #endif
+
 #endif
 
 
@@ -753,6 +761,21 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
   // Handle SD Card insert / remove
   TERN_(SDSUPPORT, card.manage_media());
 
+  // UDISK
+  #ifdef HAS_UDISK
+    #if ENABLED(USE_GD32)
+      gd32_usb_loop();
+    #else
+      MX_USB_HOST_Process();
+      MSC_MenuProcess();
+    #endif
+  #endif
+
+  // 检测断电文件，sd卡使能内也有，因此这是U盘专用
+  if(udiskMounted && !UDiskPrint){
+    TERN_(POWER_LOSS_RECOVERY, recovery.check_u());
+  }
+
   // Handle USB Flash Drive insert / remove
   TERN_(USB_FLASH_DRIVE_SUPPORT, Sd2Card::idle());
 
@@ -961,12 +984,6 @@ inline void tmc_standby_setup() {
  *    • status LEDs
  *    • Max7219
  */
-#ifdef USE_GD32
-  #include "gd32_usb.h"
-#else
-  #include "stm32_usb.h"
-#endif
-
 void LCD_Setup();
 
 void setup() {
@@ -1368,12 +1385,6 @@ void loop() {
   do {
     idle();
 
-    #if ENABLED(USE_GD32)
-      gd32_usb_loop();
-    #else
-      MX_USB_HOST_Process();
-      MSC_MenuProcess();
-    #endif
     // MYSERIAL1.write("fuck usb", 9);
     // TERN_(USE_WATCHDOG, HAL_watchdog_refresh());// thermalmanager will feed dog if normal.
 

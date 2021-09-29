@@ -12,6 +12,7 @@ extern uint64_t UDiskPrintSize;
 extern uint64_t UDiskFileSize;
 
 extern FILINFO workFileinfo;
+extern char filePath[256];
 // void menuPrintFromSource(void);
 void menuPrintUdisk(void);
 

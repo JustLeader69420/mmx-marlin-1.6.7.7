@@ -39,6 +39,8 @@ OF SUCH DAMAGE.
 #include "drv_usbh_int.h"
 #include <string.h>
 
+// #include "../../../src/feature/powerloss.h"
+
 /* local function prototypes ('static') */
 static uint8_t usbh_sof           (usbh_host *uhost);
 static uint8_t usbh_connect       (usbh_host *uhost);
@@ -50,6 +52,10 @@ static usbh_status usbh_enum_task (usbh_host *uhost);
 #ifdef USB_LOW_PWR_ENABLE
 static void usb_hwp_suspend(usb_core_driver *udev);
 #endif
+
+extern uint8_t udiskMounted;
+extern uint16_t plr_num;
+extern bool plr_flag;
 
 usbh_int_cb usbh_int_op = 
 {
@@ -311,6 +317,11 @@ void usbh_core_task (usbh_host *uhost)
 
         if (USBH_OK == status) {
             uhost->cur_state = HOST_CLASS_HANDLER;
+            
+            // udisk du
+            udiskMounted = 1;
+            delay(1000);
+            delay(1000);
         } else {
             usbh_error_handler (uhost, status);
         }
@@ -340,6 +351,11 @@ void usbh_core_task (usbh_host *uhost)
         uhost->active_class->class_deinit(uhost);
         usbh_pipe_delete(udev);
         uhost->cur_state = HOST_DEFAULT;
+
+        // udisk du
+        udiskMounted = 0;
+        plr_num = 0;
+        plr_flag = false;
         break;
 
     default:

@@ -38,56 +38,54 @@ void MSC_MenuProcess(void)
 {
   switch(msc_demo)
   {
-  case MSC_DEMO_START:
-    if(Appli_state == APPLICATION_READY)
-    {
-      msc_demo = MSC_DEMO_FILE_OPERATIONS;
-      
-    }
+    case MSC_DEMO_START:
+      if(Appli_state == APPLICATION_READY)
+      {
+        msc_demo = MSC_DEMO_FILE_OPERATIONS;
+      }
     break;
 
-  case MSC_DEMO_FILE_OPERATIONS:
-    /* Read and Write File Here */
-    if(Appli_state == APPLICATION_READY)
-    {
-        msc_demo = MSC_DEMO_EXPLORER;
-        MSC_File_Operations();
-    //   USBH_MSC_GetLUNInfo(&hUsbHostFS, 0, &msc_info);
-    //   LOGI("usb disk vid %s", msc_info.inquiry.vendor_id);
-    //   LOGI("usb disk pid %s", msc_info.inquiry.product_id);
-    //   LOGI("usb disk cap block nbr %d ", msc_info.capacity.block_nbr);
-    //   LOGI("usb disk cap block size %d ", msc_info.capacity.block_size);
-    //   uint64_t total_size = (uint64_t)msc_info.capacity.block_size * msc_info.capacity.block_nbr;
-    //   uint32_t size_kb = total_size / 1024;
-    //   uint32_t size_mb = size_kb / 1024;
-    //   uint32_t size_gb = size_mb / 1024;
-    //   LOGI("usb disk cap size %d MB, %d GB", size_mb, size_gb);
-    //   LOGI("usb disk cap size %d kBytes", size_kb);
+    case MSC_DEMO_FILE_OPERATIONS:
+      /* Read and Write File Here */
+      if(Appli_state == APPLICATION_READY)
+      {
+          msc_demo = MSC_DEMO_EXPLORER;
+          MSC_File_Operations();
+      //   USBH_MSC_GetLUNInfo(&hUsbHostFS, 0, &msc_info);
+      //   LOGI("usb disk vid %s", msc_info.inquiry.vendor_id);
+      //   LOGI("usb disk pid %s", msc_info.inquiry.product_id);
+      //   LOGI("usb disk cap block nbr %d ", msc_info.capacity.block_nbr);
+      //   LOGI("usb disk cap block size %d ", msc_info.capacity.block_size);
+      //   uint64_t total_size = (uint64_t)msc_info.capacity.block_size * msc_info.capacity.block_nbr;
+      //   uint32_t size_kb = total_size / 1024;
+      //   uint32_t size_mb = size_kb / 1024;
+      //   uint32_t size_gb = size_mb / 1024;
+      //   LOGI("usb disk cap size %d MB, %d GB", size_mb, size_gb);
+      //   LOGI("usb disk cap size %d kBytes", size_kb);
 
-      /* Prevent debounce effect for user key */
-    //   HAL_Delay(400);
-    }
+        /* Prevent debounce effect for user key */
+      //   HAL_Delay(400);
+      }
     break;
 
-  case MSC_DEMO_EXPLORER:
-    /* Display disk content */
-    if(Appli_state == APPLICATION_READY)
-    {
-      Explore_Disk("0:/", 1);
-      msc_demo = MSC_DEMO_STOP;
+    case MSC_DEMO_EXPLORER:
+      /* Display disk content */
+      if(Appli_state == APPLICATION_READY)
+      {
+        Explore_Disk("0:/", 1);
+        msc_demo = MSC_DEMO_STOP;
 
-      /* Prevent debounce effect for user key */
-    //   HAL_Delay(400);
-    }
+        /* Prevent debounce effect for user key */
+      //   HAL_Delay(400);
+      }
     break;
     
-   case MSC_DEMO_STOP:
-    /* Display disk content */
-        //stop here.
+    case MSC_DEMO_STOP:
+      /* Display disk content */
+          //stop here.
     break;
 
-  default:
-    break;
+    default: break;
   }
 
   if(Appli_state == APPLICATION_DISCONNECT)

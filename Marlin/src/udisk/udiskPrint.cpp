@@ -24,6 +24,12 @@ void UdiskPrint::startUdiskPrint(uint64_t _size){
     
     print_job_timer.start();
 }
+void UdiskPrint::resumeUdiskPrint(uint64_t _size, uint32_t _psize, millis_t resume_time){
+    udiskFlag = true;psize=_psize;res=0;fsize = _size;
+    
+    print_job_timer.resume(resume_time);
+}
 uint8_t UdiskPrint::getPrintProgress(void){
     return psize*100/fsize;
 }
+

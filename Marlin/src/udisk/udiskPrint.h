@@ -20,6 +20,7 @@ public:
     static void fileHasFinish(FIL *fp);
     static bool isUdiskPrint(){return udiskFlag;}
     static void startUdiskPrint(uint64_t _size);
+    static void resumeUdiskPrint(uint64_t _size, uint32_t _psize, millis_t resume_time);
     static void setFileSize(uint64_t _size){}
     static uint8_t getPrintProgress(void);
     static void abortUdiskPrint(FIL *fp);

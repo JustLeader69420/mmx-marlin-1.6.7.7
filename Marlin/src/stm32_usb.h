@@ -10,6 +10,8 @@ void MSC_MenuProcess(void);
 short mountUdisk(void);
 short umountUdisk(void);
 
+extern uint8_t udiskMounted;
+
 #ifdef __cplusplus
 }
 #endif

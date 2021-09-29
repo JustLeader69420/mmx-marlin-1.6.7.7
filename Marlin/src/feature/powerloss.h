@@ -33,6 +33,9 @@
 #if ENABLED(MIXING_EXTRUDER)
   #include "../feature/mixing.h"
 #endif
+#ifdef HAS_UDISK
+  #include "ff.h"
+#endif
 
 #if !defined(POWER_LOSS_STATE) && PIN_EXISTS(POWER_LOSS)
   #define POWER_LOSS_STATE HIGH
@@ -123,6 +126,7 @@ typedef struct {
 class PrintJobRecovery {
   public:
     static const char filename[5];
+    static const char filename1[6];
 
     static SdFile file;
     static job_recovery_info_t info;
@@ -165,12 +169,14 @@ class PrintJobRecovery {
     static inline void close() { file.close(); }
 
     static void check();
+    static void check_u();
     static void resume();
     static void purge();
 
     static inline void cancel() { purge(); card.autostart_index = 0; }
 
     static void load();
+    static bool load(uint8_t ifudisk);
     static void save(const bool force=ENABLED(SAVE_EACH_CMD_MODE), const float zraise=0);
 
     #if PIN_EXISTS(POWER_LOSS)
@@ -193,6 +199,7 @@ class PrintJobRecovery {
 
   private:
     static void write();
+    static void usb_write();
 
     #if ENABLED(BACKUP_POWER_SUPPLY)
       static void retract_and_lift(const float &zraise);
@@ -205,3 +212,7 @@ class PrintJobRecovery {
 };
 
 extern PrintJobRecovery recovery;
+extern uint8_t sd_or_udisk;
+extern uint16_t plr_num;
+extern FIL udiskfile;
+extern bool plr_flag;

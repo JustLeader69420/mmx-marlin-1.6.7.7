@@ -67,6 +67,7 @@ enum {
 FILINFO ufilelist[NUM_PER_PAGE];
 int udisk_cwd_fcount; //when change dir, need update
 bool udisk_at_root = true;
+char filePath[256] = {0};
 
 static inline bool is_dir_or_gcode(FILINFO *fno)
 {
@@ -198,7 +199,7 @@ void gocdeListDrawUdisk(void)
   }
 
   for(; (i<NUM_PER_PAGE); i++)			//background
-  {		
+  {
     printItemsUdisk.items[i].icon = NULL;
     menuDrawListItem(&printItemsUdisk.items[i], i);
   }
@@ -209,7 +210,6 @@ const int16_t labelVolumeError[] = {LABEL_READ_TFTSD_ERROR, LABEL_READ_U_DISK_ER
 void menuCallBackPrintUdisk(void)
 {
   static bool lock = false;
-  static TCHAR filePath[256] = {0};
   uint8_t update = 0;
   KEY_VALUES key_num = menuKeyGetValue();
 
@@ -308,6 +308,7 @@ void menuCallBackPrintUdisk(void)
               UDiskPrint = true;UDiskPrintFinish = false;UDiskStopPrint=false;
               udisk.startUdiskPrint(workFileinfo.fsize);
               // infoMenu.menu[++infoMenu.cur] = menuPrinting;
+              queue.enqueue_now_P("M24\n");
             }
            #endif
           }

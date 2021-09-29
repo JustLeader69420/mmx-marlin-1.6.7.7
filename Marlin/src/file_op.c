@@ -54,7 +54,7 @@ FIL MyFile;
 FRESULT res;
 uint32_t bytesWritten;
 uint8_t rtext[200];
-uint8_t wtext[] = "USB Host Library : Mass Storage Example";
+// uint8_t wtext[] = "USB Host Library : Mass Storage Example";
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -78,57 +78,57 @@ void MSC_File_Operations(void)
   //   LOGI("disk cluster size=%d ", pfatfs->csize * 512);
   // }
 
-  if(f_open(&MyFile, "0:USBHost.txt",FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
-  {
-    LOGE("Cannot Open 'USBHost.txt' file \n");
-  }
-  else
-  {
-    LOGI("INFO : 'USBHost.txt' opened for write  \n");
-    res= f_write (&MyFile, wtext, sizeof(wtext), (void *)&bytesWritten);
-    f_close(&MyFile);
+  // if(f_open(&MyFile, "0:USBHost.txt",FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
+  // {
+  //   LOGE("Cannot Open 'USBHost.txt' file \n");
+  // }
+  // else
+  // {
+  //   LOGI("INFO : 'USBHost.txt' opened for write  \n");
+  //   res= f_write (&MyFile, wtext, sizeof(wtext), (void *)&bytesWritten);
+  //   f_close(&MyFile);
 
-    if((bytesWritten == 0) || (res != FR_OK)) /*EOF or Error*/
-    {
-      LOGE("Cannot Write on the  'USBHost.txt' file \n");
-    }
-    else
-    {
-      if(f_open(&MyFile, "0:USBHost.txt", FA_READ) != FR_OK)
-      {
-        LOGE("Cannot Open 'USBHost.txt' file for read.\n");
-      }
-      else
-      {
-        LOGI("INFO : Text written on the 'USBHost.txt' file \n");
+  //   if((bytesWritten == 0) || (res != FR_OK)) /*EOF or Error*/
+  //   {
+  //     LOGE("Cannot Write on the  'USBHost.txt' file \n");
+  //   }
+  //   else
+  //   {
+  //     if(f_open(&MyFile, "0:USBHost.txt", FA_READ) != FR_OK)
+  //     {
+  //       LOGE("Cannot Open 'USBHost.txt' file for read.\n");
+  //     }
+  //     else
+  //     {
+  //       LOGI("INFO : Text written on the 'USBHost.txt' file \n");
 
-        res = f_read(&MyFile, rtext, sizeof(rtext), (void *)&bytesread);
+  //       res = f_read(&MyFile, rtext, sizeof(rtext), (void *)&bytesread);
 
-        if((bytesread == 0) || (res != FR_OK)) /*EOF or Error*/
-        {
-          LOGE("Cannot Read from the  'USBHost.txt' file \n");
-        }
-        else
-        {
-          LOGI("Read Text : \n");
-          LOGW("%s",(char *)rtext);
-          LOGW("\n");
-        }
-        f_close(&MyFile);
-      }
-      /* Compare read data with the expected data */
-      if((bytesread == bytesWritten))
-      {
-        LOGI("INFO : FatFs data compare SUCCES");
-        LOGI("\n");
-      }
-      else
-      {
-        LOGE("FatFs data compare ERROR");
-        LOGE("\n");
-      }
-    }
-  }
+  //       if((bytesread == 0) || (res != FR_OK)) /*EOF or Error*/
+  //       {
+  //         LOGE("Cannot Read from the  'USBHost.txt' file \n");
+  //       }
+  //       else
+  //       {
+  //         LOGI("Read Text : \n");
+  //         LOGW("%s",(char *)rtext);
+  //         LOGW("\n");
+  //       }
+  //       f_close(&MyFile);
+  //     }
+  //     /* Compare read data with the expected data */
+  //     if((bytesread == bytesWritten))
+  //     {
+  //       LOGI("INFO : FatFs data compare SUCCES");
+  //       LOGI("\n");
+  //     }
+  //     else
+  //     {
+  //       LOGE("FatFs data compare ERROR");
+  //       LOGE("\n");
+  //     }
+  //   }
+  // }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
