@@ -288,7 +288,8 @@ void menuCallBackPrinting(void)
     redrawBedTag();
   }
 
-  // Printing status
+  // Printing status du
+  /*
   if (printPaused2 != UDiskPausePrint) {
     printPaused2 = UDiskPausePrint;
     resumeToPause(printPaused2);
@@ -298,6 +299,7 @@ void menuCallBackPrinting(void)
     printPaused = isPaused();
     resumeToPause(printPaused);
   }
+  */
   
   if (lastProgress != getPrintProgress())
   {
@@ -313,32 +315,42 @@ void menuCallBackPrinting(void)
   switch(key_num)
   {
     case KEY_ICON_0:
-      if(UDiskPrint)
-        setUDiskPrintPause();
-      else
-        setPrintPause(!isPaused());
-      break;
+      if(UDiskPrint){
+        if(printPaused2 == UDiskPausePrint){
+          printPaused2 = !UDiskPausePrint;
+          resumeToPause(printPaused2);
+          setUDiskPrintPause();
+        }
+      }
+      else{
+        if(printPaused == isPaused()){
+          printPaused = !isPaused();
+          resumeToPause(printPaused);
+          setPrintPause(!isPaused());
+        }
+      }
+    break;
     
     case KEY_ICON_3:
-      if(isPrinting())				
+      if(isPrinting())
         infoMenu.menu[++infoMenu.cur] = menuStopPrinting;	
-      break;
+    break;
       
     case KEY_ICON_4:
       infoMenu.menu[++infoMenu.cur] = menuHeat;
-      break;
+    break;
     
     case KEY_ICON_5:
       infoMenu.menu[++infoMenu.cur] = menuSpeed;
-      break;
+    break;
     
     case KEY_ICON_6:
       infoMenu.menu[++infoMenu.cur] = menuBabyStep;
-      break;
+    break;
     
     case KEY_ICON_7:
       infoMenu.menu[++infoMenu.cur] = menuMore;
-      break;
+    break;
     
     default :break;
   }
@@ -403,11 +415,11 @@ void menuCallBackShutDown(void)
   {
     case KEY_POPUP_CONFIRM:
       shutDown = true;
-      break;;
+      break;
 
     case KEY_POPUP_CANCEL:
       infoMenu.cur--;
-      break;		
+      break;
   }
   for (ExtUI::extruder_t i = ExtUI::E0; i < EXTRUDERS; i = (ExtUI::extruder_t)(i + 1)) {
     if (ExtUI::getActualTemp_celsius(i) >= AUTO_SHUT_DOWN_MAXTEMP) {
