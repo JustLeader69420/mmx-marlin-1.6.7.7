@@ -2281,7 +2281,7 @@
 
   #if AXIS_IS_TMC(Y)
     #if ENABLED(R4_PRO)
-      #define Y_CURRENT       1000
+      #define Y_CURRENT       900
     #else
       #define Y_CURRENT       700
     #endif
