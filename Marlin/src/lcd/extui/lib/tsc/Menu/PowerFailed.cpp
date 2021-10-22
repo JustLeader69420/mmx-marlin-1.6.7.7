@@ -13,14 +13,16 @@ void menuCallBackPowerFailed(void)
       break;
     
     case KEY_POPUP_CANCEL:
+     #ifdef HAS_UDISK
       if(sd_or_udisk)
         f_unlink(recovery.filename1);
       else
+     #endif
         card.removeJobRecoveryFile();
       infoMenu.cur--;
       break;
   }
-  if(!IS_SD_INSERTED() && !plr_flag)
+  if(!IS_SD_INSERTED() TERN_(HAS_UDISK, && !plr_flag))
   {
     infoMenu.cur--;
   }

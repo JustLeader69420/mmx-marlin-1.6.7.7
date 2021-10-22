@@ -10,9 +10,15 @@ LABEL_MOVE,
   {ICON_Z_INC, LABEL_Z_INC},
   {ICON_10_MM,  LABEL_10_MM},
   
+ #ifdef QUICK_PRINT
+  {ICON_X_DEC, LABEL_X_INC},
+  {ICON_Y_DEC, LABEL_Y_INC},
+  {ICON_X_INC, LABEL_X_DEC},
+ #else
   {ICON_X_DEC, LABEL_X_DEC},
   {ICON_Y_DEC, LABEL_Y_INC},
   {ICON_X_INC, LABEL_X_INC},
+ #endif
   {ICON_BACK,  LABEL_BACK},
 }
 };
@@ -117,7 +123,11 @@ void menuCallBackMove()
       if(z_add_mm_t < 0)  z_add_mm_t = 0;
       z_add_mm = 0;
       memset(G0_STR, 0, sizeof(G0_STR));
-      sprintf(G0_STR, "G0 Z%d.%d F1000\n", z_add_mm_t/10, z_add_mm_t%10);
+      #ifdef QUICK_PRINT
+        sprintf(G0_STR, "G0 Z%d.%d F3000\n", z_add_mm_t/10, z_add_mm_t%10);
+      #else
+        sprintf(G0_STR, "G0 Z%d.%d F1000\n", z_add_mm_t/10, z_add_mm_t%10);
+      #endif
       queue.enqueue_one_now(G0_STR);
     }
   }else isBusy = true;
@@ -147,7 +157,7 @@ void menuCallBackMove()
   KEY_VALUES key_num = menuKeyGetValue();
   switch (key_num)
   {
-    case KEY_ICON_6: x_add_mm += item_move_len[item_move_len_i];    break;
+    case KEY_ICON_4: x_add_mm += item_move_len[item_move_len_i];    break;
     case KEY_ICON_5: y_add_mm += item_move_len[item_move_len_i];    break;
     case KEY_ICON_2: z_add_mm += item_move_len[item_move_len_i];    break;
     case KEY_ICON_3: 
@@ -155,7 +165,7 @@ void menuCallBackMove()
       moveItems.items[key_num] = itemMoveLen[item_move_len_i];
       menuDrawItem(&moveItems.items[key_num], key_num);
       break;
-    case KEY_ICON_4: x_add_mm -= item_move_len[item_move_len_i];    break;
+    case KEY_ICON_6: x_add_mm -= item_move_len[item_move_len_i];    break;
     case KEY_ICON_1: y_add_mm -= item_move_len[item_move_len_i];    break;
     case KEY_ICON_0: z_add_mm -= item_move_len[item_move_len_i];    break;
     case KEY_ICON_7: infoMenu.cur--; break;  

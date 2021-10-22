@@ -1,4 +1,7 @@
 #include "../TSC_Menu.h"
+
+#ifdef HAS_UDISK
+
 #include "Print.h"
 #include "PrintUdisk.h"
 
@@ -43,3 +46,5 @@ void menuChooseStorage()
     menuDrawPage(&chooseStorageItems);
     menuSetFrontCallBack(menuCallBackChooseStorage);
 }
+
+#endif

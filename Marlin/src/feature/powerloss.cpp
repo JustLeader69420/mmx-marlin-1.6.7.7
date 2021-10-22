@@ -30,8 +30,10 @@
 
 #include "powerloss.h"
 #include "../core/macros.h"
-#include "../lcd/extui/lib/tsc/Menu/PrintUdisk.h"
-#include "../udisk/udiskPrint.h"
+#ifdef HAS_UDISK
+  #include "../lcd/extui/lib/tsc/Menu/PrintUdisk.h"
+  #include "../udisk/udiskPrint.h"
+#endif
 
 bool PrintJobRecovery::enabled; // Initialized by settings.load()
 
@@ -66,16 +68,19 @@ uint32_t PrintJobRecovery::cmd_sdpos, // = 0
 
 
 
-typedef enum{
-  SDCARD = 0,
-  USBDISK
-};
+
 PrintJobRecovery recovery;
-uint16_t plr_num = 0;
-uint8_t sd_or_udisk = 0;
-bool plr_flag = false;
-FIL udiskfile;
-DIR udiskFolder;
+#ifdef HAS_UDISK
+  typedef enum{
+    SDCARD = 0,
+    USBDISK
+  };
+  uint16_t plr_num = 0;
+  uint8_t sd_or_udisk = 0;
+  bool plr_flag = false;
+  FIL udiskfile;
+  DIR udiskFolder;
+#endif
 
 #ifdef __cplusplus
   extern "C"{
@@ -88,9 +93,9 @@ DIR udiskFolder;
 #ifndef POWER_LOSS_PURGE_LEN
   #define POWER_LOSS_PURGE_LEN 0
 #endif
-#ifndef POWER_LOSS_ZRAISE
-  #define POWER_LOSS_ZRAISE 2     // Move on loss with backup power, or on resume without it
-#endif
+// #ifndef POWER_LOSS_ZRAISE
+//   #define POWER_LOSS_ZRAISE 2     // Move on loss with backup power, or on resume without it
+// #endif
 
 #if DISABLED(BACKUP_POWER_SUPPLY)
   #undef POWER_LOSS_RETRACT_LEN   // No retract at outage without backup power
@@ -120,7 +125,7 @@ void PrintJobRecovery::enable(const bool onoff) {
 void PrintJobRecovery::changed() {
   if (!enabled)
     purge();
-  else if (IS_SD_PRINTING() || UDiskPrint)
+  else if (IS_SD_PRINTING() TERN_( HAS_UDISK, || UDiskPrint ))
     save(true);
 }
 
@@ -132,39 +137,42 @@ void PrintJobRecovery::changed() {
 void PrintJobRecovery::check() {
   //if (!card.isMounted()) card.mount();
   if (card.isMounted()) {
-    sd_or_udisk = SDCARD;
+    TERN_( HAS_UDISK, sd_or_udisk = SDCARD;)
     load();
     if (!valid()) return cancel();
     queue.inject_P(PSTR("M1000S"));
   }
 }
-void PrintJobRecovery::check_u() {
-  // 检测到有插U盘且SD卡没有检测到断电文件
-  if(udiskMounted && plr_num<150){
-    sd_or_udisk = USBDISK;
-    // if() return;
-    plr_num++;
-    if(!(load(sd_or_udisk))){
-      plr_flag = false;
-      // return;
-    }
-    else{
-      plr_flag = true;
-      plr_num = 1000;
-      queue.inject_P(PSTR("M1000S"));
+#ifdef HAS_UDISK
+  void PrintJobRecovery::check_u() {
+    // 检测到有插U盘且SD卡没有检测到断电文件
+    if(udiskMounted && plr_num<150){
+      sd_or_udisk = USBDISK;
+      // if() return;
+      plr_num++;
+      if(!(load(sd_or_udisk))){
+        plr_flag = false;
+        // return;
+      }
+      else{
+        plr_flag = true;
+        plr_num = 1000;
+        queue.inject_P(PSTR("M1000S"));
+      }
     }
   }
-}
-
+#endif
 /**
  * Delete the recovery file and clear the recovery data
  */
 void PrintJobRecovery::purge() {
   init();
+  #ifdef HAS_UDISK
   // if(plr_flag){
     f_unlink(filename1);
     plr_flag = false;
   // }
+  #endif
   // else if(!plr_flag)
     card.removeJobRecoveryFile();
 }
@@ -180,30 +188,34 @@ void PrintJobRecovery::load() {
   }
   debug(PSTR("Load"));
 }
-bool PrintJobRecovery::load(uint8_t ifudisk) {
-  debug(PSTR("Load"));
-  // f_opendir(&udiskFolder, "/");
-  if (f_open(&udiskfile, filename1, FA_READ) == FR_OK) {
-    UINT res;
-    init();
-    f_read(&udiskfile,&info, sizeof(info), &res);
-    f_close(&udiskfile);
-    return true;
+#ifdef HAS_UDISK
+  bool PrintJobRecovery::load(uint8_t ifudisk) {
+    debug(PSTR("Load"));
+    // f_opendir(&udiskFolder, "/");
+    if (f_open(&udiskfile, filename1, FA_READ) == FR_OK) {
+      UINT res;
+      init();
+      f_read(&udiskfile,&info, sizeof(info), &res);
+      f_close(&udiskfile);
+      return true;
+    }
+    // f_closedir(&udiskFolder);
+    return false;
   }
-  // f_closedir(&udiskFolder);
-  return false;
-}
+#endif
 
 /**
  * Set info fields that won't change
  */
 void PrintJobRecovery::prepare() {
+ #ifdef HAS_UDISK
   if(UDiskPrint)
   {
     memset(info.sd_filename, 0, sizeof(info.sd_filename));
     strcpy(info.sd_filename, filePath);
   }
   else
+ #endif
     card.getAbsFilename(info.sd_filename);  // SD filename
   cmd_sdpos = 0;
 }
@@ -298,10 +310,12 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
     //
     if(IS_SD_PRINTING())
       write();
+   #ifdef HAS_UDISK
     else if(UDiskPrint){
       info.sdpos = udisk.getPrintSize();
       usb_write();
     }
+   #endif
   }
 }
 
@@ -389,16 +403,18 @@ void PrintJobRecovery::write() {
   if (ret == -1) DEBUG_ECHOLNPGM("Power-loss file write failed.");
   if (!file.close()) DEBUG_ECHOLNPGM("Power-loss file close failed.");
 }
-void PrintJobRecovery::usb_write() {
-  if(!udiskMounted) return;
-  debug(PSTR("usb Write"));
-  FRESULT fp = f_open(&udiskfile, filename1, FA_WRITE | FA_OPEN_ALWAYS);
-  fp = f_lseek(&udiskfile,0);
-  UINT ret = 0;
-  fp = f_write(&udiskfile,&info, sizeof(info), &ret);
-  if (ret <= 0) DEBUG_ECHOLNPGM("Power-loss file write failed.");
-  if (f_close(&udiskfile)) DEBUG_ECHOLNPGM("Power-loss file close failed.");
-}
+#ifdef HAS_UDISK
+  void PrintJobRecovery::usb_write() {
+    if(!udiskMounted) return;
+    debug(PSTR("usb Write"));
+    FRESULT fp = f_open(&udiskfile, filename1, FA_WRITE | FA_OPEN_ALWAYS);
+    fp = f_lseek(&udiskfile,0);
+    UINT ret = 0;
+    fp = f_write(&udiskfile,&info, sizeof(info), &ret);
+    if (ret <= 0) DEBUG_ECHOLNPGM("Power-loss file write failed.");
+    if (f_close(&udiskfile)) DEBUG_ECHOLNPGM("Power-loss file close failed.");
+  }
+#endif
 
 /**
  * Resume the saved print job
@@ -625,7 +641,7 @@ void PrintJobRecovery::resume() {
 
   // Resume the SD file from the last position
   char *fn = info.sd_filename;
-  if(!plr_flag){
+  TERN_( HAS_UDISK, if(!plr_flag){ )
     if(*fn == '/') fn++;
     extern const char M23_STR[];
     sprintf_P(cmd, M23_STR, fn);
@@ -634,6 +650,7 @@ void PrintJobRecovery::resume() {
     gcode.process_subcommands_now(cmd);
 
     TERN_(DEBUG_POWER_LOSS_RECOVERY, marlin_debug_flags = old_flags);
+ #ifdef HAS_UDISK
   }
   else{
     f_stat(info.sd_filename, &workFileinfo);
@@ -645,7 +662,8 @@ void PrintJobRecovery::resume() {
     udisk.resumeUdiskPrint(workFileinfo.fsize, resume_sdpos, info.print_job_elapsed);
     gcode.process_subcommands_now("M24\n");
   }
-
+ #endif
+ 
   // Continue to apply PLR when a file is resumed!
   enable(true);
 }

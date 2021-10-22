@@ -3,6 +3,9 @@
 #include "../../../../../feature/babystep.h"
 #include "../../../../../module/settings.h"
 
+#define BABYSTEP_MAX_HIGH 10.0f
+#define WHO_AXIS Z_AXIS
+
 //1 title, ITEM_PER_PAGE items(icon+label) 
 MENUITEMS babyStepItems = {
 //title
@@ -56,14 +59,14 @@ static void initElements(uint8_t position)
 }
 
 static float getBabyStepZAxisTotalMM(){
-  return babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
+  return babystep.axis_total[BS_TOTAL_IND(WHO_AXIS)] * planner.steps_to_mm[WHO_AXIS];
 }
 
 static int WhatIsBabyStepMM(float mm){
   float oldmm = getBabyStepZAxisTotalMM();
-  if((oldmm>=2 && mm>0) || (oldmm<=-2 && mm<0)) return 0;   // 超越值
-  if((oldmm+mm) >= 2) return 1;                             // 快到顶
-  if((oldmm+mm) <= -2) return 2;                            // 快到底
+  if((oldmm>=BABYSTEP_MAX_HIGH && mm>0) || (oldmm<=-BABYSTEP_MAX_HIGH && mm<0)) return 0;   // 超越值
+  if((oldmm+mm) >= BABYSTEP_MAX_HIGH) return 1;                             // 快到顶
+  if((oldmm+mm) <= -BABYSTEP_MAX_HIGH) return 2;                            // 快到底
   return 3;                                                 // 常规
 }
 
@@ -72,15 +75,15 @@ static void setBabyStepZAxisIncMM(float mm){
   switch (WhatIsBabyStepMM(mm))
   {
     case 1:
-      babystep.add_mm(Z_AXIS, 2.0f - oldmm);    // 值快到顶了
+      babystep.add_mm(WHO_AXIS, BABYSTEP_MAX_HIGH - oldmm);    // 值快到顶了
       break;
 
     case 2:
-      babystep.add_mm(Z_AXIS, -2.0f - oldmm);   // 值快到底了
+      babystep.add_mm(WHO_AXIS, -BABYSTEP_MAX_HIGH - oldmm);   // 值快到底了
       break;
 
     case 3:
-      babystep.add_mm(Z_AXIS, mm);              // 值正常
+      babystep.add_mm(WHO_AXIS, mm);              // 值正常
       break;
     
     default:                                    // 其它

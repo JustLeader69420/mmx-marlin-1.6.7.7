@@ -2,6 +2,8 @@
 #include "../TSC_Menu.h"
 // #include "stm32_usb.h"
 
+#ifdef HAS_UDISK
+
 static ExtUI::FileList filelistUdisk;
 static const GUI_RECT RecProgress = {60,150,316,175};
 bool UDiskPrint = false;
@@ -350,3 +352,5 @@ void menuPrintUdisk(void)
   //   infoMenu.cur--;
   // }
 }
+
+#endif

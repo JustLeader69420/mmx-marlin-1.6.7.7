@@ -65,8 +65,10 @@ void GcodeSuite::M24() {
     startOrResumeJob();               // Start (or resume) the print job timer
     TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
   }
+ #ifdef HAS_UDISK
   if(UDiskPrint)
     TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
+ #endif
 
   #if ENABLED(HOST_ACTION_COMMANDS)
     #ifdef ACTION_ON_RESUME

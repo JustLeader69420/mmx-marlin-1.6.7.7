@@ -81,6 +81,7 @@ void GcodeSuite::M1000() {
     else
       recovery.resume();
   }
+ #ifdef HAS_UDISK
   else if (plr_flag) {
     if (parser.seen('S')) {
       #if HAS_LCD_MENU
@@ -104,6 +105,7 @@ void GcodeSuite::M1000() {
     else
       recovery.resume();
   }
+ #endif
   else
     plr_error(recovery.info.valid_head ? PSTR("No") : PSTR("Invalid"));
 

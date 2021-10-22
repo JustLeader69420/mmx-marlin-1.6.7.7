@@ -1,6 +1,7 @@
 #ifndef _PRINT_UDISK_H_
 #define _PRINT_UDISK_H_
 
+#ifdef HAS_UDISK
 #include "ff.h"
 
 extern bool UDiskPrint;
@@ -15,5 +16,7 @@ extern FILINFO workFileinfo;
 extern char filePath[256];
 // void menuPrintFromSource(void);
 void menuPrintUdisk(void);
+
+#endif
 
 #endif

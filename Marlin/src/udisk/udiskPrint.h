@@ -2,9 +2,10 @@
 #define __UDISKP_
 
 #include "../inc/MarlinConfig.h"
+
 #ifdef HAS_UDISK
-  #include "ff.h"
-#endif
+
+#include "ff.h"
 class UdiskPrint{
 
 public:
@@ -34,5 +35,6 @@ private:
 
 extern UdiskPrint udisk;
 
+#endif
 
 #endif //__UDISKP

@@ -1,5 +1,8 @@
 #include "../TSC_Menu.h"
-#include "ff.h"
+
+#ifdef HAS_UDISK
+  #include "ff.h"
+#endif
 
 //1title, ITEM_PER_PAGE item(icon + label) 
 MENUITEMS printingItems = {
@@ -25,7 +28,7 @@ const ITEM itemIsPause[2] = {
 //
 bool isPrinting(void)
 {
-  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) || (udisk.isUdiskPrint() && !UDiskStopPrint);
+  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) TERN_( HAS_UDISK, || (udisk.isUdiskPrint() && !UDiskStopPrint));
 }
 
 //
@@ -36,8 +39,11 @@ bool isPaused(void)
 
 uint8_t getPrintProgress(void)
 {
+ #ifdef HAS_UDISK
   if(UDiskPrint)  return udisk.getPrintProgress();
-  else            return card.percentDone();
+  else
+ #endif
+    return card.percentDone();
 }
 uint8_t getUDiskPrintProgress(void)
 {
@@ -98,6 +104,8 @@ bool setPrintPause(bool is_pause)
   pauseLock = false;
   return true;
 }
+
+#ifdef HAS_UDISK
 bool setUDiskPrintPause(){
   static bool UDiskPauseLock = false;
   if(UDiskPauseLock)  return false;
@@ -124,7 +132,7 @@ bool setUDiskPrintPause(){
   UDiskPauseLock = false;
   return true;
 }
-
+#endif
 
 
 const GUI_RECT progressRect = {1*SPACE_X_PER_ICON, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y + ICON_HEIGHT/4,
@@ -315,6 +323,7 @@ void menuCallBackPrinting(void)
   switch(key_num)
   {
     case KEY_ICON_0:
+     #ifdef HAS_UDISK
       if(UDiskPrint){
         if(printPaused2 == UDiskPausePrint){
           printPaused2 = !UDiskPausePrint;
@@ -322,7 +331,9 @@ void menuCallBackPrinting(void)
           setUDiskPrintPause();
         }
       }
-      else{
+      else
+     #endif
+      {
         if(printPaused == isPaused()){
           printPaused = !isPaused();
           resumeToPause(printPaused);
@@ -359,11 +370,13 @@ void menuCallBackPrinting(void)
 
 void menuPrinting(void)
 {
-  printPaused2 = UDiskPausePrint;
+  TERN_( HAS_UDISK, printPaused2 = UDiskPausePrint; )
   printPaused = isPaused();
+ #ifdef HAS_UDISK
   if(udisk.isUdiskPrint())
     printingItems.items[KEY_ICON_0] = itemIsPause[printPaused2];
   else
+ #endif
     printingItems.items[KEY_ICON_0] = itemIsPause[printPaused];
   printingDrawPage();
   
@@ -383,7 +396,7 @@ void menuCallBackStopPrinting(void)
         
       }
       else*/ 
-      UDiskStopPrint = true;
+      TERN_( HAS_UDISK, UDiskStopPrint = true; )
       ExtUI::stopPrint();
       set_bed_leveling_enabled(false);
       break;

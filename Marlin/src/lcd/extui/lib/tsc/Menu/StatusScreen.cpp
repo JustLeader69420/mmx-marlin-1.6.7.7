@@ -307,7 +307,16 @@ void menuCallStatus(void)
       infoMenu.menu[++infoMenu.cur] = menuMain;
       break;
     case KEY_ICON_7:
+     #ifdef HAS_UDISK
       infoMenu.menu[++infoMenu.cur] = menuChooseStorage;
+     #else
+      if(z_values[1][1] != 0){
+        planner.leveling_active = true;
+        set_bed_leveling_enabled(true);
+      }
+      enter_by_icon = true;
+      infoMenu.menu[++infoMenu.cur] = menuPrint;
+     #endif
       break;
 
     default:break;
@@ -326,6 +335,6 @@ void menuStatus()
   drawStatus();
   drawStatusScreenMsg();
   msgNeedUpdate = false;
-  UDiskPrint = false;
+  TERN_( HAS_UDISK, UDiskPrint = false; )
   menuSetFrontCallBack(menuCallStatus);
 }

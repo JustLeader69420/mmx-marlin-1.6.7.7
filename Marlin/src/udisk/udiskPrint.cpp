@@ -1,6 +1,9 @@
+#ifdef HAS_UDISK
+
 #include "udiskPrint.h"
 #include "../module/planner.h"
 #include "../module/printcounter.h"
+
 
 UdiskPrint udisk;
 uint64_t UdiskPrint::fsize;  // 文件大小
@@ -33,3 +36,4 @@ uint8_t UdiskPrint::getPrintProgress(void){
     return psize*100/fsize;
 }
 
+#endif

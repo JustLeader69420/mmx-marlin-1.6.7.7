@@ -168,7 +168,7 @@ void GcodeSuite::get_destination_from_command() {
 
   #if ENABLED(POWER_LOSS_RECOVERY) && !PIN_EXISTS(POWER_LOSS)
     // Only update power loss recovery on moves with E
-    if (recovery.enabled && (IS_SD_PRINTING() || UDiskPrint) && seen.e && (seen.x || seen.y))
+    if (recovery.enabled && (IS_SD_PRINTING() TERN_(HAS_UDISK, || UDiskPrint)) && seen.e && (seen.x || seen.y))
       recovery.save();
   #endif
 

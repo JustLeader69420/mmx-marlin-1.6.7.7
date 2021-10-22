@@ -169,20 +169,24 @@ class PrintJobRecovery {
     static inline void close() { file.close(); }
 
     static void check();
-    static void check_u();
+    TERN_( HAS_UDISK, static void check_u();)
     static void resume();
     static void purge();
 
     static inline void cancel() { purge(); card.autostart_index = 0; }
 
     static void load();
-    static bool load(uint8_t ifudisk);
+    TERN_( HAS_UDISK, static bool load(uint8_t ifudisk);)
     static void save(const bool force=ENABLED(SAVE_EACH_CMD_MODE), const float zraise=0);
 
     #if PIN_EXISTS(POWER_LOSS)
       static inline void outage() {
-        if (enabled && READ(POWER_LOSS_PIN) == POWER_LOSS_STATE)
-          _outage();
+        static uint8_t outage_num = 0;
+        if (enabled && READ(POWER_LOSS_PIN) == POWER_LOSS_STATE) {
+          outage_num++;
+          if (outage_num >= READ_POWER_LOSS_PIN_NUM)  _outage();
+        }
+        else outage_num = 0;
       }
     #endif
 
@@ -199,7 +203,7 @@ class PrintJobRecovery {
 
   private:
     static void write();
-    static void usb_write();
+    TERN_( HAS_UDISK, static void usb_write(); )
 
     #if ENABLED(BACKUP_POWER_SUPPLY)
       static void retract_and_lift(const float &zraise);
@@ -212,7 +216,9 @@ class PrintJobRecovery {
 };
 
 extern PrintJobRecovery recovery;
-extern uint8_t sd_or_udisk;
-extern uint16_t plr_num;
-extern FIL udiskfile;
-extern bool plr_flag;
+#ifdef HAS_UDISK
+  extern uint8_t sd_or_udisk;
+  extern uint16_t plr_num;
+  extern FIL udiskfile;
+  extern bool plr_flag;
+#endif

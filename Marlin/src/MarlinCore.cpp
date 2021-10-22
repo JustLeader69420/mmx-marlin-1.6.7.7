@@ -465,8 +465,10 @@ void startOrResumeJob() {
 
   inline void abortSDPrinting() {
     float rz;
+   #ifdef HAS_UDISK
     if(udisk.isUdiskPrint())
       udisk.abortUdiskPrint(&udisk_fp);
+   #endif
     if(card.isFileOpen())
       card.endFilePrint(TERN_(SD_RESORT, true));
     SERIAL_ECHOLNPAIR("close end");
@@ -491,7 +493,7 @@ void startOrResumeJob() {
     #endif
 
     card.flag.abort_sd_printing = false;  // 结束停止打印状态
-    UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;
+    TERN_( HAS_UDISK, UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;)
 
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
   }
@@ -767,14 +769,16 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
       gd32_usb_loop();
     #else
       MX_USB_HOST_Process();
-      MSC_MenuProcess();
+      // MSC_MenuProcess();
     #endif
   #endif
 
   // 检测断电文件，sd卡使能内也有，因此这是U盘专用
+ #ifdef HAS_UDISK
   if(udiskMounted && !UDiskPrint){
     TERN_(POWER_LOSS_RECOVERY, recovery.check_u());
   }
+ #endif
 
   // Handle USB Flash Drive insert / remove
   TERN_(USB_FLASH_DRIVE_SUPPORT, Sd2Card::idle());
@@ -1039,12 +1043,14 @@ void setup() {
   SETUP_RUN(HAL_init());
   LCD_Setup();
 
+ #ifdef HAS_UDISK
   #if ENABLED(USE_GD32)
     // gd32_usb_device_cdc_init();
     gd32_usb_host_msc_init();
   #else
     MX_USB_HOST_Init();
   #endif
+ #endif
   
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers

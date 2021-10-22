@@ -752,8 +752,12 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
 
   #if ENABLED(SDSUPPORT)
     if (did_pause_print) {
-      if(UDiskPrint) UDiskPausePrint = false;
-      else card.startFileprint(); 
+     #ifdef HAS_UDISK
+      if(UDiskPrint) 
+        UDiskPausePrint = false;
+      else 
+     #endif
+        card.startFileprint(); 
       --did_pause_print; 
     }
   #endif

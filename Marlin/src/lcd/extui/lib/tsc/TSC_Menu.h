@@ -10,9 +10,11 @@
 #include "../../../../gcode/queue.h"
 #include "../../../../module/planner.h"
 #include "../../../../sd/cardreader.h"
-#include "../../../../udisk/udiskPrint.h"
 #include "../../../../libs/duration_t.h"
 #include "../../../../module/printcounter.h"
+#ifdef HAS_UDISK
+  #include "../../../../udisk/udiskPrint.h"
+#endif
 
 #ifdef AUTO_BED_LEVELING_BILINEAR
   #include "../../../../feature/bedlevel/bedlevel.h"
