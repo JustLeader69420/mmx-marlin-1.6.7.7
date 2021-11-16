@@ -23,11 +23,14 @@
 
 // 选择机器型号
 // #define R3_PRO    // R3_pro:max
-#define R4_PRO    // R4_pro:pro
+// #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
-#define ST32_SHIP
-// #define USE_GD32
+// #define ST32_SHIP
+#define USE_GD32
+#define QUICK_PRINT
+
+// #define TEST_FW
 
 /* D2:230*230*260
  * R3:320*320*400
@@ -41,15 +44,13 @@
   #define Y_BED_SIZE 400
   #define Z_BED_SIZE 400
 #else
-  #define X_BED_SIZE 230
+  #define X_BED_SIZE 210
+  // #define X_BED_SIZE 230
   #define Y_BED_SIZE 230
   #define Z_BED_SIZE 260
 #endif
 
-
-
 #define D301_AUTO_LEVELING
-
 #ifdef D301_AUTO_LEVELING
 
   //#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN  //davi 2021.1.21
@@ -648,6 +649,9 @@
 
 // Enable one of the options below for CoreXY, CoreXZ, or CoreYZ kinematics,
 // either in the usual order or reversed
+#ifdef QUICK_PRINT
+  #define COREXZ
+#endif
 //#define COREXY
 //#define COREXZ
 //#define COREYZ
@@ -665,12 +669,21 @@
 // Specify here all the endstop connectors that are connected to any endstop or probe.
 // Almost all printers will be using one per axis. Probes will use one or more of the
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
-#define USE_XMIN_PLUG
-#define USE_YMIN_PLUG
-#define USE_ZMIN_PLUG
-//#define USE_XMAX_PLUG
-//#define USE_YMAX_PLUG
-//#define USE_ZMAX_PLUG
+#if ENABLED(QUICK_PRINT)
+  // #define USE_XMIN_PLUG
+  #define USE_YMIN_PLUG
+  #define USE_ZMIN_PLUG
+  #define USE_XMAX_PLUG
+  //#define USE_YMAX_PLUG
+  //#define USE_ZMAX_PLUG
+#else
+  #define USE_XMIN_PLUG
+  #define USE_YMIN_PLUG
+  #define USE_ZMIN_PLUG
+  // #define USE_XMAX_PLUG
+  //#define USE_YMAX_PLUG
+  //#define USE_ZMAX_PLUG
+#endif
 
 // Enable pullup for all endstops to prevent a floating state
 #define ENDSTOPPULLUPS
@@ -699,13 +712,23 @@
 #endif
 
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
-#define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-#define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-#define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-#define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-#define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-#define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
+#if ENABLED(QUICK_PRINT)
+  #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define X_MAX_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+  #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+  #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
+#else
+  #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+  #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+  #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+  #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
+#endif
 
 /**
  * Stepper Drivers
@@ -786,7 +809,13 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 800, 400 }
+#if ENABLED(QUICK_PRINT)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 79.15, 80, 79.15, 400 }
+#elif ENABLED(TEST_FW)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 800, 800, 800, 400 }
+#else
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 800, 400 }
+#endif
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -794,8 +823,13 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 // #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 45 }
-#define DEFAULT_MAX_FEEDRATE          { 200, 200, 5, 45 }
-// #define DEFAULT_MAX_FEEDRATE          { 1000, 1000, 1000, 1000 }
+#if ENABLED(QUICK_PRINT)
+  #define DEFAULT_MAX_FEEDRATE          { 400, 400, 400, 90 }
+#elif ENABLED(TEST_FW)
+  #define DEFAULT_MAX_FEEDRATE          { 10, 10, 5, 45 }
+#else
+  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 5, 45 }
+#endif
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -808,8 +842,11 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-// #define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
-#define DEFAULT_MAX_ACCELERATION      { 600, 600, 100, 700 }
+#ifdef QUICK_PRINT
+  #define DEFAULT_MAX_ACCELERATION      { 600, 600, 600, 700 }
+#else
+  #define DEFAULT_MAX_ACCELERATION      { 600, 600, 100, 700 }
+#endif
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -824,9 +861,15 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          600    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  600    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   800    // X, Y, Z acceleration for travel (non printing) moves
+// #ifdef QUICK_PRINT
+//   #define DEFAULT_ACCELERATION          1000    // X, Y, Z and E acceleration for printing moves
+//   #define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
+//   #define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
+// #else
+  #define DEFAULT_ACCELERATION          600    // X, Y, Z and E acceleration for printing moves
+  #define DEFAULT_RETRACT_ACCELERATION  600    // E acceleration for retracts
+  #define DEFAULT_TRAVEL_ACCELERATION   800    // X, Y, Z acceleration for travel (non printing) moves
+// #endif
 
 /**
  * Default Jerk limits (mm/s)
@@ -838,9 +881,9 @@
  */
 #define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
-  #define DEFAULT_XJERK 20.0
-  #define DEFAULT_YJERK 20.0
-  #define DEFAULT_ZJERK  0.4
+  #define DEFAULT_XJERK 10.0
+  #define DEFAULT_YJERK 10.0
+  #define DEFAULT_ZJERK 10.0
 
   //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
 
@@ -873,7 +916,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-//#define S_CURVE_ACCELERATION
+#define S_CURVE_ACCELERATION
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1048,7 +1091,7 @@
 #endif
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
+#define Z_PROBE_SPEED_FAST (4*60) //HOMING_FEEDRATE_Z
 
 // Feedrate (mm/min) for the "accurate" probe of each point
 #define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 2)
@@ -1138,9 +1181,21 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR false
-#define INVERT_Y_DIR true
-#define INVERT_Z_DIR true
+#if ENABLED(QUICK_PRINT)
+  #define INVERT_X_DIR true
+  #define INVERT_Y_DIR true
+  #define INVERT_Z_DIR true
+#elif ENABLED(TEST_FW)
+  #define INVERT_X_DIR true
+  #define INVERT_Y_DIR true
+  #define INVERT_Z_DIR true
+#else
+  #define INVERT_X_DIR false
+  #define INVERT_Y_DIR true
+  #define INVERT_Z_DIR true
+#endif
+
+// #define INVERT_Z_DIR true
 
 // @section extruder
 
@@ -1167,9 +1222,15 @@
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
-#define X_HOME_DIR -1
-#define Y_HOME_DIR -1
-#define Z_HOME_DIR -1
+#if ENABLED(QUICK_PRINT)
+  #define X_HOME_DIR  1
+  #define Y_HOME_DIR -1
+  #define Z_HOME_DIR -1
+#else
+  #define X_HOME_DIR -1
+  #define Y_HOME_DIR -1
+  #define Z_HOME_DIR -1
+#endif
 
 // @section machine
 
@@ -1451,8 +1512,16 @@
 #endif
 
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_XY (50*60)
-#define HOMING_FEEDRATE_Z  (4*60)
+#ifdef TEST_FW
+  #define HOMING_FEEDRATE_XY (6*60)
+#else
+  #define HOMING_FEEDRATE_XY (50*60)
+#endif
+#ifdef QUICK_PRINT
+  #define HOMING_FEEDRATE_Z  (20*60)
+#else
+  #define HOMING_FEEDRATE_Z  (4*60)
+#endif
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS

@@ -449,6 +449,7 @@ xyze_int8_t Stepper::count_direction{0};
 
 /**
  * Set the stepper direction of each axis
+ * 设置各轴的步进方向
  *
  *   COREXY: X_AXIS=A_AXIS and Y_AXIS=B_AXIS
  *   COREXZ: X_AXIS=A_AXIS and Z_AXIS=C_AXIS
@@ -2876,7 +2877,28 @@ void Stepper::report_positions() {
       case Z_AXIS: {
 
         #if CORE_IS_XZ
+         #ifdef QUICK_PRINT
+          BABYSTEP_CORE(X, Z, BABYSTEP_INVERT_Z, direction, (CORESIGN(1)>0));
+         #else
           BABYSTEP_CORE(X, Z, BABYSTEP_INVERT_Z, direction, (CORESIGN(1)<0));
+         #endif
+          /*
+          const xy_byte_t old_dir = { _READ_DIR(X), _READ_DIR(Z) }; 
+          _ENABLE_AXIS(X); _ENABLE_AXIS(Z);                         
+          DIR_WAIT_BEFORE();                                        
+          _APPLY_DIR(X, _INVERT_DIR(X)^direction^BABYSTEP_INVERT_Z);                    
+          _APPLY_DIR(Z, _INVERT_DIR(Z)^direction^BABYSTEP_INVERT_Z^(CORESIGN(1)<0));                
+          DIR_WAIT_AFTER();                                         
+          _SAVE_START();                                            
+          _APPLY_STEP(X, !_INVERT_STEP_PIN(X), true);               
+          _APPLY_STEP(Z, !_INVERT_STEP_PIN(Z), true);               
+          _PULSE_WAIT();                                            
+          _APPLY_STEP(X, _INVERT_STEP_PIN(X), true);                
+          _APPLY_STEP(Z, _INVERT_STEP_PIN(Z), true);                
+          EXTRA_DIR_WAIT_BEFORE();                                  
+          _APPLY_DIR(X, old_dir.a); _APPLY_DIR(Z, old_dir.b);       
+          EXTRA_DIR_WAIT_AFTER();
+          */
         #elif CORE_IS_YZ
           BABYSTEP_CORE(Y, Z, BABYSTEP_INVERT_Z, direction, (CORESIGN(1)<0));
         #elif DISABLED(DELTA)

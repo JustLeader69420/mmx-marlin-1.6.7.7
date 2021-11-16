@@ -75,8 +75,12 @@
 //
 // Limit Switches
 //
+#if ENABLED(QUICK_PRINT)
+  #define X_MAX_PIN                           PF12
+#else
 #define X_MIN_PIN                           PF12
 // #define X_MAX_PIN                           PA15
+#endif
 
 #define Y_MIN_PIN                           PF14
 // #define Y_MAX_PIN                           PD12
@@ -85,6 +89,7 @@
   #define Z_MIN_PIN          PB1
 #else
   #define Z_MIN_PIN          PG0
+  #define Z_MAZ_PIN 
 #endif
 // #define Z_MIN_PIN                           PG0
 // #define Z_MAX_PIN                           PD15

@@ -12,36 +12,36 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "E:/gitlib/.pio/build/langgo407ve/firmware.elf",
-            "projectEnvName": "langgo407ve",
+            "executable": "E:/gitlib/.pio/build/langgo407ve_gd/firmware.elf",
+            "projectEnvName": "langgo407ve_gd",
             "toolchainBinDir": "C:/Users/Administrator/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "STM32F40x.svd",
             "preLaunchTask": {
                 "type": "PlatformIO",
-                "task": "Pre-Debug (langgo407ve)"
+                "task": "Pre-Debug"
             }
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "E:/gitlib/.pio/build/langgo407ve/firmware.elf",
-            "projectEnvName": "langgo407ve",
+            "executable": "E:/gitlib/.pio/build/langgo407ve_gd/firmware.elf",
+            "projectEnvName": "langgo407ve_gd",
             "toolchainBinDir": "C:/Users/Administrator/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "STM32F40x.svd"
         },
         {
-            "cwd": "${workspaceRoot}",
-            "executable": "./.pio/build/langgo407ve_gd/firmware.elf",
-            "name": "cortex debug",
+            "type": "platformio-debug",
             "request": "launch",
-            "type": "cortex-debug",
-            "servertype": "jlink",
-            "device": "STM32F407ZE",
-            "svdFile": "STM32F40x.svd",
-            //"serialNumber": "137526290"
+            "name": "PIO Debug (without uploading)",
+            "executable": "E:/gitlib/.pio/build/langgo407ve_gd/firmware.elf",
+            "projectEnvName": "langgo407ve_gd",
+            "toolchainBinDir": "C:/Users/Administrator/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "STM32F40x.svd",
+            "loadMode": "manual"
         }
     ]
 }

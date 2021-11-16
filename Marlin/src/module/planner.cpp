@@ -1767,6 +1767,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   , feedRate_t fr_mm_s, const uint8_t extruder, const float &millimeters/*=0.0*/
 ) {
 
+  // 计算要各个轴移动的步进数（可正可负）
   const int32_t da = target.a - position.a,
                 db = target.b - position.b,
                 dc = target.c - position.c;
@@ -1791,7 +1792,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #if EITHER(PREVENT_COLD_EXTRUSION, PREVENT_LENGTHY_EXTRUDE)
     if (de) {
       #if ENABLED(PREVENT_COLD_EXTRUSION)
-        if (thermalManager.tooColdToExtrude(extruder)) {
+        if (thermalManager.tooColdToExtrude(extruder)) {  // 温度达不到目标，下面会清零。
           position.e = target.e; // Behave as if the move really took place, but ignore E part
           TERN_(HAS_POSITION_FLOAT, position_float.e = target_float.e);
           de = 0; // no difference
@@ -1800,7 +1801,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       #endif // PREVENT_COLD_EXTRUSION
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)
         const float e_steps = ABS(de * e_factor[extruder]);
-        const float max_e_steps = settings.axis_steps_per_mm[E_AXIS_N(extruder)] * (EXTRUDE_MAXLENGTH);
+        const float max_e_steps = settings.axis_steps_per_mm[E_AXIS_N(extruder)] * (EXTRUDE_MAXLENGTH);   // 单次最大挤出量
         if (e_steps > max_e_steps) {
           #if ENABLED(MIXING_EXTRUDER)
             bool ignore_e = false;
@@ -1823,7 +1824,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #endif // PREVENT_COLD_EXTRUSION || PREVENT_LENGTHY_EXTRUDE
 
   // Compute direction bit-mask for this block
-  uint8_t dm = 0;
+  uint8_t dm = 0;   // 记录各个轴的方向
   #if CORE_IS_XY
     if (da < 0) SBI(dm, X_HEAD);                // Save the real Extruder (head) direction in X Axis
     if (db < 0) SBI(dm, Y_HEAD);                // ...and Y
@@ -1857,7 +1858,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
   #if EXTRUDERS
     const float esteps_float = de * e_factor[extruder];
-    const uint32_t esteps = ABS(esteps_float) + 0.5f;
+    const uint32_t esteps = ABS(esteps_float) + 0.5f;   // ABS(N)，将N变为正整数，+0.5是为了四舍五入
   #else
     constexpr uint32_t esteps = 0;
   #endif

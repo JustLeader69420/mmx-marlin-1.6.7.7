@@ -171,7 +171,7 @@
 #elif HAS_DRIVER(LV8729)
   #define MIN_STEPPER_PULSE_CYCLES uint32_t((((F_CPU) - 1) / 2000000) + 1) // 0.5µs, aka 500ns
 #else
-  #define MIN_STEPPER_PULSE_CYCLES _MIN_STEPPER_PULSE_CYCLES(1UL)
+  #define MIN_STEPPER_PULSE_CYCLES _MIN_STEPPER_PULSE_CYCLES(1UL)   // 最小步进脉冲周期
 #endif
 
 // Calculate the minimum pulse times (high and low)

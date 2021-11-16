@@ -1,6 +1,7 @@
+#include "udiskPrint.h"
+
 #ifdef HAS_UDISK
 
-#include "udiskPrint.h"
 #include "../module/planner.h"
 #include "../module/printcounter.h"
 

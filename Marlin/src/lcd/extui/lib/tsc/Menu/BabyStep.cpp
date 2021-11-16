@@ -3,7 +3,7 @@
 #include "../../../../../feature/babystep.h"
 #include "../../../../../module/settings.h"
 
-#define BABYSTEP_MAX_HIGH 10.0f
+#define BABYSTEP_MAX_HIGH 2.0f
 #define WHO_AXIS Z_AXIS
 
 //1 title, ITEM_PER_PAGE items(icon+label) 

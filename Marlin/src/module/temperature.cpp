@@ -2566,6 +2566,14 @@ public:
  *  - Advance Babysteps
  *  - Endstop polling
  *  - Planner clean buffer
+ * 
+ * 处理与温度相关的各种~1KHz任务
+ *  - 加热器PWM (~1KHz与定标器)
+ *  - LCD按键轮询(~500Hz)
+ *  - 启动/读取一个ADC传感器
+ *  - 循序渐进
+ *  - 结束轮询
+ *  - 规划器清洁缓冲区
  */
 void Temperature::tick() {
 
@@ -3016,7 +3024,7 @@ void Temperature::tick() {
   //
   // Additional ~1KHz Tasks
   //
-
+  // 执行babystep任务
   #if ENABLED(BABYSTEPPING) && DISABLED(INTEGRATED_BABYSTEPPING)
     babystep.task();
   #endif

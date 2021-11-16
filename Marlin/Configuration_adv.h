@@ -529,10 +529,10 @@
 //#define Z_LATE_ENABLE // Enable Z the last moment. Needed if your Z driver overheats.
 
 // Employ an external closed loop controller. Override pins here if needed.
-//#define EXTERNAL_CLOSED_LOOP_CONTROLLER
+// #define EXTERNAL_CLOSED_LOOP_CONTROLLER
 #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
-  //#define CLOSED_LOOP_ENABLE_PIN        -1
-  //#define CLOSED_LOOP_MOVE_COMPLETE_PIN -1
+  #define CLOSED_LOOP_ENABLE_PIN        -1
+  #define CLOSED_LOOP_MOVE_COMPLETE_PIN -1
 #endif
 
 /**
@@ -573,7 +573,11 @@
 //
 // For Z set the number of stepper drivers
 //
-#define NUM_Z_STEPPER_DRIVERS 2   // (1-4) Z options change based on how many
+#ifdef QUICK_PRINT
+  #define NUM_Z_STEPPER_DRIVERS 1   // (1-4) Z options change based on how many
+#else
+  #define NUM_Z_STEPPER_DRIVERS 2   // (1-4) Z options change based on how many
+#endif
 
 #if NUM_Z_STEPPER_DRIVERS > 1
   //#define Z_MULTI_ENDSTOPS
@@ -653,7 +657,12 @@
 
 //#define SENSORLESS_BACKOFF_MM  { 2, 2 }     // (mm) Backoff from endstops before sensorless homing
 
-#define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm) Backoff from endstops after first bump
+#if ENABLED(TEST_FW)
+  #define HOMING_BUMP_MM      { 1, 1, 1 }       // (mm) Backoff from endstops after first bump
+#else
+  #define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm) Backoff from endstops after first bump
+  
+#endif
 #define HOMING_BUMP_DIVISOR { 2, 2, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
@@ -837,6 +846,8 @@
  * Idle Stepper Shutdown
  * Set DISABLE_INACTIVE_? 'true' to shut down axis steppers after an idle period.
  * The Deactive Time can be overridden with M18 and M84. Set to 0 for No Timeout.
+ * 
+ * 长时间不动就关闭步进电机
  */
 #define DEFAULT_STEPPER_DEACTIVE_TIME 120
 #define DISABLE_INACTIVE_X true
@@ -845,27 +856,33 @@
 #define DISABLE_INACTIVE_E true
 
 // If the Nozzle or Bed falls when the Z stepper is disabled, set its resting position here.
+// 如果Z步进器被禁用时喷嘴或床身下降，将其静止位置设置在此处。
 //#define Z_AFTER_DEACTIVATE Z_HOME_POS
 
+// 在步进器被停用后需要重新安置
 //#define HOME_AFTER_DEACTIVATE  // Require rehoming after steppers are deactivated
 
 // Default Minimum Feedrates for printing and travel moves
+// 默认打印最小馈电速率和旅行移动
 #define DEFAULT_MINIMUMFEEDRATE       0.0     // (mm/s) Minimum feedrate. Set with M205 S.
 #define DEFAULT_MINTRAVELFEEDRATE     0.0     // (mm/s) Minimum travel feedrate. Set with M205 T.
 
 // Minimum time that a segment needs to take as the buffer gets emptied
+// 当缓冲区被清空时，段需要占用的最小时间（默认最小分段时间）
 #define DEFAULT_MINSEGMENTTIME        20000   // (µs) Set with M205 B.
 
 // Slow down the machine if the lookahead buffer is (by default) half full.
+// 如果前向缓冲区(默认情况下)是半满的，则减慢机器的速度。（当前瞻缓冲区填充到设定的SLOWDOWN_DIVISOR数量时，减慢机器的速度。为较大的缓冲区大小增加减速除数。）
 // Increase the slowdown divisor for larger buffer sizes.
+// 为较大的缓冲区大小增加减速因子。
 #define SLOWDOWN
 #if ENABLED(SLOWDOWN)
   #define SLOWDOWN_DIVISOR 2
 #endif
 
 /**
- * XY Frequency limit
- * Reduce resonance by limiting the frequency of small zigzag infill moves.
+ * XY Frequency limit  限制XY频率
+ * Reduce resonance by limiting the frequency of small zigzag infill moves.  通过限制小之字形填充移动的频率来减少共振。
  * See https://hydraraptor.blogspot.com/2010/12/frequency-limit.html
  * Use M201 F<freq> G<min%> to change limits at runtime.
  */
@@ -877,11 +894,11 @@
 // Minimum planner junction speed. Sets the default minimum speed the planner plans for at the end
 // of the buffer and all stops. This should not be much greater than zero and should only be changed
 // if unwanted behavior is observed on a user's machine when running at very slow speeds.
-#define MINIMUM_PLANNER_SPEED 0.05 // (mm/s)
+#define MINIMUM_PLANNER_SPEED 0.05 // (mm/s)    // 最小规划器速度
 
 //
-// Backlash Compensation
-// Adds extra movement to axes on direction-changes to account for backlash.
+// Backlash Compensation  间隙补偿
+// Adds extra movement to axes on direction-changes to account for backlash.  增加额外的运动轴上的方向变化，以考虑反弹。
 //
 //#define BACKLASH_COMPENSATION
 #if ENABLED(BACKLASH_COMPENSATION)
@@ -913,6 +930,7 @@
 #endif
 
 /**
+ * 自动间隙校准
  * Automatic backlash, position and hotend offset calibration
  *
  * Enable G425 to run automatic calibration using an electrically-
@@ -973,12 +991,18 @@
  * below 1kHz (for AVR) or 10kHz (for ARM), where aliasing between axes in multi-axis moves causes audible
  * vibration and surface artifacts. The algorithm adapts to provide the best possible step smoothing at the
  * lowest stepping frequencies.
+ * 
+ * 自适应步进平滑
+ * 自适应步进平滑提高了多轴移动的分辨率，特别是在低于 1kHz（对于 AVR）或 10kHz（对于 ARM）的步进频率时，
+ * 多轴移动中轴之间的混叠会导致声音振动和表面伪影。
+ * 该算法适用于在最低步进频率下提供最​​佳可能的步进平滑。
  */
 //#define ADAPTIVE_STEP_SMOOTHING
 
 /**
- * Custom Microstepping
+ * Custom Microstepping  自定义微步进
  * Override as-needed for your setup. Up to 3 MS pins are supported.
+ * 如果您的电路板带有名为X_MS1、X_MS2等的引脚，那么您可以使用 G 代码或 LCD 菜单更改微步进。
  */
 //#define MICROSTEP1 LOW,LOW,LOW
 //#define MICROSTEP2 HIGH,LOW,LOW
@@ -991,7 +1015,7 @@
 #define MICROSTEP_MODES { 16, 16, 16, 16, 16, 16 } // [1,2,4,8,16]
 
 /**
- *  @section  stepper motor current
+ *  @section  stepper motor current  步进电机电流
  *
  *  Some boards have a means of setting the stepper motor current via firmware.
  *
@@ -1049,7 +1073,11 @@
 // @section lcd
 
 #if EITHER(ULTIPANEL, EXTENSIBLE_UI)
+ #if ENABLED(QUICK_PRINT)
+  #define MANUAL_FEEDRATE { 50*60, 50*60, 20*60, 1*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
+ #else
   #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 1*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
+ #endif
   #define SHORT_MANUAL_Z_MOVE 0.025 // (mm) Smallest manual Z move (< 0.1mm)
   #if ENABLED(ULTIPANEL)
     #define MANUAL_E_MOVES_RELATIVE // Display extruder move distance rather than "position"
@@ -1058,6 +1086,7 @@
 #endif
 
 // Change values more rapidly when the encoder is rotated faster
+// 当编码器旋转得更快时，更改值的速度更快
 #define ENCODER_RATE_MULTIPLIER
 #if ENABLED(ENCODER_RATE_MULTIPLIER)
   #define ENCODER_10X_STEPS_PER_SEC   30  // (steps/s) Encoder rate for 10x speed
@@ -1160,35 +1189,41 @@
   #endif
 #endif
 
+// SD 卡支持
 #if ENABLED(SDSUPPORT)
 
   // The standard SD detect circuit reads LOW when media is inserted and HIGH when empty.
+  // 标准SD检测电路在插入介质时读取LOW，空介质时读取HIGH。
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
+  // 如果您的SD卡检测不正确，请启用此选项并设置为HIGH。
   //#define SD_DETECT_STATE HIGH
 
-  //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
+  //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)  只读SD卡(可储存超过2K的闪存)
 
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
-  #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
+  #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished  当SD打印完成时禁用步进
+  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place  使用“M84XYE”来启用Z，这样你的床就不会动
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
+  // 根据卡片的FAT，反向SD排序首先显示“最近的”文件。
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
+  // 因为FAT的使用顺序不一致，所以推荐使用SDCARD_SORT_ALPHA。
   #define SDCARD_RATHERRECENTFIRST
 
-  #define SD_MENU_CONFIRM_START             // Confirm the selected SD file before printing
+  #define SD_MENU_CONFIRM_START             // Confirm the selected SD file before printing  打印前确认选定的SD文件
 
-  //#define MENU_ADDAUTOSTART               // Add a menu option to run auto#.g files
+  //#define MENU_ADDAUTOSTART               // Add a menu option to run auto#.g files  添加一个菜单选项来运行auto#。g的文件
 
-  #define EVENT_GCODE_SD_ABORT "G28XY"      // G-code to run on SD Abort Print (e.g., "G28XY" or "G27")
+  #define EVENT_GCODE_SD_ABORT "G28XY"      // G-code to run on SD Abort Print (e.g., "G28XY" or "G27") 在SD终止打印上运行的G-code(例如，“G28XY”或“G27”)
 
   #if ENABLED(PRINTER_EVENT_LEDS)
+    // (秒)恢复正常照明前保持LED“完成”颜色的时间
     #define PE_LEDS_COMPLETED_TIME  (30*60) // (seconds) Time to keep the LED "done" color before restoring normal illumination
   #endif
 
   /**
-   * Continue after Power-Loss (Creality3D)
+   * Continue after Power-Loss (Creality3D)  断电后继续(Creality3D)
    *
    * Store the current state to the SD Card at the start of each layer
    * during SD printing. If the recovery file is found at boot time, present
@@ -1201,8 +1236,9 @@
     //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
     //#define POWER_LOSS_RECOVER_ZHOME  // Z homing is needed for proper recovery. 99.9% of the time this should be disabled!
     // #define POWER_LOSS_ZRAISE       2 // (mm) Z axis raise on resume (on power loss with UPS)
-    //#define POWER_LOSS_PIN         44 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
-    //#define POWER_LOSS_STATE     HIGH // State of pin indicating power loss
+    // #define POWER_LOSS_PIN         PE5 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
+    // #define POWER_LOSS_STATE       LOW // State of pin indicating power loss
+    // #define READ_POWER_LOSS_PIN_NUM 3 // 读取引脚的次数
     //#define POWER_LOSS_PULL           // Set pullup / pulldown as appropriate
     #define POWER_LOSS_PURGE_LEN   10 // (mm) Length of filament to purge on resume
     #define POWER_LOSS_RETRACT_LEN 10 // (mm) Length of filament to retract on fail. Requires backup power.
@@ -1213,7 +1249,7 @@
   #endif
 
   /**
-   * Sort SD file listings in alphabetical order.
+   * Sort SD file listings in alphabetical order.  排序SD文件清单在字母顺序。
    *
    * With this option enabled, items on SD cards will be sorted
    * by name for easier navigation.
@@ -1251,6 +1287,7 @@
   #endif
 
   // This allows hosts to request long names for files and folders with M33
+  // 这允许主机请求使用M33的文件和文件夹的长名称
   #define LONG_FILENAME_HOST_SUPPORT
 
   // Enable this option to scroll long filenames in the SD card menu
@@ -1830,10 +1867,11 @@
 #endif
 
 // Moves (or segments) with fewer steps than this will be joined with the next move
-#define MIN_STEPS_PER_SEGMENT 6
+// 步数少于此的移动（或分段）将与下一个移动合并。
+#define MIN_STEPS_PER_SEGMENT 6   // 每段最少步数
 
 /**
- * Minimum delay before and after setting the stepper DIR (in ns)
+ * Minimum delay before and after setting the stepper DIR (in ns)  在设置步进DIR之前和之后的最小延迟(ns)
  *     0 : No delay (Expect at least 10µS since one Stepper ISR must transpire)
  *    20 : Minimum for TMC2xxx drivers
  *   200 : Minimum for A4988 drivers
@@ -1845,11 +1883,11 @@
  *
  * Override the default value based on the driver type set in Configuration.h.
  */
-//#define MINIMUM_STEPPER_POST_DIR_DELAY 650
-//#define MINIMUM_STEPPER_PRE_DIR_DELAY 650
+// #define MINIMUM_STEPPER_POST_DIR_DELAY 20   // 20211022, 之前未打开
+// #define MINIMUM_STEPPER_PRE_DIR_DELAY 20
 
 /**
- * Minimum stepper driver pulse width (in µs)
+ * Minimum stepper driver pulse width (in µs)   最小步进驱动脉冲宽度(以µs计)
  *   0 : Smallest possible width the MCU can produce, compatible with TMC2xxx drivers
  *   0 : Minimum 500ns for LV8729, adjusted in stepper.h
  *   1 : Minimum for A4988 and A5984 stepper drivers
@@ -1862,9 +1900,9 @@
 //#define MINIMUM_STEPPER_PULSE 2
 
 /**
- * Maximum stepping rate (in Hz) the stepper driver allows
+ * Maximum stepping rate (in Hz) the stepper driver allows    步进驱动器允许的最大步进速率(Hz)
  *  If undefined, defaults to 1MHz / (2 * MINIMUM_STEPPER_PULSE)
- *  5000000 : Maximum for TMC2xxx stepper drivers
+ *  5000000 : Maximum for TMC2xxx stepper drivers   TMC2xxx步进驱动的最大值
  *  1000000 : Maximum for LV8729 stepper driver
  *  500000  : Maximum for A4988 stepper driver
  *  250000  : Maximum for DRV8825 stepper driver
@@ -2264,7 +2302,11 @@
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #if AXIS_IS_TMC(X)
+   #ifdef QUICK_PRINT
+    #define X_CURRENT       900        // (mA) RMS current. Multiply by 1.414 for peak current.
+   #else
     #define X_CURRENT       500        // (mA) RMS current. Multiply by 1.414 for peak current.
+   #endif
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS     16    // 0..256
     #define X_RSENSE          0.11
@@ -2283,7 +2325,7 @@
     #if ENABLED(R4_PRO)
       #define Y_CURRENT       900
     #else
-      #define Y_CURRENT       700
+      #define Y_CURRENT       900
     #endif
     #define Y_CURRENT_HOME  Y_CURRENT
     #define Y_MICROSTEPS     16
@@ -2300,7 +2342,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z)
-    #define Z_CURRENT       600
+    #define Z_CURRENT       900
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
@@ -2308,7 +2350,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z2)
-    #define Z2_CURRENT      600
+    #define Z2_CURRENT      900
     #define Z2_CURRENT_HOME Z2_CURRENT
     #define Z2_MICROSTEPS    16
     #define Z2_RSENSE         0.11
