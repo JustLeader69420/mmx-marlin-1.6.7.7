@@ -26,9 +26,11 @@
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
-// #define ST32_SHIP
-#define USE_GD32
+#define ST32_SHIP
+// #define USE_GD32
 #define QUICK_PRINT
+#define USART_LCD
+// #define NEW_BOARD
 
 // #define TEST_FW
 
@@ -59,7 +61,7 @@
   #define AUTO_BED_LEVELING_BILINEAR
   #define MARLIN_DEV_MODE
   #define HAS_FSMC_TFT  1
-  #define BTT_FSMC_LCD
+  #define MD_FSMC_LCD
 
 #endif
 
@@ -716,7 +718,7 @@
   #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
   #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
   #define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define X_MAX_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+  #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
   #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
   #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
   #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
@@ -810,7 +812,7 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 #if ENABLED(QUICK_PRINT)
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 79.15, 80, 79.15, 400 }
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 79, 80, 79, 400 }
 #elif ENABLED(TEST_FW)
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 800, 800, 800, 400 }
 #else
@@ -1200,7 +1202,11 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
+#if ENABLED(QUICK_PRINT)
+#define INVERT_E0_DIR false
+#else
 #define INVERT_E0_DIR true
+#endif
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false

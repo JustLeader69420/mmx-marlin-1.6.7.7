@@ -24,7 +24,7 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
-#if ENABLED(BTT_FSMC_LCD)
+#if ENABLED(MD_FSMC_LCD)
 
 #include "../../ui_api.h"
 
@@ -48,50 +48,49 @@ TSCBoot boot;
 
 #define Buzzer_TurnOn(fre, ms) BUZZ(ms, fre)
 void Buzzer_play(SOUND sound){
-switch (sound)
-{
-case sound_ok:
-  Buzzer_TurnOn(3800,40);
-  Buzzer_TurnOn(0,20);
-  Buzzer_TurnOn(5500,50);
-  break;
-case sound_success:
-
-  Buzzer_TurnOn(3500,50);
-  Buzzer_TurnOn(0,50);
-  Buzzer_TurnOn(3500,50);
-  Buzzer_TurnOn(0,50);
-  Buzzer_TurnOn(3500,50);
-  break;
-case sound_cancel:
-  Buzzer_TurnOn(5500,50);
-  Buzzer_TurnOn(0,20);
-  Buzzer_TurnOn(3800,40);
-  break;
-  case sound_notify:
-  Buzzer_TurnOn(3090,50);
-  Buzzer_TurnOn(0,50);
-  Buzzer_TurnOn(4190,50);
-  break;
-case sound_error:
-   Buzzer_TurnOn(2200,200);
-   Buzzer_TurnOn(0,60);
-   Buzzer_TurnOn(2200,200);
-   Buzzer_TurnOn(0,60);
-   Buzzer_TurnOn(2200,200);
-  break;
-case sound_keypress:
-default:
-  Buzzer_TurnOn(LCD_FEEDBACK_FREQUENCY_HZ, LCD_FEEDBACK_FREQUENCY_DURATION_MS);
-  break;
-}
+  switch (sound)
+  {
+    case sound_ok:
+      Buzzer_TurnOn(3800,40);
+      Buzzer_TurnOn(0,20);
+      Buzzer_TurnOn(5500,50);
+      break;
+    case sound_success:
+      Buzzer_TurnOn(3500,50);
+      Buzzer_TurnOn(0,50);
+      Buzzer_TurnOn(3500,50);
+      Buzzer_TurnOn(0,50);
+      Buzzer_TurnOn(3500,50);
+      break;
+    case sound_cancel:
+      Buzzer_TurnOn(5500,50);
+      Buzzer_TurnOn(0,20);
+      Buzzer_TurnOn(3800,40);
+      break;
+      case sound_notify:
+      Buzzer_TurnOn(3090,50);
+      Buzzer_TurnOn(0,50);
+      Buzzer_TurnOn(4190,50);
+      break;
+    case sound_error:
+      Buzzer_TurnOn(2200,200);
+      Buzzer_TurnOn(0,60);
+      Buzzer_TurnOn(2200,200);
+      Buzzer_TurnOn(0,60);
+      Buzzer_TurnOn(2200,200);
+      break;
+    case sound_keypress:
+    default:
+      Buzzer_TurnOn(LCD_FEEDBACK_FREQUENCY_HZ, LCD_FEEDBACK_FREQUENCY_DURATION_MS);
+      break;
+  }
 }
 
 // 存储gcode cmd到gcode队列
 // 如果gcode队列已满，在标题栏中提醒。
 bool storeCmd(const char *cmd)
-{  
-  if (queue.length >= BUFSIZE) {  
+{
+  if (queue.length >= BUFSIZE) {
     reminderMessage(LABEL_BUSY, STATUS_BUSY);
     return false;
   }
@@ -102,7 +101,7 @@ bool storeCmd(const char *cmd)
 // Store gcode cmd to gcode queue
 // If the gcode queue is full, reminde in title bar,  waiting for available queue and store the command.
 void mustStoreCmd(const char *cmd)
-{  
+{
   if (queue.length >= BUFSIZE) reminderMessage(LABEL_BUSY, STATUS_BUSY);
   queue.enqueue_one_now(cmd);
 }
@@ -182,6 +181,9 @@ void menuUpdate(void) {
           infoMenu.menu[++infoMenu.cur] = menuShutDown;
         } else {
           // popup print completed
+         #if ENABLED(USART_LCD)
+          // infoMenu.cur--;
+         #else
           uint8_t finish_show[64] = {0};
           Buzzer_play(sound_success);
           uint32_t printedTime = print_job_timer.duration();
@@ -193,6 +195,7 @@ void menuUpdate(void) {
           sprintf_P((char*)finish_show, "%s\n%s: %s", textSelect(LABEL_PRINTING_COMPLETED),textSelect(LABEL_ELAPSED_TIME), time_str);
           
           popupReminder(textSelect(LABEL_PRINT), finish_show);
+         #endif
         }
       }
     }

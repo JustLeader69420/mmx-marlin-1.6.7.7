@@ -150,7 +150,7 @@
   #include "../lcd/tft/touch.h"
 #endif
 
-#if ENABLED(BTT_FSMC_LCD)
+#if ENABLED(MD_FSMC_LCD)
   // #include "../lcd/extui/lib/tsc/TSC_Menu.h"
   #include "../lcd/extui/lib/tsc/Menu/Settings.h"
   #include "../lcd/extui/lib/tsc/Menu/LevelingOffset.h"

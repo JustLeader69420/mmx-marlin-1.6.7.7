@@ -34,8 +34,11 @@ GCodeQueue queue;
 #include "../module/planner.h"
 #include "../module/temperature.h"
 #include "../MarlinCore.h"
-#include "../lcd/extui/lib/tsc/Menu/PrintUdisk.h"
-#include "../udisk/udiskPrint.h"
+
+#if ENABLED(HAS_UDISK)
+  #include "../lcd/extui/lib/tsc/Menu/PrintUdisk.h"
+  #include "../udisk/udiskPrint.h"
+#endif
 
 #if ENABLED(PRINTER_EVENT_LEDS)
   #include "../feature/leds/printer_event_leds.h"
@@ -47,6 +50,10 @@ GCodeQueue queue;
 
 #if ENABLED(POWER_LOSS_RECOVERY)
   #include "../feature/powerloss.h"
+#endif
+
+#if ENABLED(BABYSTEPPING)
+  #include "../feature/babystep.h"
 #endif
 
 /**
@@ -469,7 +476,27 @@ void GCodeQueue::get_serial_commands() {
 
         while (*command == ' ') command++;                   // Skip leading spaces
         char *npos = (*command == 'N') ? command : nullptr;  // Require the N parameter to start the line
-
+      
+       #if ENABLED(BABYSTEPPING)
+        if(strstr_P(command, PSTR("M290")) != NULL){
+          gcode.process_subcommands_now_P(command);
+          return;
+        }
+       #endif
+       #if ENABLED(USART_LCD)
+        if((strstr_P(command, PSTR("M104")) != NULL) || (strstr_P(command, PSTR("M140")) != NULL)){
+          gcode.process_subcommands_now_P(command);
+          return;
+        }
+        else if((strstr_P(command, PSTR("M1107")) != NULL) || 
+                (strstr_P(command, PSTR("M1110")) != NULL) ||
+                (strstr_P(command, PSTR("M1111")) != NULL))
+        {
+          gcode.process_subcommands_now_P(command);
+          return;
+        }
+       #endif
+      
         if (npos) {
 
           bool M110 = strstr_P(command, PSTR("M110")) != nullptr;

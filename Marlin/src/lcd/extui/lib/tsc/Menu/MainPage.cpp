@@ -90,18 +90,40 @@ void menuCallBackMainPage() {
       default:break;
     #else
       //case KEY_ICON_0: infoMenu.menu[++infoMenu.cur] = menuPreheat;   break;
-      case KEY_ICON_0: infoMenu.menu[++infoMenu.cur] = menuMove;      break;
-      case KEY_ICON_1: infoMenu.menu[++infoMenu.cur] = menuHome;      break;
-      case KEY_ICON_2: infoMenu.menu[++infoMenu.cur] = menuExtrude;   break;
-      case KEY_ICON_3: infoMenu.menu[++infoMenu.cur] = menuSpeed;     break;
-      case KEY_ICON_4: infoMenu.menu[++infoMenu.cur] = menuSettings;  break;
-      case KEY_ICON_5: infoMenu.menu[++infoMenu.cur] = menuFan;       break;
+      case KEY_ICON_0:
+        infoMenu.menu[++infoMenu.cur] = menuMove;
+        break;
 
-      #ifdef AUTO_BED_LEVELING_BILINEAR
-        case KEY_ICON_6: infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;  break;
-      #endif
+      case KEY_ICON_1:
+        infoMenu.menu[++infoMenu.cur] = menuHome;
+        break;
 
-      case KEY_ICON_7: infoMenu.cur--;  break;
+      case KEY_ICON_2:
+        infoMenu.menu[++infoMenu.cur] = menuExtrude;
+        break;
+
+      case KEY_ICON_3:
+        infoMenu.menu[++infoMenu.cur] = menuSpeed;
+        break;
+
+      case KEY_ICON_4:
+        infoMenu.menu[++infoMenu.cur] = menuSettings;
+        break;
+
+      case KEY_ICON_5:
+        infoMenu.menu[++infoMenu.cur] = menuFan;
+        break;
+
+     #ifdef AUTO_BED_LEVELING_BILINEAR
+      case KEY_ICON_6:
+        infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;
+        break;
+     #endif
+
+      case KEY_ICON_7:
+        infoMenu.cur--;
+        break;
+        
       default:break;
     #endif
     #endif

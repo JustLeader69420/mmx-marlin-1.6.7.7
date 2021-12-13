@@ -4,6 +4,10 @@
   #include "ff.h"
 #endif
 
+#if ENABLED(USART_LCD)
+  #include "../../../../../lcd_show_addr.h"
+#endif
+
 //1title, ITEM_PER_PAGE item(icon + label) 
 MENUITEMS printingItems = {
 //  title
@@ -24,6 +28,10 @@ const ITEM itemIsPause[2] = {
   {ICON_PAUSE,                LABEL_PAUSE},
   {ICON_RESUME,               LABEL_RESUME},
 };
+
+bool isPrintInfoMenu(){
+  return (infoMenu.menu[infoMenu.cur] == menuPrinting);
+}
 
 //
 bool isPrinting(void)
@@ -180,12 +188,30 @@ void reDrawTime(void)
   uint32_t  hour = printedTime/3600%1000;   // 让小时数最大可以计数到999
   uint8_t   min = printedTime%3600/60,
             sec = printedTime%60;
+
   GUI_SetNumMode(GUI_NUMMODE_ZERO);
   GUI_DispDecTime(progressRect.x0 + 2 * BYTE_WIDTH, TIME_Y, hour, 3, RIGHT);
   GUI_DispDecTime(progressRect.x0 + 6 * BYTE_WIDTH, TIME_Y, min,  2, RIGHT);
   GUI_DispDecTime(progressRect.x0 + 9 * BYTE_WIDTH, TIME_Y, sec,  2, RIGHT);
   GUI_SetNumMode(GUI_NUMMODE_SPACE);
+  
 }
+
+#if ENABLED(USART_LCD)
+  void send_time(uint32_t pt){
+    int hour = pt/3600%1000;   // 让小时数最大可以计数到999
+    int min  = pt%3600/60,
+        sec  = pt%60;
+    char send_str[16] = {0};
+    memset(send_str, 0, sizeof(send_str));
+    addHeadMess(send_str);
+    send_str[2] = 9+3;
+    send_str[4] = PRING_TIME >> 8;    send_str[5] = PRING_TIME & 0xff;
+    sprintf_P(&send_str[6], "%d:%d:%d", hour, min, sec);
+    send_hexPGM(send_str, send_str[2]+3);
+    // delay(50);
+  }
+#endif
 
 void reDrawProgress(uint8_t progress)
 {	  
@@ -213,6 +239,20 @@ void printingDrawPage(void)
  #else
   printingItems.title.address = (uint8_t *)card.longest_filename(); //getCurGcodeName(infoFile.title);
  #endif
+ #if ENABLED(USART_LCD)
+  char send_str[64] = {0};
+  char send_str2[8] = {0x5A, 0xA5, 0x05, 0x82, 0x2B, 0xBE, 0x00, 0x01};
+  memset(send_str, 0, sizeof(send_str));
+  addHeadMess(send_str);
+  send_str[4] = PRINTING_HEAD_TEXT >> 8;  send_str[5] = PRINTING_HEAD_TEXT & 0xff;
+  sprintf(&send_str[6], "%s", printingItems.title.address);
+  send_str[2] = 34+3;
+  send_hexPGM(send_str, send_str[2]+3);
+  delay(20);
+  send_hexPGM(send_str2, 8);
+  delay(20);
+ #endif
+
   menuDrawPage(&printingItems);
   //	Scroll_CreatePara(&titleScroll, infoFile.title,&titleRect);  //
   // printed time
@@ -245,9 +285,9 @@ void printingDrawPage(void)
   redrawPositionZ();
 }
 
+uint8_t printPaused = 0;
+uint8_t printPaused2 = 0;
 static uint8_t lastProgress = 0;
-static uint8_t printPaused = 0;
-static uint8_t printPaused2 = 0;
 static uint32_t printedTime = 0;
 void menuCallBackPrinting(void)	
 {
@@ -313,6 +353,10 @@ void menuCallBackPrinting(void)
   {
     lastProgress = getPrintProgress();
     reDrawProgress(lastProgress);
+    #if ENABLED(USART_LCD)
+      
+      // delay(50);
+    #endif
   }
   if (printedTime != getPrintTime())
   {
@@ -365,7 +409,6 @@ void menuCallBackPrinting(void)
     
     default :break;
   }
- 
 }
 
 void menuPrinting(void)
@@ -379,6 +422,13 @@ void menuPrinting(void)
  #endif
     printingItems.items[KEY_ICON_0] = itemIsPause[printPaused];
   printingDrawPage();
+
+  #if ENABLED(USART_LCD)
+    // 串口屏切换到打印界面
+    char send_str[10] = {0x5A, 0xA5, 0x07, 0x82, 0x00, 0x84, 0x5A, 0x01, 0x00, 0x10};
+    send_hexPGM(send_str, 10);
+    // delay(50);
+  #endif
   
   menuSetFrontCallBack(menuCallBackPrinting);
 }

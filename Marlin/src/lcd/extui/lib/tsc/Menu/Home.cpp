@@ -25,12 +25,32 @@ bool stop_home = false; // 停止复位的标志，注该标志影响到阻塞�
 
     switch(key_num)
     {
-      case KEY_ICON_0: stop_home = false; storeCmd(PSTR("G28"));   break;
-      case KEY_ICON_1: stop_home = false; storeCmd(PSTR("G28 X")); break;
-      case KEY_ICON_2: stop_home = false; storeCmd(PSTR("G28 Y")); break;
-      case KEY_ICON_3: stop_home = false; storeCmd(PSTR("G28 Z")); break;
-      case KEY_ICON_4: stop_home = true;  storeCmd(PSTR("M410")); storeCmd(PSTR("M18")); break; //M410快速停止电机，在这用于关闭定时；M18/M84，解锁电机
-      case KEY_ICON_7: stop_home = false; infoMenu.cur--; break;
+      case KEY_ICON_0:
+        stop_home = false; storeCmd(PSTR("G28"));
+        break;
+
+      case KEY_ICON_1:
+        stop_home = false; storeCmd(PSTR("G28 X"));
+        break;
+
+      case KEY_ICON_2:
+        stop_home = false; storeCmd(PSTR("G28 Y"));
+        break;
+
+      case KEY_ICON_3:
+        stop_home = false; storeCmd(PSTR("G28 Z"));
+        break;
+
+      case KEY_ICON_4:
+        stop_home = true;
+        storeCmd(PSTR("M410"));
+        storeCmd(PSTR("M18"));
+        break; //M410快速停止电机，在这用于关闭定时；M18/M84，解锁电机
+
+      case KEY_ICON_7:
+        stop_home = false; infoMenu.cur--;
+        break;
+        
       default:break;            
     }
   }

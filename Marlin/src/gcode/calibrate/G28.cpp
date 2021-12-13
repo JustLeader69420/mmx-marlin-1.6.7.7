@@ -68,6 +68,7 @@
 
 #ifdef AUTO_BED_LEVELING_BILINEAR
   #include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+  #include "../../lcd/extui/lib/tsc/Menu/BabyStep.h"
 #endif
 #include "../../lcd/extui/lib/tsc/Menu/Home.h"
 
@@ -502,4 +503,13 @@ void GcodeSuite::G28() {
 
   can_print_flag = true;    // 可以进入打印
   stop_home = false;        // 关闭停止复位标志，防干扰
+  
+  #ifdef AUTO_BED_LEVELING_BILINEAR
+    old_baby_step_value = getBabyStepZAxisTotalMM();
+  #endif
+  
+  #if ENABLED(USART_LCD)
+    char send_baby[] = {0x5A, 0xA5, 0x08, 0x82, 0x2C, 0x20, 0x30, 0x00, 0x00, 0x00, 0x00};
+    send_hexPGM(send_baby, 11);
+  #endif
 }

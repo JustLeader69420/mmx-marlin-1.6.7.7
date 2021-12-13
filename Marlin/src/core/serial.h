@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../inc/MarlinConfig.h"
+// #include "serial_hook.h"
 
 #define RTT_AS_SERIAL_OUT 1
 #include "rtt.h"
@@ -322,6 +323,8 @@ void serialprint_onoff(const bool onoff);
 void serialprintln_onoff(const bool onoff);
 void serialprint_truefalse(const bool tf);
 void serial_spaces(uint8_t count);
+
+void send_hexPGM(PGM_P str, int len);
 
 void print_bin(const uint16_t val);
 void print_xyz(const float &x, const float &y, const float &z, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr);

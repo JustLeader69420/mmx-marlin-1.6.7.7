@@ -3151,6 +3151,7 @@
  * Auto-report temperatures with M155 S<seconds>
  */
 #define AUTO_REPORT_TEMPERATURES
+#define AUTO_REPORT_POSITION
 
 /**
  * Include capabilities in M115 output

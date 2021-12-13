@@ -39,7 +39,7 @@ const ITEM itemBabyStepUnit[ITEM_BABYSTEP_UNIT_NUM] = {
 const float item_babystep_unit[ITEM_BABYSTEP_UNIT_NUM] = {0.01f, 0.1f, 1};
 
 static ELEMENTS elementsUnit;
-static float old_baby_step_value = 0.0f;
+float old_baby_step_value = 0.0f;
 bool autoCloseBabysetp = false;
 
 static void initElements(uint8_t position)
@@ -58,19 +58,32 @@ static void initElements(uint8_t position)
   }
 }
 
-static float getBabyStepZAxisTotalMM(){
+float getBabyStepZAxisTotalMM(){
   return babystep.axis_total[BS_TOTAL_IND(WHO_AXIS)] * planner.steps_to_mm[WHO_AXIS];
 }
 
 static int WhatIsBabyStepMM(float mm){
   float oldmm = getBabyStepZAxisTotalMM();
-  if((oldmm>=BABYSTEP_MAX_HIGH && mm>0) || (oldmm<=-BABYSTEP_MAX_HIGH && mm<0)) return 0;   // 超越值
-  if((oldmm+mm) >= BABYSTEP_MAX_HIGH) return 1;                             // 快到顶
-  if((oldmm+mm) <= -BABYSTEP_MAX_HIGH) return 2;                            // 快到底
-  return 3;                                                 // 常规
+  // 超越值
+  if((oldmm>=BABYSTEP_MAX_HIGH && mm>0) || (oldmm<=-BABYSTEP_MAX_HIGH && mm<0))
+  {
+    return 0;
+  }
+  // 快到顶
+  if((oldmm+mm) >= BABYSTEP_MAX_HIGH)
+  {
+    return 1;
+  }
+  // 快到底
+  if((oldmm+mm) <= -BABYSTEP_MAX_HIGH)
+  {
+    return 2;
+  }
+  // 常规
+  return 3;
 }
 
-static void setBabyStepZAxisIncMM(float mm){
+void setBabyStepZAxisIncMM(float mm){
   float oldmm = getBabyStepZAxisTotalMM();
   switch (WhatIsBabyStepMM(mm))
   {
@@ -95,11 +108,6 @@ void showBabyStep(void)
 {
   GUI_DispFloat(CENTER_X - 5*BYTE_WIDTH/2, CENTER_Y, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
 }
-void babyStepReDraw(void)
-{
-  GUI_DispFloat(CENTER_X - 5*BYTE_WIDTH/2, CENTER_Y, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
-}
-
 
 void menuCallBackBabyStep(void)
 {
@@ -114,12 +122,12 @@ void menuCallBackBabyStep(void)
       setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
       break;
     case KEY_ICON_4:
-      #ifdef AUTO_BED_LEVELING_BILINEAR
+       #ifdef AUTO_BED_LEVELING_BILINEAR
         setLevelingOffset(getBabyStepZAxisTotalMM() - old_baby_step_value); // 将当前BabyStep的值赋给z_offset
         old_baby_step_value = getBabyStepZAxisTotalMM();
         popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_SYCHRONZIED_VALUE));
         // infoMenu.cur--;
-      #endif
+       #endif
       // settings.save();                              // 保存，注意保存的是z_offset的值，而不是BabyStep的值，BabyStep每次复位都会被清零，防止干扰
       break;
     case KEY_ICON_5:
@@ -139,7 +147,7 @@ void menuCallBackBabyStep(void)
   if(baby_step_value != getBabyStepZAxisTotalMM())
   {
     baby_step_value = getBabyStepZAxisTotalMM();
-    babyStepReDraw();
+    showBabyStep();
   }
   if(autoCloseBabysetp){
     autoCloseBabysetp = false;
@@ -149,7 +157,6 @@ void menuCallBackBabyStep(void)
 
 void menuBabyStep()
 {
-  old_baby_step_value = getBabyStepZAxisTotalMM();
   initElements(KEY_ICON_5);
   menuDrawPage(&babyStepItems);
   showBabyStep();

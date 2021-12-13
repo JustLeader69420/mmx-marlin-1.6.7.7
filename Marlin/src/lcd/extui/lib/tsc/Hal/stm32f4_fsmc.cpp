@@ -1,6 +1,6 @@
 #include "../../../../../inc/MarlinConfig.h"
 
-#if defined(BTT_FSMC_LCD) // FSMC on 100/144 pins SoCs
+#if defined(MD_FSMC_LCD) // FSMC on 100/144 pins SoCs
 
 #include "stm32f4_fsmc.h"
 #include "stm32f4xx_hal.h"
@@ -332,4 +332,4 @@ void LCD_WriteSequence(uint16_t *Data, uint16_t count)
 
 #endif
 
-#endif // BTT_FSMC_LCD
+#endif // MD_FSMC_LCD

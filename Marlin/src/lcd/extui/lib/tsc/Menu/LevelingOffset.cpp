@@ -68,7 +68,7 @@ void setLevelingOffset(float offset)
   if(LevelingOffset<=-2.0f)  LevelingOffset = -2.0f;
 }
 // 置零
-void resetLevelingOffset(){
+void resetLevelingOffset(void){
   LevelingOffset = 0.0f;
 }
 // 将数据保存到存储器
@@ -80,7 +80,7 @@ bool saveOffset(){
         z_values[px][py] += newLevelingOffset;
       }
     }
-    // SERIAL_PRINTF("6666666");
+    
     oldLevelingOffset = LevelingOffset;
     return settings.save(); //判断是否保存成功
   }

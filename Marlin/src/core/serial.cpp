@@ -35,6 +35,13 @@ static PGMSTR(echomagic, "echo:");
 void serialprintPGM(PGM_P str) {
   while (const char c = pgm_read_byte(str++)) SERIAL_CHAR(c);
 }
+void send_hexPGM(PGM_P str, int len){
+  char c;
+  while(len--){
+    c = pgm_read_byte(str++);
+    SERIAL_CHAR(c);
+  }
+}
 void serial_echo_start()  { serialprintPGM(echomagic); }
 void serial_error_start() { serialprintPGM(errormagic); }
 

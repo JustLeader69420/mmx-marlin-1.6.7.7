@@ -3,6 +3,7 @@
 #include "../../../ui_api.h"
 #include "../../../../../libs/buzzer.h"
 #include "../../../../../gcode/gcode.h"
+#include "../../../../../lcd_show_addr.h"
 // #include "../../../../../inc/MarlinConfigPre.h"
 
 
@@ -52,6 +53,68 @@ void windowReDrawButton(uint8_t positon, uint8_t pressed)
 
 void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no)
 {
+ #if ENABLED(USART_LCD)
+/*
+  char dwin_send_Y[16] = {0};
+  char dwin_send_N[16] = {0};
+  char dwin_send_T[32] = {0};
+  char dwin_send_I[256] = {0};
+  char dwin_send_S[] = {0x5A, 0xA5, 0x07, 0x82, 0x00, 0x84, 0x5A, 0x01, 0x00, 0x15};
+
+  PORT_REDIRECT(SERIAL_BOTH);
+  // yes button
+  if(yes == NULL){
+    addHeadMess(dwin_send_Y);
+    dwin_send_Y[4] = INFO_CONFIRM >> 8;   dwin_send_Y[5] = INFO_CONFIRM & 0xff;
+    dwin_send_Y[2] = 10 + 3;
+    send_hexPGM(dwin_send_Y, dwin_send_Y[2]+3);
+  }
+  else{
+    addHeadMess(dwin_send_Y);
+    dwin_send_Y[4] = INFO_CONFIRM >> 8;   dwin_send_Y[5] = INFO_CONFIRM & 0xff;
+    sprintf_P(&dwin_send_Y[6], "%s", yes);
+    dwin_send_Y[2] = strlen(&dwin_send_Y[6]) + 3;
+    send_hexPGM(dwin_send_Y, dwin_send_Y[2]+3);
+  }
+  delay(10);
+  
+  // no button
+  if(no == NULL){
+    addHeadMess(dwin_send_N);
+    dwin_send_N[4] = INFO_BACK >> 8;      dwin_send_N[5] = INFO_BACK & 0xff;
+    dwin_send_N[2] = 10 + 3;
+    send_hexPGM(dwin_send_N, dwin_send_N[2] + 3);
+  }
+  else{
+    addHeadMess(dwin_send_N);
+    dwin_send_N[4] = INFO_BACK >> 8;      dwin_send_N[5] = INFO_BACK & 0xff;
+    sprintf_P(&dwin_send_N[6], "%s", no);
+    dwin_send_N[2] = strlen(&dwin_send_N[6]) + 3;
+    send_hexPGM(dwin_send_N, dwin_send_N[2] + 3);
+  }
+  delay(10);
+  
+  // titel
+  addHeadMess(dwin_send_T);
+  dwin_send_T[4] = INFO_TITEL >> 8;       dwin_send_T[5] = INFO_TITEL & 0xff;
+  sprintf_P(&dwin_send_T[6], "%s", title);
+  dwin_send_T[2] = 32-3;
+  send_hexPGM(dwin_send_T, dwin_send_T[2] + 3);
+  delay(10);
+
+  // Info
+  addHeadMess(dwin_send_I);
+  dwin_send_I[4] = INFO_MESSAGE >> 8;     dwin_send_I[5] = INFO_MESSAGE & 0xff;
+  sprintf_P(&dwin_send_I[6], "%s", context);
+  dwin_send_I[2] = 100-3;
+  send_hexPGM(dwin_send_I, dwin_send_I[2] + 3);
+  delay(10);
+  
+  // changed interface
+  send_hexPGM(dwin_send_S, sizeof(dwin_send_S));
+*/
+ #else
+
   buttonNum = 0;
   windowButton = btn;
   if(yes)
@@ -72,7 +135,9 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
     GUI_DrawWindow(&window, title, context);
   
   for(uint8_t i = 0; i < buttonNum; i++)
-    GUI_DrawButton(&windowButton[i], 0);    
+    GUI_DrawButton(&windowButton[i], 0);
+
+ #endif
 }
 
 void menuCallBackPopup(void)
@@ -239,36 +304,44 @@ void menuPopup_ABL(void)
 void popupReminder_p(uint8_t* info, uint8_t* context)
 {
   filament_runout_flag = true;    //this is no filament
-  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);
+ #if DISABLED(USART_LCD)
   if(infoMenu.menu[infoMenu.cur] != menuPopup)
   {
     infoMenu.menu[++infoMenu.cur] = menuPopup;
   }
+ #endif
 }
 void popupReminder_B(uint8_t* info, uint8_t* context)
 {
-  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);
+ #if DISABLED(USART_LCD)
   if(infoMenu.menu[infoMenu.cur] != menuPopup_B)
   {
     infoMenu.menu[++infoMenu.cur] = menuPopup_B;
   }
+ #endif
 }
 void popupReminder_SF(uint8_t* info, uint8_t* context, bool _SOF)
 {
   SF_popup = true;
   SOF = _SOF;
-  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);
+ #if DISABLED(USART_LCD)
   if(infoMenu.menu[infoMenu.cur] != menuPopup)
   {
     infoMenu.menu[++infoMenu.cur] = menuPopup;
   }
+ #endif
 }
 void popupReminder(uint8_t* info, uint8_t* context)
 {
-  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);    
+  popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);
+ #if DISABLED(USART_LCD)
   if(infoMenu.menu[infoMenu.cur] != menuPopup)
   {
     infoMenu.menu[++infoMenu.cur] = menuPopup;
   }
+ #endif
 }
 

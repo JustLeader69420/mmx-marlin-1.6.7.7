@@ -71,6 +71,10 @@
   #include "../feature/babystep.h"
 #endif
 
+#if ENABLED(USART_LCD)
+  #include "../lcd_show_addr.h"
+#endif
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
@@ -244,6 +248,11 @@ void report_current_position_projected() {
   report_logical_position(current_position);
   stepper.report_a_position(planner.position);
 }
+
+#if ENABLED(AUTO_REPORT_POSITION)
+  //struct PositionReport { void report() { report_current_position_projected(); } };
+  AutoReporter<PositionReport> position_auto_reporter;
+#endif
 
 /**
  * sync_plan_position
@@ -1050,7 +1059,18 @@ void prepare_line_to_destination() {
 
       #if ENABLED(PREVENT_COLD_EXTRUSION)
         ignore_e = thermalManager.tooColdToExtrude(active_extruder);
+       #if ENABLED(USART_LCD)
+        if(ignore_e){
+          char md_send_C[32] = {0};
+          addHeadMess(md_send_C);
+          md_send_C[2] = 32 - 3;
+          md_send_C[4] = INFO_WARNING >> 8;   md_send_C[5] = INFO_WARNING & 0xff;
+          sprintf_P(&md_send_C[6], "Cold extrusion");
+          send_hexPGM(md_send_C, md_send_C[2] + 3);
+        }
+       #else
         if (ignore_e) SERIAL_ECHO_MSG(STR_ERR_COLD_EXTRUDE_STOP);
+       #endif
       #endif
 
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)
@@ -1068,7 +1088,16 @@ void prepare_line_to_destination() {
             }
           #else
             ignore_e = true;
+           #if ENABLED(USART_LCD)
+            char md_send_L[32] = {0};
+            addHeadMess(md_send_L);
+            md_send_L[2] = 32 - 3;
+            md_send_L[4] = INFO_WARNING >> 8;   md_send_L[5] = INFO_WARNING & 0xff;
+            sprintf_P(&md_send_L[6], "Too long");
+            send_hexPGM(md_send_L, md_send_L[2] + 3);
+           #else
             SERIAL_ECHO_MSG(STR_ERR_LONG_EXTRUDE_STOP);
+           #endif
           #endif
         }
       #endif

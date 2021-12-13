@@ -6,19 +6,22 @@
 #define TOUCH_MOSI_PIN   PB5
 #define TOUCH_MISO_PIN   PB4 
 #define TOUCH_INT_PIN    PB7 // PenIRQ coming from XPT2046
+#define ERR_RANGE 50
+#define READ_TIMES 5
+#define LOST_VAL 1
 
 /***************************************** XPT2046 SPI ģʽ�ײ���ֲ�Ľӿ�********************************************/
 //XPT2046 SPI��� - ʹ��ģ��SPI
 _SW_SPI xpt2046;
 
 //Ƭѡ
-void XPT2046_CS_Set(uint8_t level)
+static void Set_CS(uint8_t level)
 {
   SW_SPI_CS_Set(&xpt2046, level);
 }
 
 //��д����
-uint8_t XPT2046_ReadWriteByte(uint8_t TxData)
+static uint8_t Read_Write_Byte(uint8_t TxData)
 {		
   return SW_SPI_Read_Write(&xpt2046, TxData);			    
 }
@@ -35,7 +38,7 @@ void XPT2046_Init(void)
   TOUCH_MISO_PIN,   //MISO
   TOUCH_MOSI_PIN    //MOSI
   );
-  XPT2046_CS_Set(1);
+  Set_CS(1);
 }
 
 
@@ -47,57 +50,59 @@ uint8_t XPT2046_Read_Pen(void)
 uint16_t XPT2046_Read_AD(uint8_t CMD)
 {
   uint16_t ADNum;
-  XPT2046_CS_Set(0);
+  Set_CS(0);
 
-  XPT2046_ReadWriteByte(CMD);
-  ADNum=XPT2046_ReadWriteByte(0xff);
-  ADNum= ((ADNum)<<8) | XPT2046_ReadWriteByte(0xff);
+  Read_Write_Byte(CMD);
+  ADNum=Read_Write_Byte(0xff);
+  ADNum= ((ADNum)<<8) | Read_Write_Byte(0xff);
   ADNum >>= 4;
 
-  XPT2046_CS_Set(1);
+  Set_CS(1);
   return ADNum;
 }
 
-#define READ_TIMES 5
-#define LOST_VAL 1
 uint16_t XPT2046_Average_AD(uint8_t CMD)
 {
   uint16_t i, j;
-  uint16_t buf[READ_TIMES];
-  uint16_t sum=0;
-  uint16_t temp;
-  for(i=0; i<READ_TIMES; i++) buf[i] = XPT2046_Read_AD(CMD);		 		    
+  uint16_t read_buf[READ_TIMES];
+  uint16_t sum = 0,temp = 0;
+
+  for(i=0; i<READ_TIMES; i++)
+  {
+    read_buf[i] = XPT2046_Read_AD(CMD);
+  } 		    
   for(i=0; i<READ_TIMES-1; i++)
   {
     for(j=i+1; j<READ_TIMES; j++)
     {
-      if(buf[i] > buf[j])
+      if(read_buf[i] > read_buf[j])
       {
-        temp = buf[i];
-        buf[i] = buf[j];
-        buf[j] = temp;
+        temp = read_buf[i];
+        read_buf[i] = read_buf[j];
+        read_buf[j] = temp;
       }
     }
   }
 
-  for(i=LOST_VAL; i < READ_TIMES-LOST_VAL; i++) sum += buf[i];
+  for(i=LOST_VAL; i < READ_TIMES-LOST_VAL; i++)
+  {
+    sum += read_buf[i];
+  }
+
   temp = sum/(READ_TIMES-2*LOST_VAL);
   return temp;   
 } 
 
-
-#define ERR_RANGE 50
 uint16_t XPT2046_Repeated_Compare_AD(uint8_t CMD) 
 {
-  uint16_t ad1, ad2;
-  ad1 = XPT2046_Average_AD(CMD);
-  ad2 = XPT2046_Average_AD(CMD);
+  uint16_t num1, num2;
+  num1 = XPT2046_Average_AD(CMD);
+  num2 = XPT2046_Average_AD(CMD);
 
-  if((ad2 <= ad1 && ad1 < ad2 + ERR_RANGE) 
-  || (ad1 <= ad2 && ad2 < ad1 + ERR_RANGE))
+  if(((num2 <= num1) && (num1 < num2 + ERR_RANGE)) || ((num1 <= num2) && (num2 < num1 + ERR_RANGE)))
   {
-    return (ad1+ad2)/2;
+    return (num1+num2)/2;
   }
   else return 0;	  
-} 
+}
 

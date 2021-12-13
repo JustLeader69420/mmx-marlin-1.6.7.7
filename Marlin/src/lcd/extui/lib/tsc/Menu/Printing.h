@@ -8,12 +8,33 @@
   */
 #define AUTO_SHUT_DOWN_MAXTEMP 50
 
+#if ENABLED(HAS_UDISK)
+  extern bool UDiskPrint;
+  extern bool UDiskPausePrint;
+  extern bool UDiskStopPrint;
+  extern bool UDiskPrintFinish;
+#endif
+#if ENABLED(USART_LCD)
+  extern uint8_t printPaused;
+  extern uint8_t printPaused2;
+#endif
+
 bool isPrinting(void);
+bool isPrintInfoMenu(void);
 bool isPaused(void);
 bool setPrintPause(bool is_pause);
+#if ENABLED(HAS_UDISK)
+  bool setUDiskPrintPause();
+#endif
+
+uint32_t getPrintTime(void);
+uint8_t getPrintProgress(void);
+void send_time(uint32_t pt);
 
 void menuPrinting(void);
 void menuStopPrinting(void);
 void menuShutDown(void);
+
+void resumeToPause(bool is_pause);
 
 #endif

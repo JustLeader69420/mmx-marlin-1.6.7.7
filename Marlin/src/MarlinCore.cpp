@@ -236,6 +236,10 @@
 
 #endif
 
+#if ENABLED(USART_LCD)
+  #include "lcd_show_addr.h"
+#endif
+
 
 
 /********************parameter***************************/
@@ -462,6 +466,18 @@ void startOrResumeJob() {
 }
 
 #if ENABLED(SDSUPPORT)
+  
+  #if ENABLED(USART_LCD)
+    // 串口屏切换到上打印列表界面
+    void back_printlist(void){
+      char send_str[10] = {0x5A, 0xA5, 0x07, 0x82, 0x00, 0x84, 0x5A, 0x01, 0x00, 0x0E};
+      char send_str2[8] = {0x5A, 0xA5, 0x05, 0x82, 0x2B, 0xBE, 0x00, 0x00};
+      send_hexPGM(send_str2, 8);
+      delay(20);
+      send_hexPGM(send_str, 10);
+      // delay(50);
+    }
+  #endif
 
   inline void abortSDPrinting() {
     float rz;
@@ -496,6 +512,11 @@ void startOrResumeJob() {
     TERN_( HAS_UDISK, UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;)
 
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
+
+   #if ENABLED(USART_LCD)
+    // 串口屏切换到上一个界面
+    back_printlist();
+   #endif
   }
 
   inline void finishSDPrinting() {
@@ -503,6 +524,10 @@ void startOrResumeJob() {
       marlin_state = MF_RUNNING;
       TERN_(PASSWORD_AFTER_SD_PRINT_END, password.lock_machine());
     }
+    #if ENABLED(USART_LCD)
+      // 串口屏切换到上一个界面
+      back_printlist();
+    #endif
   }
 
 #endif // SDSUPPORT
@@ -726,7 +751,7 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
  *  - Handle Joystick jogging
  */
 void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
-
+  
   // Core Marlin activities
   manage_inactivity(TERN_(ADVANCED_PAUSE_FEATURE, no_stepper_sleep));
 
@@ -795,6 +820,11 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
   // Handle UI input / draw events
   TERN(DWIN_CREALITY_LCD, DWIN_Update(), ui.update());
 
+  // updata dwin lcd
+  #if ENABLED(USART_LCD)
+    Updata_usart_lcd();
+  #endif
+
   // Run i2c Position Encoders
   #if ENABLED(I2C_POSITION_ENCODERS)
     static millis_t i2cpem_next_update_ms;
@@ -812,6 +842,7 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
     if (!gcode.autoreport_paused) {
       TERN_(AUTO_REPORT_TEMPERATURES, thermalManager.auto_report_temperatures());
       TERN_(AUTO_REPORT_SD_STATUS, card.auto_report_sd_status());
+      TERN_(AUTO_REPORT_POSITION, position_auto_reporter.tick());
     }
   #endif
 
@@ -993,8 +1024,6 @@ void LCD_Setup();
 void setup() {
 
   tmc_standby_setup();  // TMC Low Power Standby pins must be set early or they're not usable
-
-  
 
   #if ENABLED(MARLIN_DEV_MODE)
     auto log_current_ms = [&](PGM_P const msg) {
@@ -1372,6 +1401,29 @@ void setup() {
   stop_home = false;  // 关闭停止复位标志，防干扰
   oldLevelingOffset = LevelingOffset;
   SETUP_LOG("setup() completed.");
+
+  #if ENABLED(USART_LCD)
+    char first_open[] = {0x5A, 0xA5, 0x07, 0x82, 0x00, 0x84, 0x5A, 0x01, 0x00, 0x01};
+    char first_AHot[] = {0x5A, 0xA5, 0x05, 0x82, 0x10, 0xF4, 0x00, 0x00};
+    char first_ABed[] = {0x5A, 0xA5, 0x05, 0x82, 0x10, 0xFA, 0x00, 0x00};
+    char first_X[] = {0x5A, 0xA5, 0x09, 0x82, 0x2B, 0xC0, 0x30, 0x2E, 0x30, 0x00, 0x00, 0x00};
+    char first_Y[] = {0x5A, 0xA5, 0x09, 0x82, 0x2C, 0xD0, 0x30, 0x2E, 0x30, 0x00, 0x00, 0x00};
+    char first_Z[] = {0x5A, 0xA5, 0x09, 0x82, 0x2D, 0xE0, 0x30, 0x2E, 0x30, 0x00, 0x00, 0x00};
+    char first_E[] = {0x5A, 0xA5, 0x05, 0x82, 0x19, 0x0A, 0x00, 0x00};
+    send_hexPGM(first_open, 10);
+    delay(5);
+    send_hexPGM(first_AHot, 8);
+    delay(5);
+    send_hexPGM(first_ABed, 8);
+    delay(5);
+    send_hexPGM(first_X, 12);
+    delay(5);
+    send_hexPGM(first_Y, 12);
+    delay(5);
+    send_hexPGM(first_Z, 12);
+    delay(5);
+    send_hexPGM(first_E, 8);
+  #endif
 }
 
 /**

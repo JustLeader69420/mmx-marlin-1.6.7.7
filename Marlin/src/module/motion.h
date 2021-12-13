@@ -206,6 +206,12 @@ void report_real_position();
 void report_current_position();
 void report_current_position_projected();
 
+#if ENABLED(AUTO_REPORT_POSITION)
+  #include "../libs/autoreport.h"
+  struct PositionReport { static void report() { report_current_position_projected(); } };
+  extern AutoReporter<PositionReport> position_auto_reporter;
+#endif
+
 void get_cartesian_from_steppers();
 void set_current_from_steppers_for_axis(const AxisEnum axis);
 

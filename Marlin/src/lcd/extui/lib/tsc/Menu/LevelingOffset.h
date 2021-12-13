@@ -9,7 +9,9 @@ extern float LevelingOffset;
 extern float oldLevelingOffset; 
 
 void menuLevelingOffset(void);
+float getLevelingOffset(void);
 void setLevelingOffset(float offset);
+void resetLevelingOffset(void);
 bool saveOffset();
 
 #endif

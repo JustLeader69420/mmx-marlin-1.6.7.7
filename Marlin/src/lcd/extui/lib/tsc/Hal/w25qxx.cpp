@@ -92,6 +92,12 @@ void W25Qxx_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWr
 }
 
 //��FLASH�з���buffer������
+
+/*
+ * @param pBuffer  write buffer
+ * @param WriteAddr  the start address
+ * @param NumByteToWrite  the size of buffer
+ */
 void W25Qxx_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
 {
   uint8_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;

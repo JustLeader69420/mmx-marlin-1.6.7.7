@@ -19,7 +19,11 @@ typedef struct {
   float actHotend = 0, tagHotend = 0, actBed = 0, tagBed = 0;
   float fanPercent = 0;
   float feedRatePercent = 0;
+  float babystep_v = 0;
+  float leveling_v = 0;
+  int e0 = 0;
   ExtUI::extruder_t curTool = ExtUI::E0;
+  uint8_t progress=0;
 }STATUS_MSG;
 
 extern STATUS_MSG statusMsg;

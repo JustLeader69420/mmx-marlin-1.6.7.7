@@ -31,11 +31,16 @@ void menuCallBackChooseStorage() {
             }
             enter_by_icon = true;
             infoMenu.menu[++infoMenu.cur] = menuPrint;
-        break;
+            break;
         
-        case KEY_ICON_1: infoMenu.menu[++infoMenu.cur] = menuPrintUdisk;    break;      
+        case KEY_ICON_1:
+            infoMenu.menu[++infoMenu.cur] = menuPrintUdisk;
+            break;      
 
-        case KEY_ICON_7: infoMenu.cur--;                                    break;
+        case KEY_ICON_7:
+            infoMenu.cur--;
+            break;
+            
         default: break;
     }
 }

@@ -186,6 +186,26 @@ bool CardReader::is_dir_or_gcode(const dir_t &p) {
     || (p.name[8] == 'G' && p.name[9] != '~')           // Non-backup *.G* files are accepted
   );
 }
+bool CardReader::is_dir_or_gcode(const dir_t &p, char *a) {
+  //uint8_t pn0 = p.name[0];
+  *a = 0;
+  if ( (p.attributes & DIR_ATT_HIDDEN)                  // Hidden by attribute
+    // When readDir() > 0 these must be false:
+    //|| pn0 == DIR_NAME_FREE || pn0 == DIR_NAME_DELETED  // Clear or Deleted entry
+    //|| pn0 == '.' || longFilename[0] == '.'             // Hidden file
+    //|| !DIR_IS_FILE_OR_SUBDIR(&p)                       // Not a File or Directory
+  ) return false;
+
+  flag.filenameIsDir = DIR_IS_SUBDIR(&p);               // We know it's a File or Folder
+
+  if(flag.filenameIsDir)  *a = 1;
+  if(p.name[8] == 'G' && p.name[9] != '~')  *a = 2;
+
+  return (
+    flag.filenameIsDir                                  // All Directories are ok
+    || (p.name[8] == 'G' && p.name[9] != '~')           // Non-backup *.G* files are accepted
+  );
+}
 
 //
 // Get the number of (compliant) items in the folder
@@ -287,6 +307,9 @@ void CardReader::ls() {
     printListing(root);
   }
 }
+// void CardReader::getfilelist(){
+
+// }
 
 #if ENABLED(LONG_FILENAME_HOST_SUPPORT)
 

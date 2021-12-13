@@ -21,7 +21,7 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
-#if BOTH(BTT_FSMC_LCD, EXTENSIBLE_UI)
+#if BOTH(MD_FSMC_LCD, EXTENSIBLE_UI)
 
 #include "ui_api.h"
 #include "lib/tsc/TSC_Menu.h"

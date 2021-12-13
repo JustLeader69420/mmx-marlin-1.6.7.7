@@ -516,6 +516,10 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 191: M191(); break;                                  // M191: Wait for chamber temperature to reach target
       #endif
 
+      #if ENABLED(AUTO_REPORT_POSITION)
+        case 154: M154(); break;                                  // M154: Set position auto-report interval
+      #endif
+
       #if BOTH(AUTO_REPORT_TEMPERATURES, HAS_TEMP_SENSOR)
         case 155: M155(); break;                                  // M155: Set temperature auto-report interval
       #endif
@@ -589,7 +593,9 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 202: M202(); break;                                  // M202: Not used for Sprinter/grbl gen6
       #endif
 
+     #ifndef QUICK_PRINT
       case 203: M203(); break;                                    // M203: Set max feedrate (units/sec)
+     #endif
       case 204: M204(); break;                                    // M204: Set acceleration
       case 205: M205(); break;                                    // M205: Set advanced settings
 
@@ -918,6 +924,14 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
       #if ENABLED(SDSUPPORT)
         case 1001: M1001(); break;                                // M1001: [INTERNAL] Handle SD completion
+      #endif
+
+      #if ENABLED(USART_LCD)
+        case 1107: M1107(); break;
+        case 1108: M1108(); break;
+        case 1109: M1109(); break;
+        case 1110: M1110(); break;
+        case 1111: M1111(); break;
       #endif
 
       #if ENABLED(MAX7219_GCODE)

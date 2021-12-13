@@ -85,6 +85,7 @@ public:
   static void release();
   static inline bool isMounted() { return flag.mounted; }
   static void ls();
+  static void getfilelist();
 
   // Handle media insert/remove
   static void manage_media();
@@ -170,6 +171,8 @@ public:
   static inline int16_t write(void* buf, uint16_t nbyte) { return file.isOpen() ? file.write(buf, nbyte) : -1; }
 
   static Sd2Card& getSd2Card() { return sd2card; }
+
+  static bool is_dir_or_gcode(const dir_t &p,char *a);
 
   #if ENABLED(AUTO_REPORT_SD_STATUS)
     static void auto_report_sd_status();
