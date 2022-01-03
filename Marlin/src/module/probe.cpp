@@ -84,6 +84,8 @@
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
+#include "stepper/indirection.h"
+
 Probe probe;
 
 xyz_pos_t Probe::offset; // Initialized by settings.load()
@@ -706,6 +708,7 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
   // Move the probe to the starting XYZ
   do_blocking_move_to(npos);
 
+  DISABLE_STEPPER_X();
   WRITE(CALIB_PIN, LOW);
   SERIAL_PRINTF("***********wait 500ms probe***************\n");
   safe_delay(500);
