@@ -42,6 +42,17 @@
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "STM32F40x.svd",
             "loadMode": "manual"
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./.pio/build/langgo407ve_st/firmware.elf",
+            "name": "cortex debug",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "jlink",
+            "device": "STM32F407ZE",
+            "svdFile": "STM32F40x.svd",
+            //"serialNumber": "137526290"
         }
     ]
 }

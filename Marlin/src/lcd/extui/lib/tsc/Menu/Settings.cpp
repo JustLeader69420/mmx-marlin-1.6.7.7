@@ -109,8 +109,12 @@ LABEL_SETTINGS,
   {ICON_SCREEN_INFO,          LABEL_SCREEN_INFO},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   // {ICON_BABYSTEP,           LABEL_BABYSTEP},
-  {ICON_BACKGROUND,           LABEL_BACKGROUND},
-  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  #if ENABLED(NEW_BOARD)
+    {ICON_FEATURE_SETTINGS,     LABEL_SETTINGS},
+  #else
+    {ICON_BACKGROUND,           LABEL_BACKGROUND},
+    {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  #endif
   {ICON_BACK,                 LABEL_BACK},}
 };
 #ifdef BEEPER_PIN // Speaker
@@ -175,6 +179,15 @@ void menuCallBackSettings(void)
     //   // infoMenu.menu[++infoMenu.cur] = menuBabyStep;
     //   recovery.save(true);
     //   break;
+
+    #if ENABLED(NEW_BOARD)
+      case KEY_ICON_5:
+        infoMenu.menu[++infoMenu.cur] = menuTestC;
+        break;
+      case KEY_ICON_6:
+        infoMenu.menu[++infoMenu.cur] = menuTestM;
+        break;
+    #endif
 
     case KEY_ICON_7:
       if(needSave){

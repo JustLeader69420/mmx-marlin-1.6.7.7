@@ -27,7 +27,11 @@
 
 #if ENABLED(SDSUPPORT)
   #ifndef SD_DETECT_PIN
-    #define SD_DETECT_PIN PE3
+    #ifdef NEW_BOARD
+      #define SD_DETECT_PIN PA8
+    #else
+      #define SD_DETECT_PIN PE3
+    #endif
   #endif
 #if BOTH(SDCARD_SORT_ALPHA, SDSORT_DYNAMIC_RAM)
   #define SD_RESORT 1

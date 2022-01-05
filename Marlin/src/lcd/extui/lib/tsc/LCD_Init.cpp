@@ -468,6 +468,9 @@ void LCD_Init(void)
 
   LCD_init_RGB();
   LCD_RefreshDirection();
+  #if ENABLED(NEW_BOARD)
+    GUI_Clear(BLACK);
+  #endif
   // while(1) {
   //   GUI_Clear(gcolor);
   //   delay(200);

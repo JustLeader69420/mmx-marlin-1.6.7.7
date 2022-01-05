@@ -64,6 +64,10 @@
 #include "Menu/PrintUdisk.h"
 #include "Menu/ChooseStorage.h"
 #include "Menu/PreheatSet.h"
+#if ENABLED(NEW_BOARD)
+  #include "Menu/Test_current.h"
+  #include "Menu/Test_music.h"
+#endif
 
 typedef enum
 {

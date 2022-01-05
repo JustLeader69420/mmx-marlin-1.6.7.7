@@ -22,14 +22,16 @@
 #pragma once
 
 // 选择机器型号
-// #define R3_PRO    // R3_pro:max
+#define R3_PRO    // R3_pro:max
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
 #define ST32_SHIP
 // #define USE_GD32
-#define QUICK_PRINT
-#define USART_LCD
+
+#define HAS_UDISK
+// #define QUICK_PRINT
+// #define USART_LCD
 // #define NEW_BOARD
 
 // #define TEST_FW
@@ -46,8 +48,8 @@
   #define Y_BED_SIZE 400
   #define Z_BED_SIZE 400
 #else
-  #define X_BED_SIZE 210
-  // #define X_BED_SIZE 230
+  // #define X_BED_SIZE 210
+  #define X_BED_SIZE 230
   #define Y_BED_SIZE 230
   #define Z_BED_SIZE 260
 #endif
@@ -65,7 +67,6 @@
 
 #endif
 
-#define HAS_UDISK
 
 /**
  * Configuration.h
@@ -149,7 +150,11 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT 3
+#ifdef NEW_BOARD
+  #define SERIAL_PORT 2
+#else
+  #define SERIAL_PORT 3
+#endif
 
 /**
  * Select a secondary serial port on the board to use for communication with the host.
@@ -748,6 +753,7 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
+#if ENABLED(NEW_BOARD)
 #define X_DRIVER_TYPE  TMC2208
 #define Y_DRIVER_TYPE  TMC2208
 #define Z_DRIVER_TYPE  TMC2208
@@ -764,6 +770,24 @@
 //#define E5_DRIVER_TYPE A4988
 //#define E6_DRIVER_TYPE A4988
 //#define E7_DRIVER_TYPE A4988
+#else
+#define X_DRIVER_TYPE  TMC2208
+#define Y_DRIVER_TYPE  TMC2208
+#define Z_DRIVER_TYPE  TMC2208
+//#define X2_DRIVER_TYPE A4988
+//#define Y2_DRIVER_TYPE A4988
+#define Z2_DRIVER_TYPE TMC2208
+//#define Z3_DRIVER_TYPE A4988
+//#define Z4_DRIVER_TYPE A4988
+#define E0_DRIVER_TYPE TMC2208
+//#define E1_DRIVER_TYPE A4988
+//#define E2_DRIVER_TYPE A4988
+//#define E3_DRIVER_TYPE A4988
+//#define E4_DRIVER_TYPE A4988
+//#define E5_DRIVER_TYPE A4988
+//#define E6_DRIVER_TYPE A4988
+//#define E7_DRIVER_TYPE A4988
+#endif
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
@@ -830,7 +854,7 @@
 #elif ENABLED(TEST_FW)
   #define DEFAULT_MAX_FEEDRATE          { 10, 10, 5, 45 }
 #else
-  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 5, 45 }
+  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 4, 45 }
 #endif
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
@@ -1191,6 +1215,10 @@
   #define INVERT_X_DIR true
   #define INVERT_Y_DIR true
   #define INVERT_Z_DIR true
+#elif ENABLED(NEW_BOARD)
+  #define INVERT_X_DIR true
+  #define INVERT_Y_DIR false
+  #define INVERT_Z_DIR false
 #else
   #define INVERT_X_DIR false
   #define INVERT_Y_DIR true
@@ -1204,6 +1232,8 @@
 // For direct drive extruder v9 set to true, for geared extruder set to false.
 #if ENABLED(QUICK_PRINT)
 #define INVERT_E0_DIR false
+#elif ENABLED(NEW_BOARD)
+#define INVERT_E0_DIR true
 #else
 #define INVERT_E0_DIR true
 #endif

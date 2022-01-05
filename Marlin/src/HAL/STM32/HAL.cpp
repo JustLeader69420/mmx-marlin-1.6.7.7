@@ -121,7 +121,13 @@ extern "C" {
 // ------------------------
 
 // TODO: Make sure this doesn't cause any delay
-void HAL_adc_start_conversion(const uint8_t adc_pin) { HAL_adc_result = analogRead(adc_pin); }
+void HAL_adc_start_conversion(const uint8_t adc_pin) {
+  #if ENABLED(NEW_BOARD)
+    HAL_adc_result = Get_Adc(adc_pin);
+  #else
+    HAL_adc_result = analogRead(adc_pin);
+  #endif
+}
 uint16_t HAL_adc_get_result() { return HAL_adc_result; }
 
 // Reset the system (to initiate a firmware flash)
@@ -131,5 +137,130 @@ void flashFirmware(const int16_t) { NVIC_SystemReset(); }
 systickCallback_t systick_user_callback;
 void systick_attach_callback(systickCallback_t cb) { systick_user_callback = cb; }
 void HAL_SYSTICK_Callback() { if (systick_user_callback) systick_user_callback(); }
+
+/******************new board(PRT_MC)********************/
+  #if ENABLED(NEW_BOARD)
+    ADC_HandleTypeDef ADC_Handler;//ADC 句柄
+    // #define HOTONE_TEMP_PIN ADC_Handler[0]
+    uint8_t get_AdcPinNum(const uint8_t adc_pin){
+      switch (adc_pin)
+      {
+        case PF5: return 1;
+          break;
+
+        case PF6: return 0;
+          break;
+
+        case PF7: return 2;
+          break;
+
+        case PF8: return 3;
+          break;
+
+        case PF9: return 4;
+          break;
+
+        default: break;
+      }
+      return 0;
+    }
+    //初始化ADC 
+    //ch: ADC_channels   
+    //通道值  0~16 取值范围为：ADC_CHANNEL_0~ADC_CHANNEL_16 
+    void MY_ADC_Configuration(ADC_TypeDef * adc_num){
+      ADC_Handler.Instance=adc_num; 
+      ADC_Handler.Init.ClockPrescaler=ADC_CLOCK_SYNC_PCLK_DIV4;   //4 分频，ADCCLK=PCLK2/4=90/4=22.5MHZ 
+      ADC_Handler.Init.Resolution=ADC_RESOLUTION_10B;  //12位模式 
+      ADC_Handler.Init.DataAlign=ADC_DATAALIGN_RIGHT;  //右对齐 
+      ADC_Handler.Init.ScanConvMode=DISABLE;        //非扫描模式 
+      ADC_Handler.Init.EOCSelection=DISABLE;        //关闭 EOC 中断 
+      ADC_Handler.Init.ContinuousConvMode=DISABLE;    //关闭连续转换 
+      ADC_Handler.Init.NbrOfConversion=1;    //1 个转换在规则序列中 也就是只转换规则序列 1   
+      ADC_Handler.Init.DiscontinuousConvMode=DISABLE;    //禁止不连续采样模式 
+      ADC_Handler.Init.NbrOfDiscConversion=0;        //不连续采样通道数为 0 
+      ADC_Handler.Init.ExternalTrigConv=ADC_SOFTWARE_START;  //软件触发 
+      ADC_Handler.Init.ExternalTrigConvEdge= ADC_EXTERNALTRIGCONVEDGE_NONE;//使用软件触发 
+      ADC_Handler.Init.DMAContinuousRequests=DISABLE;         //关闭DMA请求
+
+      HAL_ADC_Init(&ADC_Handler);                           //初始化   
+    }
+    void MY_ADC3_Init(const uint8_t adc_pin){
+      __HAL_RCC_ADC3_CLK_ENABLE();
+      pinmap_pinout(digitalPinToPinName(adc_pin), PinMap_ADC_1);
+    }
+    void MY_ADC_Init_P(const uint8_t adc_pin){
+      uint8_t num = 0;
+      GPIO_InitTypeDef GPIO_Initure;
+      __HAL_RCC_ADC3_CLK_ENABLE();            //Ê¹ÄÜADC3Ê±ÖÓ
+      __HAL_RCC_GPIOF_CLK_ENABLE();						//¿ªÆôGPIOFÊ±ÖÓ
+      num = get_AdcPinNum(adc_pin);
+
+      ADC_Handler.Instance=ADC3; 
+      ADC_Handler.Init.ClockPrescaler=ADC_CLOCK_SYNC_PCLK_DIV4;   //4 分频，ADCCLK=PCLK2/4=90/4=22.5MHZ 
+      ADC_Handler.Init.Resolution=ADC_RESOLUTION_10B;  //12位模式 
+      ADC_Handler.Init.DataAlign=ADC_DATAALIGN_RIGHT;  //右对齐 
+      ADC_Handler.Init.ScanConvMode=DISABLE;        //非扫描模式 
+      ADC_Handler.Init.EOCSelection=DISABLE;        //关闭 EOC 中断 
+      ADC_Handler.Init.ContinuousConvMode=DISABLE;    //关闭连续转换 
+      ADC_Handler.Init.NbrOfConversion=1;    //1 个转换在规则序列中 也就是只转换规则序列 1   
+      ADC_Handler.Init.DiscontinuousConvMode=DISABLE;    //禁止不连续采样模式 
+      ADC_Handler.Init.NbrOfDiscConversion=0;        //不连续采样通道数为 0 
+      ADC_Handler.Init.ExternalTrigConv=ADC_SOFTWARE_START;  //软件触发 
+      ADC_Handler.Init.ExternalTrigConvEdge= ADC_EXTERNALTRIGCONVEDGE_NONE;//使用软件触发 
+      ADC_Handler.Init.DMAContinuousRequests=DISABLE;         //关闭DMA请求
+
+      // __HAL_RCC_ADC3_CLK_ENABLE();
+      // pinmap_pinout(digitalPinToPinName(adc_pin), PinMap_ADC_1);
+
+      HAL_ADC_Init(&ADC_Handler);                           //初始化
+
+    
+      GPIO_Initure.Pin=GPIO_PIN_9;            //PF9
+      GPIO_Initure.Mode=GPIO_MODE_ANALOG;     //Ä£Äâ
+      GPIO_Initure.Pull=GPIO_NOPULL;          //²»´øÉÏÏÂÀ­
+      HAL_GPIO_Init(GPIOF,&GPIO_Initure);
+    }
+    //ADC 底层驱动，引脚配置，时钟使能 
+    //此函数会被HAL_ADC_Init()调用 
+    //hadc:ADC句柄 
+    // void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc) 
+    // {
+    //   GPIO_InitTypeDef GPIO_Initure; 
+    //   __HAL_RCC_ADC1_CLK_ENABLE();    //使能 ADC1时钟 
+    //   __HAL_RCC_GPIOA_CLK_ENABLE();    //开启 GPIOA时钟 
+    //   GPIO_Initure.Pin=GPIO_PIN_5;        //PA5 
+    //   GPIO_Initure.Mode=GPIO_MODE_ANALOG;  //模拟 
+    //   GPIO_Initure.Pull=GPIO_NOPULL;      //不带上下拉 
+    //   HAL_GPIO_Init(GPIOA,&GPIO_Initure); 
+    // }
+
+    // 获取ADC的通道
+    uint32_t get_adc_channel(PinName pin, const my_PinMap_ADC *map){
+      while (map->pin != NC) {
+        if (map->pin == pin) {
+          return map->channel;
+        }
+        map++;
+      }
+      return 0;
+    }
+    //获得ADC 值 
+    //ch: 通道值  0~16，取值范围为：ADC_CHANNEL_0~ADC_CHANNEL_16 
+    //返回值:转换结果 
+    uint16_t Get_Adc(const uint8_t adc_pin){
+      uint8_t num = 0;
+      num = get_AdcPinNum(adc_pin);
+
+      ADC_ChannelConfTypeDef ADC_ChanConf; 
+      ADC_ChanConf.Channel= get_adc_channel(digitalPinToPinName(adc_pin), ADC_Channel);          //通道
+      ADC_ChanConf.Rank=1;                                    //第1 个序列，序列1
+      ADC_ChanConf.SamplingTime=ADC_SAMPLETIME_480CYCLES;     //采样时间
+      ADC_ChanConf.Offset=0;
+      HAL_ADC_ConfigChannel(&ADC_Handler, &ADC_ChanConf);//通道配置 
+      HAL_ADC_Start(&ADC_Handler);                       //开启 ADC 
+      HAL_ADC_PollForConversion(&ADC_Handler, 10);       //轮询转换 
+      return (uint16_t)HAL_ADC_GetValue(&ADC_Handler);   //返回最近一次ADC1规则组的转换结果 
+    }
+  #endif
 
 #endif // ARDUINO_ARCH_STM32 && !STM32GENERIC

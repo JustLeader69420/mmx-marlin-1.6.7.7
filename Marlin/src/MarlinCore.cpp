@@ -240,6 +240,10 @@
   #include "lcd_show_addr.h"
 #endif
 
+#if ENABLED(NEW_BOARD)
+  #include "module/music/KT404C.h"
+#endif
+
 
 
 /********************parameter***************************/
@@ -999,7 +1003,29 @@ inline void tmc_standby_setup() {
     SET_INPUT_PULLDOWN(E7_STDBY_PIN);
   #endif
 }
-
+#if ENABLED(NEW_BOARD)
+void Init_Reset_Pin(void){
+  #if AXIS_DRIVER_TYPE_X(A4988)
+    SET_OUTPUT_H(X_RESET_PIN);
+  #endif
+  
+  #if AXIS_DRIVER_TYPE_Y(A4988)
+    SET_OUTPUT_H(Y_RESET_PIN);
+  #endif
+  
+  #if AXIS_DRIVER_TYPE_Z(A4988)
+    SET_OUTPUT_H(Z_RESET_PIN);
+  #endif
+  
+  #if AXIS_DRIVER_TYPE_Z2(A4988)
+    SET_OUTPUT_H(Z2_RESET_PIN);
+  #endif
+  
+  #if AXIS_DRIVER_TYPE_E0(A4988)
+    SET_OUTPUT_H(E0_RESET_PIN);
+  #endif
+}
+#endif
 /**
  * Marlin entry-point: Set up before the program loop
  *  - Set up the kill pin, filament runout, power hold
@@ -1020,7 +1046,6 @@ inline void tmc_standby_setup() {
  *    • Max7219
  */
 void LCD_Setup();
-
 void setup() {
 
   tmc_standby_setup();  // TMC Low Power Standby pins must be set early or they're not usable
@@ -1392,6 +1417,12 @@ void setup() {
     SETUP_RUN(password.lock_machine());      // Will not proceed until correct password provided
   #endif
 
+  #if ENABLED(NEW_BOARD)
+    Init_Reset_Pin();
+
+    kt404c.serial(USART6, 9600);
+  #endif
+
   marlin_state = MF_RUNNING;
   oldLevelingOffset = LevelingOffset;
 
@@ -1424,6 +1455,8 @@ void setup() {
     delay(5);
     send_hexPGM(first_E, 8);
   #endif
+
+  SERIAL_ECHO_MSG("Init end");
 }
 
 /**

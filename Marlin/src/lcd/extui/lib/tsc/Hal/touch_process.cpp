@@ -66,7 +66,7 @@ uint8_t calibrationEnsure(uint16_t x,uint16_t y)
 
 
   if(lcd_x < x+TS_ERR_RANGE && lcd_x>x-TS_ERR_RANGE  && lcd_y > y-TS_ERR_RANGE && lcd_y<y+TS_ERR_RANGE)
-  {		
+  {
     x_offset=(LCD_WIDTH_PIXEL - GUI_StrPixelWidth(textSelect(LABEL_ADJUST_OK))) >> 1;
     GUI_DispString(x_offset, LCD_HEIGHT_PIXEL-40, textSelect(LABEL_ADJUST_OK));
     /*GUI_DispDec(0, 0, T_A, 10, RIGHT);
@@ -188,7 +188,7 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
 
   uint16_t key_return=IDLE_TOUCH;
 
-  if (isPress())        
+  if (isPress())
   {
     if(firstPress)
     {

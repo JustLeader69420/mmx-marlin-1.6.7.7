@@ -1795,7 +1795,8 @@ void Temperature::init() {
 
   #if HAS_FAN0 
     INIT_FAN_PIN(FAN_PIN);
-    TIM8_CH2_PWM_Init(55999,2);
+    TIM8_CH2_PWM_Init(2240-1,3-1);
+    // TIM8_CH2_PWM_Init(55999,2);
   #endif
   #if HAS_FAN1
     INIT_FAN_PIN(FAN1_PIN);
@@ -1838,7 +1839,7 @@ void Temperature::init() {
   #if ENABLED(HEATER_1_USES_MAX6675)
     OUT_WRITE(MAX6675_SS2_PIN, HIGH);
   #endif
-
+  
   HAL_adc_init();
 
   #if HAS_TEMP_ADC_0
@@ -1965,7 +1966,6 @@ void Temperature::init() {
     #endif
     #if _MINMAX_TEST(0, MAX)
       _TEMP_MAX_E(0);
-      
       //for debug use only.
       // do{ \
       //   const int16_t tmax = _MIN(HEATER_0_MAXTEMP, \
@@ -1974,6 +1974,7 @@ void Temperature::init() {
       //   while (analog_to_celsius_hotend(temp_range[0].raw_max, 0) > tmax) \
       //     temp_range[0].raw_max -= TEMPDIR(0) * (OVERSAMPLENR); \
       // }while(0);
+
     #endif
     #if _MINMAX_TEST(1, MIN)
       _TEMP_MIN_E(1);

@@ -77,118 +77,124 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         return;
     fsmcInit = 1;
 
-#if 0
-  // TFT_IO::lcd_init_rgb();
-  TFT_FSMC::Init();
-  TFT_IO::InitTFT();
-  TFT_FSMC::testRGB();
+    #if 0
 
-#else
-    uint32_t controllerAddress;
+        // TFT_IO::lcd_init_rgb();
+        TFT_FSMC::Init();
+        TFT_IO::InitTFT();
+        TFT_FSMC::testRGB();
 
-#if PIN_EXISTS(TFT_RESET)
-    OUT_WRITE(TFT_RESET_PIN, HIGH);
-    HAL_Delay(100);
-#endif
+    #else
 
-#if PIN_EXISTS(TFT_BACKLIGHT)
-    OUT_WRITE(TFT_BACKLIGHT_PIN, HIGH);
-#endif
+        uint32_t controllerAddress;
 
-    FSMC_NORSRAM_TimingTypeDef Timing, ExtTiming;
+      #if PIN_EXISTS(TFT_RESET)
+        OUT_WRITE(TFT_RESET_PIN, HIGH);
+        HAL_Delay(100);
+      #endif
 
-    uint32_t NSBank = (uint32_t)pinmap_peripheral(digitalPinToPinName(TFT_CS_PIN), PinMap_FSMC_CS);
+      #if PIN_EXISTS(TFT_BACKLIGHT)
+        OUT_WRITE(TFT_BACKLIGHT_PIN, HIGH);
+      #endif
 
-    SRAMx.Instance = FSMC_NORSRAM_DEVICE;
-    SRAMx.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
-    /* SRAMx.Init */
-    SRAMx.Init.NSBank = NSBank;
-    SRAMx.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
-    SRAMx.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
-    SRAMx.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
-    SRAMx.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
-    SRAMx.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
-    SRAMx.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
-    SRAMx.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
-    SRAMx.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
-    SRAMx.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
-    SRAMx.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
-    SRAMx.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
-    SRAMx.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
-#ifdef STM32F4xx
-    SRAMx.Init.PageSize = FSMC_PAGE_SIZE_NONE;
-#endif
-    /* Read Timing - relatively slow to ensure ID information is correctly read from TFT controller */
-    /* Can be decreases from 15-15-24 to 4-4-8 with risk of stability loss */
-    Timing.AddressSetupTime = 15;
-    Timing.AddressHoldTime = 15;
-    Timing.DataSetupTime = 24;
-    Timing.BusTurnAroundDuration = 0;
-    Timing.CLKDivision = 4;
-    Timing.DataLatency = 17;
-    Timing.AccessMode = FSMC_ACCESS_MODE_A;
-    /* Write Timing */
-    /* Can be decreases from 8-15-8 to 0-0-1 with risk of stability loss */
-    ExtTiming.AddressSetupTime = 8;
-    ExtTiming.AddressHoldTime = 15;
-    ExtTiming.DataSetupTime = 8;
-    ExtTiming.BusTurnAroundDuration = 0;
-    ExtTiming.CLKDivision = 16;
-    ExtTiming.DataLatency = 17;
-    ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
+        FSMC_NORSRAM_TimingTypeDef Timing, ExtTiming;
 
-    __HAL_RCC_FSMC_CLK_ENABLE();
+        uint32_t NSBank = (uint32_t)pinmap_peripheral(digitalPinToPinName(TFT_CS_PIN), PinMap_FSMC_CS);
 
-    for (uint16_t i = 0; PinMap_FSMC[i].pin != NC; i++)
-        pinmap_pinout(PinMap_FSMC[i].pin, PinMap_FSMC);
-    pinmap_pinout(digitalPinToPinName(TFT_CS_PIN), PinMap_FSMC_CS);
-    pinmap_pinout(digitalPinToPinName(TFT_RS_PIN), PinMap_FSMC_RS);
+        SRAMx.Instance = FSMC_NORSRAM_DEVICE;
+        SRAMx.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
+        /* SRAMx.Init */
+        SRAMx.Init.NSBank = NSBank;
+        SRAMx.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
+        SRAMx.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
+        SRAMx.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
+        SRAMx.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
+        SRAMx.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
+        SRAMx.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
+        SRAMx.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
+        SRAMx.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
+        SRAMx.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
+        SRAMx.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
+        SRAMx.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
+        SRAMx.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
+      #ifdef STM32F4xx
+        SRAMx.Init.PageSize = FSMC_PAGE_SIZE_NONE;
+      #endif
+        /* Read Timing - relatively slow to ensure ID information is correctly read from TFT controller */
+        /* Can be decreases from 15-15-24 to 4-4-8 with risk of stability loss */
+        Timing.AddressSetupTime = 15;
+        Timing.AddressHoldTime = 15;
+        Timing.DataSetupTime = 24;
+        Timing.BusTurnAroundDuration = 0;
+        Timing.CLKDivision = 4;
+        Timing.DataLatency = 17;
+        Timing.AccessMode = FSMC_ACCESS_MODE_A;
+        /* Write Timing */
+        /* Can be decreases from 8-15-8 to 0-0-1 with risk of stability loss */
+        ExtTiming.AddressSetupTime = 8;
+        ExtTiming.AddressHoldTime = 15;
+        ExtTiming.DataSetupTime = 8;
+        ExtTiming.BusTurnAroundDuration = 0;
+        ExtTiming.CLKDivision = 16;
+        ExtTiming.DataLatency = 17;
+        ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
 
-    controllerAddress = FSMC_BANK1_1;
-#ifdef PF0
-    switch (NSBank)
-    {
-    case FSMC_NORSRAM_BANK2:
-        controllerAddress = FSMC_BANK1_2;
-        break;
-    case FSMC_NORSRAM_BANK3:
-        controllerAddress = FSMC_BANK1_3;
-        break;
-    case FSMC_NORSRAM_BANK4:
-        controllerAddress = FSMC_BANK1_4;
-        break;
-    }
-#endif
+        __HAL_RCC_FSMC_CLK_ENABLE();
 
-    controllerAddress |= (uint32_t)pinmap_peripheral(digitalPinToPinName(TFT_RS_PIN), PinMap_FSMC_RS);
+        for (uint16_t i = 0; PinMap_FSMC[i].pin != NC; i++)
+            pinmap_pinout(PinMap_FSMC[i].pin, PinMap_FSMC);
+        pinmap_pinout(digitalPinToPinName(TFT_CS_PIN), PinMap_FSMC_CS);
+        pinmap_pinout(digitalPinToPinName(TFT_RS_PIN), PinMap_FSMC_RS);
 
-    MX_FSMC_Init();
-    // HAL_SRAM_Init(&SRAMx, &Timing, NULL);
-    // SRAMx.Instance->BTCR[0] = FSMC_BCR1_WREN | FSMC_BCR_MTYP_SRAM  | FSMC_BCR_MWID_16BITS | FSMC_BCR_MBKEN;   //BCR1
-    // SRAMx.Instance->BTCR[1] = (FSMC_DATA_SETUP_TIME << 8) | FSMC_ADDRESS_SETUP_TIME;  //BTR1
+        controllerAddress = FSMC_BANK1_1;
+      #ifdef PF0
+        switch (NSBank)
+        {
+            case FSMC_NORSRAM_BANK2:
+                controllerAddress = FSMC_BANK1_2;
+                break;
+            case FSMC_NORSRAM_BANK3:
+                controllerAddress = FSMC_BANK1_3;
+                break;
+            case FSMC_NORSRAM_BANK4:
+                controllerAddress = FSMC_BANK1_4;
+                break;
+        }
+      #endif
 
-    __HAL_RCC_DMA2_CLK_ENABLE();
+        controllerAddress |= (uint32_t)pinmap_peripheral(digitalPinToPinName(TFT_RS_PIN), PinMap_FSMC_RS);
 
-#ifdef STM32F1xx
-    DMAtx.Instance = DMA2_Channel1;
-#elif defined(STM32F4xx)
-    DMAtx.Instance = DMA2_Stream0;
-    DMAtx.Init.Channel = DMA_CHANNEL_0;
-    DMAtx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    DMAtx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
-    DMAtx.Init.MemBurst = DMA_MBURST_SINGLE;
-    DMAtx.Init.PeriphBurst = DMA_PBURST_SINGLE;
-#endif
+        //
+        #if ENABLED(NEW_BOARD)
+          HAL_SRAM_Init(&SRAMx, &Timing, &ExtTiming);
+        #else
+          MX_FSMC_Init();
+        #endif
+        // SRAMx.Instance->BTCR[0] = FSMC_BCR1_WREN | FSMC_BCR_MTYP_SRAM  | FSMC_BCR_MWID_16BITS | FSMC_BCR_MBKEN;   //BCR1
+        // SRAMx.Instance->BTCR[1] = (FSMC_DATA_SETUP_TIME << 8) | FSMC_ADDRESS_SETUP_TIME;  //BTR1
 
-    DMAtx.Init.Direction = DMA_MEMORY_TO_MEMORY;
-    DMAtx.Init.MemInc = DMA_MINC_DISABLE;
-    DMAtx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    DMAtx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    DMAtx.Init.Mode = DMA_NORMAL;
-    DMAtx.Init.Priority = DMA_PRIORITY_HIGH;
+        __HAL_RCC_DMA2_CLK_ENABLE();
 
-    LCD = (TFTLCD_TypeDef *)controllerAddress;
-#endif
+      #ifdef STM32F1xx
+        DMAtx.Instance = DMA2_Channel1;
+      #elif defined(STM32F4xx)
+        DMAtx.Instance = DMA2_Stream0;
+        DMAtx.Init.Channel = DMA_CHANNEL_0;
+        DMAtx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+        DMAtx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+        DMAtx.Init.MemBurst = DMA_MBURST_SINGLE;
+        DMAtx.Init.PeriphBurst = DMA_PBURST_SINGLE;
+      #endif
+        DMAtx.Init.Direction = DMA_MEMORY_TO_MEMORY;
+        DMAtx.Init.MemInc = DMA_MINC_DISABLE;
+        DMAtx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+        DMAtx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+        DMAtx.Init.Mode = DMA_NORMAL;
+        DMAtx.Init.Priority = DMA_PRIORITY_HIGH;
+
+        LCD = (TFTLCD_TypeDef *)controllerAddress;
+        
+    #endif
 }
 #if 0
 void LCD_WriteData(uint16_t data) {

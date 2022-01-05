@@ -155,13 +155,42 @@ static inline int freeMemory() {
 //
 // ADC
 //
+#if ENABLED(NEW_BOARD)
+  typedef struct {
+    PinName pin;
+    ADC_TypeDef * ADCx;
+    uint32_t channel;
+  } my_PinMap_ADC;
 
-#define HAL_ANALOG_SELECT(pin) pinMode(pin, INPUT)
+  const my_PinMap_ADC ADC_Channel[] = {
+    {PF_5,  ADC3, ADC_CHANNEL_15},
+    {PF_6,  ADC3, ADC_CHANNEL_4},
+    {PF_7,  ADC3, ADC_CHANNEL_5},
+    {PF_8,  ADC3, ADC_CHANNEL_6},
+    {PF_9,  ADC3, ADC_CHANNEL_7},
+    {NC,    NP,    0}
+  };
+  const PinMap PinMap_ADC_1[] = {
+    {PF_5,  ADC3,  STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 15, 0)}, // ADC3_IN15
+    {PF_6,  ADC3,  STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0,  4, 0)}, // ADC3_IN4
+    {PF_7,  ADC3,  STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0,  5, 0)}, // ADC3_IN5
+    {PF_8,  ADC3,  STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0,  6, 0)}, // ADC3_IN6
+    {PF_9,  ADC3,  STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0,  7, 0)}, // ADC3_IN7
+    {NC,    NP,    0}
+  };
+  void MY_ADC_Configuration(ADC_TypeDef * adc_num);
+  void MY_ADC3_Init(const uint8_t adc_pin);
+  void MY_ADC_Init_P(const uint8_t adc_pin);
+  uint16_t Get_Adc(const uint8_t adc_pin);
 
-inline void HAL_adc_init() {}
+  #define HAL_ANALOG_SELECT(pin) MY_ADC3_Init(pin)
+  #define HAL_ANALOG_SELECT_P(pin) MY_ADC_Init_P(pin)
+#else
+  #define HAL_ANALOG_SELECT(pin) pinMode(pin, INPUT)
+#endif
 
-#define HAL_ADC_VREF         3.3
-#define HAL_ADC_RESOLUTION  10
+#define HAL_ADC_VREF        3.3
+#define HAL_ADC_RESOLUTION  ADC_RESOLUTION
 #define HAL_START_ADC(pin)  HAL_adc_start_conversion(pin)
 #ifndef USE_GD32
   #define HAL_READ_ADC()      (HAL_adc_result) //stm32.  adc cfg correct.
@@ -170,6 +199,7 @@ inline void HAL_adc_init() {}
 #endif
 #define HAL_ADC_READY()     true
 
+inline void HAL_adc_init() {TERN_(NEW_BOARD, MY_ADC_Configuration(ADC3);)}
 void HAL_adc_start_conversion(const uint8_t adc_pin);
 
 uint16_t HAL_adc_get_result();

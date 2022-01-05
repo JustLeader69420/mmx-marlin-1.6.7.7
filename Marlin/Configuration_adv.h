@@ -1236,7 +1236,7 @@
     //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
     //#define POWER_LOSS_RECOVER_ZHOME  // Z homing is needed for proper recovery. 99.9% of the time this should be disabled!
     // #define POWER_LOSS_ZRAISE       2 // (mm) Z axis raise on resume (on power loss with UPS)
-    // #define POWER_LOSS_PIN         PE5 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
+    // #define POWER_LOSS_PIN         PC6 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
     // #define POWER_LOSS_STATE       LOW // State of pin indicating power loss
     // #define READ_POWER_LOSS_PIN_NUM 3 // 读取引脚的次数
     //#define POWER_LOSS_PULL           // Set pullup / pulldown as appropriate
@@ -2303,7 +2303,7 @@
 
   #if AXIS_IS_TMC(X)
    #ifdef QUICK_PRINT
-    #define X_CURRENT       900        // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT       800        // (mA) RMS current. Multiply by 1.414 for peak current.
    #else
     #define X_CURRENT       500        // (mA) RMS current. Multiply by 1.414 for peak current.
    #endif
@@ -2324,8 +2324,10 @@
   #if AXIS_IS_TMC(Y)
     #if ENABLED(R4_PRO)
       #define Y_CURRENT       900
+    #elif ENABLED(QUICK_PRINT)
+      #define Y_CURRENT       800
     #else
-      #define Y_CURRENT       900
+      #define Y_CURRENT       700
     #endif
     #define Y_CURRENT_HOME  Y_CURRENT
     #define Y_MICROSTEPS     16
@@ -2342,7 +2344,11 @@
   #endif
 
   #if AXIS_IS_TMC(Z)
-    #define Z_CURRENT       900
+   #ifdef QUICK_PRINT
+    #define Z_CURRENT       800
+   #else
+    #define Z_CURRENT       800
+   #endif
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
@@ -2350,7 +2356,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z2)
-    #define Z2_CURRENT      900
+    #define Z2_CURRENT      800
     #define Z2_CURRENT_HOME Z2_CURRENT
     #define Z2_MICROSTEPS    16
     #define Z2_RSENSE         0.11
