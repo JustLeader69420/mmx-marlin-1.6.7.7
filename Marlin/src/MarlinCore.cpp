@@ -1374,7 +1374,7 @@ void setup() {
   #endif
 
   #if HAS_TRINAMIC_CONFIG && DISABLED(PSU_DEFAULT_OFF)
-    delay(200);
+    // delay(200);
     SETUP_RUN(test_tmc_connection(true, true, true, true));
   #endif
 

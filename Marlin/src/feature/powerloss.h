@@ -41,7 +41,7 @@
   #define POWER_LOSS_STATE HIGH
 #endif
 
-//#define DEBUG_POWER_LOSS_RECOVERY
+// #define DEBUG_POWER_LOSS_RECOVERY
 //#define SAVE_EACH_CMD_MODE
 //#define SAVE_INFO_INTERVAL_MS 0
 
@@ -201,9 +201,9 @@ class PrintJobRecovery {
       static inline void debug(PGM_P const) {}
     #endif
 
-  private:
     static void write();
     TERN_( HAS_UDISK, static void usb_write(); )
+  private:
 
     #if ENABLED(BACKUP_POWER_SUPPLY)
       static void retract_and_lift(const float &zraise);

@@ -105,60 +105,133 @@
   //
   // Software serial ASYNC half duplex?
   //
-/*** X ***/
-#define X_ENABLE_PIN        PE6
-#define X_STEP_PIN          PE5
-#define X_DIR_PIN           PE4
-/*** Y ***/
-#define Y_ENABLE_PIN        PF3
-#define Y_STEP_PIN          PF2
-#define Y_DIR_PIN           PF1
-/*** Z ***/
-#define Z_ENABLE_PIN        PC2
-#define Z_STEP_PIN          PC1
-#define Z_DIR_PIN           PC0
-/*** Z2 ***/
-#define Z2_ENABLE_PIN       PB0
-#define Z2_STEP_PIN         PC5
-#define Z2_DIR_PIN          PC4
-/*** E0 ***/
-#define E0_ENABLE_PIN       PE1
-#define E0_STEP_PIN         PE0
-#define E0_DIR_PIN          PB7
-/*** TX、RX or Reset ***/
-#if AXIS_DRIVER_TYPE_X(TMC2208)
-  #define X_SERIAL_TX_PIN     PC13
-  #define X_SERIAL_RX_PIN     PC13
-#elif AXIS_DRIVER_TYPE_X(A4988)
-  #define X_RESET_PIN         PC13
-#endif
+#if 1
 
-#if AXIS_DRIVER_TYPE_Y(TMC2208)
-  #define Y_SERIAL_TX_PIN     PF4
-  #define Y_SERIAL_RX_PIN     PF4
-#elif AXIS_DRIVER_TYPE_Y(A4988)
-  #define Y_RESET_PIN         PF4
-#endif
+  /*** X ***/
+  #define X_ENABLE_PIN        PE6
+  #define X_STEP_PIN          PE5
+  #define X_DIR_PIN           PE4
+  /*** Y ***/
+  #define Y_ENABLE_PIN        PF3
+  #define Y_STEP_PIN          PF2
+  #define Y_DIR_PIN           PF1
+  /*** Z ***/
+  #define Z_ENABLE_PIN        PC2
+  #define Z_STEP_PIN          PC1
+  #define Z_DIR_PIN           PC0
+  /*** Z2 ***/
+  #define Z2_ENABLE_PIN       PB0
+  #define Z2_STEP_PIN         PC5
+  #define Z2_DIR_PIN          PC4
+  /*** E0 ***/
+  #define E0_ENABLE_PIN       PE1
+  #define E0_STEP_PIN         PE0
+  #define E0_DIR_PIN          PB7
+  /*** TX、RX or Reset ***/
+  #if AXIS_DRIVER_TYPE_X(TMC2208)
+    #define X_SERIAL_TX_PIN     PC13
+    #define X_SERIAL_RX_PIN     PC13
+  #elif AXIS_DRIVER_TYPE_X(A4988)
+    #define X_RESET_PIN         PC13
+  #endif
 
-#if AXIS_DRIVER_TYPE_Z(TMC2208)
-  #define Z_SERIAL_TX_PIN     PC3
-  #define Z_SERIAL_RX_PIN     PC3
-#elif AXIS_DRIVER_TYPE_Z(A4988)
-  #define Z_RESET_PIN         PC3
-#endif
+  #if AXIS_DRIVER_TYPE_Y(TMC2208)
+    #define Y_SERIAL_TX_PIN     PF4
+    #define Y_SERIAL_RX_PIN     PF4
+  #elif AXIS_DRIVER_TYPE_Y(A4988)
+    #define Y_RESET_PIN         PF4
+  #endif
 
-#if AXIS_DRIVER_TYPE_Z2(TMC2208)
-  #define Z2_SERIAL_TX_PIN    PB1
-  #define Z2_SERIAL_RX_PIN    PB1
-#elif AXIS_DRIVER_TYPE_Z2(A4988)
-  #define Z2_RESET_PIN        PB1
-#endif
+  #if AXIS_DRIVER_TYPE_Z(TMC2208)
+    #define Z_SERIAL_TX_PIN     PC3
+    #define Z_SERIAL_RX_PIN     PC3
+  #elif AXIS_DRIVER_TYPE_Z(A4988)
+    #define Z_RESET_PIN         PC3
+  #endif
 
-#if AXIS_DRIVER_TYPE_E0(TMC2208)
-  #define E0_SERIAL_TX_PIN    PE2
-  #define E0_SERIAL_RX_PIN    PE2
-#elif AXIS_DRIVER_TYPE_E0(A4988)
-  #define E0_RESET_PIN        PE2
+  #if AXIS_DRIVER_TYPE_Z2(TMC2208)
+    #define Z2_SERIAL_TX_PIN    PB1
+    #define Z2_SERIAL_RX_PIN    PB1
+  #elif AXIS_DRIVER_TYPE_Z2(A4988)
+    #define Z2_RESET_PIN        PB1
+  #endif
+
+  #if AXIS_DRIVER_TYPE_E0(TMC2208)
+    #define E0_SERIAL_TX_PIN    PE2
+    #define E0_SERIAL_RX_PIN    PE2
+  #elif AXIS_DRIVER_TYPE_E0(A4988)
+    #define E0_RESET_PIN        PE2
+  #endif
+
+#else
+
+  /*** X ***/
+  #define X_ENABLE_PIN        PE4
+  #define X_STEP_PIN          PE3
+  #define X_DIR_PIN           PE2
+  /*** Y ***/
+  #define Y_ENABLE_PIN        PF0
+  #define Y_STEP_PIN          PC13
+  #define Y_DIR_PIN           PE6
+  /*** Z ***/
+  #define Z_ENABLE_PIN        PF4
+  #define Z_STEP_PIN          PF3
+  #define Z_DIR_PIN           PF2
+  /*** Z2 ***/
+  #define Z2_ENABLE_PIN       PC2
+  #define Z2_STEP_PIN         PC1
+  #define Z2_DIR_PIN          PC0
+  /*** E0 ***/
+  #define E0_ENABLE_PIN       PE0
+  #define E0_STEP_PIN         PB7
+  #define E0_DIR_PIN          PB6
+  /*** E1 ***/
+  #define E1_ENABLE_PIN       PC5
+  #define E1_STEP_PIN         PC4
+  #define E1_DIR_PIN          PA1
+  /*** TX、RX or Reset ***/
+  #if AXIS_DRIVER_TYPE_X(TMC2208)
+    #define X_SERIAL_TX_PIN     PE5
+    #define X_SERIAL_RX_PIN     PE5
+  #elif AXIS_DRIVER_TYPE_X(A4988)
+    #define X_RESET_PIN         PE5
+  #endif
+
+  #if AXIS_DRIVER_TYPE_Y(TMC2208)
+    #define Y_SERIAL_TX_PIN     PF1
+    #define Y_SERIAL_RX_PIN     PF1
+  #elif AXIS_DRIVER_TYPE_Y(A4988)
+    #define Y_RESET_PIN         PF1
+  #endif
+
+  #if AXIS_DRIVER_TYPE_Z(TMC2208)
+    #define Z_SERIAL_TX_PIN     PF10
+    #define Z_SERIAL_RX_PIN     PF10
+  #elif AXIS_DRIVER_TYPE_Z(A4988)
+    #define Z_RESET_PIN         PF10
+  #endif
+
+  #if AXIS_DRIVER_TYPE_Z2(TMC2208)
+    #define Z2_SERIAL_TX_PIN    PC3
+    #define Z2_SERIAL_RX_PIN    PC3
+  #elif AXIS_DRIVER_TYPE_Z2(A4988)
+    #define Z2_RESET_PIN        PC3
+  #endif
+
+  #if AXIS_DRIVER_TYPE_E0(TMC2208)
+    #define E0_SERIAL_TX_PIN    PE1
+    #define E0_SERIAL_RX_PIN    PE1
+  #elif AXIS_DRIVER_TYPE_E0(A4988)
+    #define E0_RESET_PIN        PE1
+  #endif
+
+  #if AXIS_DRIVER_TYPE_E1(TMC2208)
+    #define E1_SERIAL_TX_PIN    PB0
+    #define E1_SERIAL_RX_PIN    PB0
+  #elif AXIS_DRIVER_TYPE_E1(A4988)
+    #define E1_RESET_PIN        PB0
+  #endif
+
 #endif
 
 #if HAS_TMC220x
@@ -293,7 +366,7 @@
 #endif
 
 #ifndef BOARD_INFO_NAME
-  #define BOARD_INFO_NAME "BC.DZ.PC000007.03"
+  #define BOARD_INFO_NAME "BC.DZ.PC000007"
 
   #ifdef ST32_SHIP
     #define CHIP_NAME "(S)"

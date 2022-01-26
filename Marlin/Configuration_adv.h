@@ -2304,6 +2304,8 @@
   #if AXIS_IS_TMC(X)
    #ifdef QUICK_PRINT
     #define X_CURRENT       800        // (mA) RMS current. Multiply by 1.414 for peak current.
+   #elif ENABLED(NEW_BOARD)
+    #define X_CURRENT       500
    #else
     #define X_CURRENT       500        // (mA) RMS current. Multiply by 1.414 for peak current.
    #endif
@@ -2326,6 +2328,8 @@
       #define Y_CURRENT       900
     #elif ENABLED(QUICK_PRINT)
       #define Y_CURRENT       800
+    #elif ENABLED(NEW_BOARD)
+      #define Y_CURRENT       500
     #else
       #define Y_CURRENT       700
     #endif
@@ -2346,6 +2350,8 @@
   #if AXIS_IS_TMC(Z)
    #ifdef QUICK_PRINT
     #define Z_CURRENT       800
+   #elif ENABLED(NEW_BOARD)
+    #define Z_CURRENT       500
    #else
     #define Z_CURRENT       800
    #endif
@@ -2356,7 +2362,11 @@
   #endif
 
   #if AXIS_IS_TMC(Z2)
+   #if ENABLED(NEW_BOARD)
+    #define Z2_CURRENT      500
+   #else
     #define Z2_CURRENT      800
+   #endif
     #define Z2_CURRENT_HOME Z2_CURRENT
     #define Z2_MICROSTEPS    16
     #define Z2_RSENSE         0.11

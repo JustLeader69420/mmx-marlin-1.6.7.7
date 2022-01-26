@@ -22,7 +22,7 @@
 #pragma once
 
 // 选择机器型号
-#define R3_PRO    // R3_pro:max
+// #define R3_PRO    // R3_pro:max
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
@@ -32,7 +32,7 @@
 #define HAS_UDISK
 // #define QUICK_PRINT
 // #define USART_LCD
-// #define NEW_BOARD
+#define NEW_BOARD
 
 // #define TEST_FW
 
@@ -153,6 +153,7 @@
 #ifdef NEW_BOARD
   #define SERIAL_PORT 2
 #else
+  // #define SERIAL_PORT 2
   #define SERIAL_PORT 3
 #endif
 
@@ -791,7 +792,7 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-//#define ENDSTOP_INTERRUPTS_FEATURE
+// #define ENDSTOP_INTERRUPTS_FEATURE
 
 /**
  * Endstop Noise Threshold

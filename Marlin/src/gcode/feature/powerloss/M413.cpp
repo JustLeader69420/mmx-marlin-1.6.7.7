@@ -48,7 +48,9 @@ void GcodeSuite::M413() {
 
   #if ENABLED(DEBUG_POWER_LOSS_RECOVERY)
     if (parser.seen("RL")) recovery.load();
-    if (parser.seen('W')) recovery.save(true);
+    // if (parser.seen('W')) recovery.save(true);
+    if (parser.seen('WS')) {recovery.save(true); recovery.write();}
+    TERN_(HAS_UDISK, if (parser.seen('WU')) {recovery.save(true); recovery.usb_write();})
     if (parser.seen('P')) recovery.purge();
     if (parser.seen('D')) recovery.debug(PSTR("M413"));
     #if PIN_EXISTS(POWER_LOSS)

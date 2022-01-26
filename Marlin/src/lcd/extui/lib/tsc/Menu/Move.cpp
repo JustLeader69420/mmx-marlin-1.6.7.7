@@ -75,11 +75,13 @@ static void redrawPosition(void)
 void drawTopInfo(int16_t inf)
 {
   GUI_SetColor(RED);
+  GUI_SetBkColor(BLACK);
   GUI_DispStringInPrect(&busyrect, textSelect(inf));
   GUI_SetColor(FK_COLOR);
 }
 void drawTopInfo(const uint8_t *p)
 {
+  GUI_SetBkColor(BLACK);
   GUI_SetColor(RED);
   GUI_DispStringInPrect(&busyrect, p);
   GUI_SetColor(FK_COLOR);
