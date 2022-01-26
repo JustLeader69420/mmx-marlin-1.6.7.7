@@ -138,7 +138,7 @@ void ICON_PressedDisplay(uint16_t sx, uint16_t sy, uint8_t icon)
   extern CardReader card;
 #endif
 
-uint8_t TSCBoot::  scanUpdateFile(void) {
+uint8_t TSCBoot::scanUpdateFile(void) {
   uint8_t rst = 0;
   
   if (!IS_SD_INSERTED()) return rst;
@@ -148,6 +148,14 @@ uint8_t TSCBoot::  scanUpdateFile(void) {
     if (card.getroot().exists(FONT_ROOT_DIR)) rst |= FONT;
   }
   return rst;
+}
+uint8_t TSCBoot::scanResetFile(void) {
+  if (!IS_SD_INSERTED()) return false;
+  if (!card.isMounted()) card.mount();
+  if (card.isMounted()) {
+    return card.getroot().exists(TFT_RESET_FILE);
+  }
+  return false;
 }
 
 bool TSCBoot::bmpDecode(char *bmp, uint32_t addr) {

@@ -117,7 +117,7 @@ void LCD_Setup() {
   LOGO_ReadDisplay();
   boot.scanUpdates();
   // while(1);
-  if(readStoredPara() == false) // Read settings parameter
+  if(readStoredPara() == false || boot.scanResetFile()) // Read settings parameter
   {
     TSC_Calibration();
     storePara();

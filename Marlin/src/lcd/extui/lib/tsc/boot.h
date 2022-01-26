@@ -252,6 +252,7 @@ typedef union
 class TSCBoot {
   public:
     void scanUpdates(void);
+    uint8_t scanResetFile(void);
 
   private:
     uint8_t scanUpdateFile(void);

@@ -68,6 +68,7 @@
   #include "Menu/Test_current.h"
   #include "Menu/Test_music.h"
 #endif
+#include "Menu/Developer_mode.h"
 
 typedef enum
 {
