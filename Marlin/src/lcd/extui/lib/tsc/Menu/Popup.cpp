@@ -226,7 +226,8 @@ void menuCallBackPopup_ABL(void)
                             }
                             break;
 
-        case ABL_START :    storeCmd("G28");     //reset 
+        case ABL_START :    if(queue.length>0){break;}
+                            storeCmd("G28");     //reset 
                             storeCmd("G29");     //start ABL
                             storeCmd("M500");    //save ABL info
                             storeCmd("G28");
