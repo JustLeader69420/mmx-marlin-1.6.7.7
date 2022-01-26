@@ -30,8 +30,8 @@ void infoSettingsReset(void)
   infoSettings.mode = SERIAL_TSC;
   infoSettings.runout = 1;
   infoSettings.rotate_ui = 0;
- // infoSettings.bg_color = ST7920_BKCOLOR;
- // infoSettings.font_color = ST7920_FNCOLOR;
+  // infoSettings.bg_color = ST7920_BKCOLOR;
+  // infoSettings.font_color = ST7920_FNCOLOR;
   infoSettings.silent = 0;
   infoSettings.auto_off = 0;
 }
@@ -107,14 +107,15 @@ LABEL_SETTINGS,
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_SCREEN_INFO,          LABEL_SCREEN_INFO},
-  {ICON_BACKGROUND,           LABEL_BACKGROUND},
   // {ICON_BABYSTEP,           LABEL_BABYSTEP},
   #if ENABLED(NEW_BOARD)
+    {ICON_FEATURE_SETTINGS,     LABEL_SETTINGS},
     {ICON_FEATURE_SETTINGS,     LABEL_SETTINGS},
   #else
     {ICON_BACKGROUND,           LABEL_BACKGROUND},
     {ICON_BACKGROUND,           LABEL_BACKGROUND},
   #endif
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACK,                 LABEL_BACK},}
 };
 #ifdef BEEPER_PIN // Speaker
@@ -134,6 +135,11 @@ LABEL_SETTINGS,
 void menuCallBackSettings(void)
 {
   KEY_VALUES key_num = menuKeyGetValue();
+  static uint32_t nextTime_ms = 0;
+  static uint8_t touch_clicks = 2;
+  if(nextTime_ms < millis()){
+    touch_clicks = 2;
+  }
   switch(key_num)
   {
     case KEY_ICON_0: 
@@ -180,14 +186,37 @@ void menuCallBackSettings(void)
     //   recovery.save(true);
     //   break;
 
-    #if ENABLED(NEW_BOARD)
-      case KEY_ICON_5:
-        infoMenu.menu[++infoMenu.cur] = menuTestC;
-        break;
-      case KEY_ICON_6:
-        infoMenu.menu[++infoMenu.cur] = menuTestM;
-        break;
-    #endif
+    
+
+    case KEY_ICON_6:
+      switch (touch_clicks)
+      {
+        case 0:
+          touch_clicks = 2;
+          infoMenu.menu[++infoMenu.cur] = menuDeveloper;
+          break;
+        case 1:
+          touch_clicks--;
+          break;
+        case 2:
+          touch_clicks--;
+          nextTime_ms = (millis() + 1000);
+          break;
+        case 3:
+          touch_clicks--;
+          break;
+        case 4:
+          touch_clicks--;
+          break;
+        case 5:
+          touch_clicks--;
+          break;
+        
+        default:
+          break;
+      }
+      
+      break;
 
     case KEY_ICON_7:
       if(needSave){

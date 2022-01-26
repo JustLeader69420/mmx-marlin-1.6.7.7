@@ -708,7 +708,9 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
   // Move the probe to the starting XYZ
   do_blocking_move_to(npos);
 
-  DISABLE_STEPPER_X();
+  #if DISABLED(QUICK_PRINT)
+    DISABLE_STEPPER_X();
+  #endif
   WRITE(CALIB_PIN, LOW);
   SERIAL_PRINTF("***********wait 500ms probe***************\n");
   safe_delay(500);
