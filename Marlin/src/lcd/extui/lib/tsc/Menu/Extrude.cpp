@@ -6,7 +6,8 @@ MENUITEMS extrudeItems = {
 // title
 LABEL_EXTRUDE,
 // icon                       label
- {{ICON_UNLOAD,               LABEL_UNLOAD},
+//  {{ICON_UNLOAD,               LABEL_UNLOAD},  
+ {{ICON_STATUSNOZZLE,         LABEL_NOZZLE},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_LOAD,                 LABEL_LOAD},
@@ -49,7 +50,10 @@ static bool isBusy = false; // 判断当前系统是否繁忙
 static uint8_t top_info_ai = 0, top_info_bi = 0, top_info_ci = 0;    // 用于是否需要清空顶部背景
 
 bool pause_extrude_flag = false;  // 暂停挤出机的标志
+#define HOTEND_SEPARATOR_X      (START_X + 0 * ICON_WIDTH + 0 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH)/2)
+#define STATUS_START_Y          (TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0)
 
+/************************************************************************************/
 void extrudeCoordinateReDraw(void)
 {
   const GUI_RECT rect = {exhibitRect.x0, CENTER_Y, exhibitRect.x1, (int16_t)(CENTER_Y+BYTE_HEIGHT)};
@@ -71,6 +75,15 @@ void showExtrudeCoordinate(void)
   GUI_ClearPrect(&rect);
   GUI_DispStringInPrect(&rect, (uint8_t *)extruderDisplayID[item_extruder_i]);
   extrudeCoordinateReDraw();
+}
+
+static void redrawHotendAct(int16_t msg)
+{
+  GUI_DispDec(HOTEND_SEPARATOR_X - 3*BYTE_WIDTH, STATUS_START_Y, msg, 3, RIGHT);
+}
+static void redrawToolTag(int16_t msg)
+{
+  GUI_DispDec(HOTEND_SEPARATOR_X + BYTE_WIDTH+1, STATUS_START_Y, msg, 3, LEFT);
 }
 
 void menuCallBackExtrude(void)
@@ -105,12 +118,12 @@ void menuCallBackExtrude(void)
 
   switch(key_num)
   {
-    case KEY_ICON_0:
-      if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
-        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
-      else
-        e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
-      break;
+    // case KEY_ICON_0:
+    //   if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
+    //     ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+    //   else
+    //     e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
+    //   break;
     
     case KEY_ICON_3:
       if(pause_extrude_flag)
@@ -179,7 +192,23 @@ void menuCallBackExtrude(void)
         GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
       }
     }
+
+    GUI_SetColor(VAL_COLOR);
+    GUI_SetBkColor(WHITE);
+    GUI_DispString(HOTEND_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Ext value
+    // Refresh hotend temperature
+    // if (statusMsg.actHotend != tempMsg.actHotend) {
+      statusMsg.actHotend = tempMsg.actHotend;
+      redrawHotendAct(tempMsg.actHotend);
+    // }
+    // if (statusMsg.tagHotend != tempMsg.tagHotend) {
+      statusMsg.tagHotend = tempMsg.tagHotend;
+      redrawToolTag(tempMsg.tagHotend);
+    // }
+    GUI_SetColor(WHITE);
+    GUI_SetBkColor(VAL_COLOR);
   }
+
   if (extrudeCoordinate2 != (int)ExtUI::getAxisPosition_mm(item_extruder_i)){
     extrudeCoordinate2 = (int)ExtUI::getAxisPosition_mm(item_extruder_i);
     extrudeCoordinateReDraw();
@@ -189,6 +218,8 @@ void menuCallBackExtrude(void)
 void menuExtrude()
 {
   e_add_mm = top_info_ai = top_info_bi = top_info_ci = 0;   // 防止上一次界面的干扰
+  statusMsg.actHotend = -1;
+  statusMsg.tagHotend = -1;
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
   menuSetFrontCallBack(menuCallBackExtrude);
