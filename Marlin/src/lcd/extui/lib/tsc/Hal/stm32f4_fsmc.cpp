@@ -123,8 +123,8 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         /* Read Timing - relatively slow to ensure ID information is correctly read from TFT controller */
         /* Can be decreases from 15-15-24 to 4-4-8 with risk of stability loss */
         Timing.AddressSetupTime = 15;
-        Timing.AddressHoldTime = 15;
-        Timing.DataSetupTime = 24;
+        Timing.AddressHoldTime = 0;
+        Timing.DataSetupTime = 12;
         Timing.BusTurnAroundDuration = 0;
         Timing.CLKDivision = 4;
         Timing.DataLatency = 17;
@@ -132,7 +132,7 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         /* Write Timing */
         /* Can be decreases from 8-15-8 to 0-0-1 with risk of stability loss */
         ExtTiming.AddressSetupTime = 8;
-        ExtTiming.AddressHoldTime = 15;
+        ExtTiming.AddressHoldTime = 0;
         ExtTiming.DataSetupTime = 8;
         ExtTiming.BusTurnAroundDuration = 0;
         ExtTiming.CLKDivision = 16;
@@ -168,7 +168,8 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         #if ENABLED(NEW_BOARD)
           HAL_SRAM_Init(&SRAMx, &Timing, &ExtTiming);
         #else
-          MX_FSMC_Init();
+          HAL_SRAM_Init(&SRAMx, &Timing, &ExtTiming);
+          // MX_FSMC_Init();
         #endif
         // SRAMx.Instance->BTCR[0] = FSMC_BCR1_WREN | FSMC_BCR_MTYP_SRAM  | FSMC_BCR_MWID_16BITS | FSMC_BCR_MBKEN;   //BCR1
         // SRAMx.Instance->BTCR[1] = (FSMC_DATA_SETUP_TIME << 8) | FSMC_ADDRESS_SETUP_TIME;  //BTR1
