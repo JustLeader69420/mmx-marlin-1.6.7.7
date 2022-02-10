@@ -78,9 +78,9 @@
 // Limit Switches
 //
 #if ENABLED(QUICK_PRINT)
-  #define X_MAX_PIN                           PF11
+  #define X_MAX_PIN                           PF14
 #else
-  #define X_MIN_PIN                           PF11
+  #define X_MIN_PIN                           PF14
   // #define X_MAX_PIN                           PA15
 #endif
 
@@ -90,8 +90,8 @@
 #ifdef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
   #define Z_MIN_PIN          PD3
 #else
-  #define Z_MIN_PIN          PF14
-  #define Z_MAZ_PIN 
+  #define Z_MIN_PIN          PF11
+  // #define Z_MAZ_PIN 
 #endif
 // #define Z_MIN_PIN                           PG0
 // #define Z_MAX_PIN                           PD15
@@ -105,7 +105,7 @@
   //
   // Software serial ASYNC half duplex?
   //
-#if 1
+#if 0
 
   /*** X ***/
   #define X_ENABLE_PIN        PE6
@@ -205,10 +205,10 @@
   #endif
 
   #if AXIS_DRIVER_TYPE_Z(TMC2208)
-    #define Z_SERIAL_TX_PIN     PF10
-    #define Z_SERIAL_RX_PIN     PF10
+    #define Z_SERIAL_TX_PIN     PF9 // 此处应是PF10，但表与PF9反了
+    #define Z_SERIAL_RX_PIN     PF9
   #elif AXIS_DRIVER_TYPE_Z(A4988)
-    #define Z_RESET_PIN         PF10
+    #define Z_RESET_PIN         PF9
   #endif
 
   #if AXIS_DRIVER_TYPE_Z2(TMC2208)
@@ -646,5 +646,26 @@
     #define MOSI_PIN                SDIO_CMD_PIN  //A7
   #endif
 #endif
+
+
+//
+// WIFI
+//
+
+/**
+ *          -----
+ *      TX | 1 2 | GND      Enable PG1   // Must be high for module to run
+ *  Enable | 3 4 | GPIO2    Reset  PG0   // active low, probably OK to leave floating
+ *   Reset | 5 6 | GPIO0    GPIO2  PF15  // must be high (ESP3D software configures this with a pullup so OK to leave as floating)
+ *    3.3V | 7 8 | RX       GPIO0  PF14  // Leave as unused (ESP3D software configures this with a pullup so OK to leave as floating)
+ *          -----
+ *            W1
+ */
+#define ESP_WIFI_MODULE_COM                    6  // Must also set either SERIAL_PORT or SERIAL_PORT_2 to this
+#define ESP_WIFI_MODULE_BAUDRATE        BAUDRATE  // Must use same BAUDRATE as SERIAL_PORT & SERIAL_PORT_2
+#define ESP_WIFI_MODULE_RESET_PIN           PE5
+#define ESP_WIFI_MODULE_ENABLE_PIN          PE4
+#define ESP_WIFI_MODULE_GPIO0_PIN           ESP_WIFI_MODULE_ENABLE_PIN
+// #define ESP_WIFI_MODULE_GPIO2_PIN           PF15
 
 #endif
