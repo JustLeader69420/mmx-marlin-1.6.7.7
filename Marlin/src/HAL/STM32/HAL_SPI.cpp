@@ -45,7 +45,11 @@ static SPISettings spiConfig;
   #include "../shared/Delay.h"
 
   void spiBegin(void) {
+   #if ENABLED(NEW_BOARD)
+    OUT_WRITE(SDSS, HIGH);
+   #else
     OUT_WRITE(SS_PIN, HIGH);
+   #endif
     OUT_WRITE(SCK_PIN, HIGH);
     SET_INPUT(MISO_PIN);
     OUT_WRITE(MOSI_PIN, HIGH);
