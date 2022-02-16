@@ -32,7 +32,7 @@
 #define HAS_UDISK
 // #define QUICK_PRINT
 // #define USART_LCD
-#define NEW_BOARD
+// #define NEW_BOARD
 
 // #define TEST_FW
 
@@ -151,7 +151,7 @@
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
 #ifdef NEW_BOARD
-  #define SERIAL_PORT 2
+  #define SERIAL_PORT 3
 #else
   // #define SERIAL_PORT 2
   #define SERIAL_PORT 3

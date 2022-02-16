@@ -44,8 +44,10 @@ void redrawTestCurrent(void){
 
   memset(tempstr, 0, 100);
   GUI_ClearPrect(&TestCurrentRect_2);
-  // 计算加热头的电流(放大1000倍)
-  hotend_A = ((hotend_num/GETTIME*330)*1000)/(1024*21*4); // 330-->3.3v放大100倍,1024-->ADC分辨率10bit,21-->放大倍数,4-->采样电阻0.04欧放大100倍
+  // 计算加热头的电流(放大1000倍变成mA)
+  // 330-->3.3v放大100倍
+  // 1024-->ADC分辨率10bit, 1000-->放大倍数, 1-->采样电阻0.01欧放大100倍与前面3.3v放大100倍刚好抵消
+  hotend_A = ((hotend_num/GETTIME*330)*1000)/(1024*100*1);
   sprintf_P(tempstr, "Hotend_ocp: %d, Hotend: %dmA", (hotend_num/GETTIME), hotend_A);
   GUI_DispStringInPrect(&TestCurrentRect_2,(uint8_t *)tempstr);
 }

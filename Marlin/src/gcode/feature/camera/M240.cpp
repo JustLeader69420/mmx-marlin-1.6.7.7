@@ -69,7 +69,7 @@
     delayMicroseconds(pulse_length);
   }
 
-  FORCE_INLINE void tweak_photo_pin() { set_photo_pin(HIGH); set_photo_pin(LOW); }
+  FORCE_INLINE void tweak_photo_pin() { set_photo_pin(PHOTO_PIN_ACTIVE_STATE); TERN_(MINGDA_MODE, delay(10);) set_photo_pin(!PHOTO_PIN_ACTIVE_STATE); }
 
   #ifdef PHOTO_PULSES_US
 
@@ -182,11 +182,13 @@ void GcodeSuite::M240() {
     chdk_timeout = millis() + parser.intval('D', PHOTO_SWITCH_MS);
 
   #elif HAS_PHOTOGRAPH
-
-    spin_photo_pin();
-    delay(7.33);
-    spin_photo_pin();
-
+    #if ENABLED(MINGDA_MODE)
+      spin_photo_pin();
+    #else
+      spin_photo_pin();
+      delay(7.33);
+      spin_photo_pin();
+    #endif
   #endif
 
   #ifdef PHOTO_POSITION

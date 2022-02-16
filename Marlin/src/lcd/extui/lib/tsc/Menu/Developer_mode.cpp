@@ -76,6 +76,7 @@ void menuCallBackDeveloper(void)
       case KEY_ICON_5:
         infoMenu.menu[++infoMenu.cur] = menuTestC;
         break;
+      case KEY_ICON_6: mustStoreCmd("M240\n"); break;
     #endif
 
     case KEY_ICON_7:

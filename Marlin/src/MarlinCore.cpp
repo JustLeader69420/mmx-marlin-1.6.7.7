@@ -1238,7 +1238,7 @@ void setup() {
   #endif
 
   #if HAS_PHOTOGRAPH
-    OUT_WRITE(PHOTOGRAPH_PIN, LOW);
+    OUT_WRITE(PHOTOGRAPH_PIN, !PHOTO_PIN_ACTIVE_STATE);
   #endif
 
   #if HAS_CUTTER
