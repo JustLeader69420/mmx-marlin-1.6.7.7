@@ -2353,7 +2353,7 @@
    #elif ENABLED(NEW_BOARD)
     #define Z_CURRENT       500
    #else
-    #define Z_CURRENT       800
+    #define Z_CURRENT       600
    #endif
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
@@ -2365,7 +2365,7 @@
    #if ENABLED(NEW_BOARD)
     #define Z2_CURRENT      500
    #else
-    #define Z2_CURRENT      800
+    #define Z2_CURRENT      600
    #endif
     #define Z2_CURRENT_HOME Z2_CURRENT
     #define Z2_MICROSTEPS    16
@@ -2905,7 +2905,9 @@
  * Add the M240 G-code to take a photo.
  * The photo can be triggered by a digital pin or a physical movement.
  */
-//#define PHOTO_GCODE
+#ifdef NEW_BOARD
+#define PHOTO_GCODE
+#endif
 #if ENABLED(PHOTO_GCODE)
   // A position to move to (and raise Z) before taking the photo
   //#define PHOTO_POSITION { X_MAX_POS - 5, Y_MAX_POS, 0 }  // { xpos, ypos, zraise } (M240 X Y Z)
@@ -2914,7 +2916,9 @@
 
   // Canon RC-1 or homebrew digital camera trigger
   // Data from: https://www.doc-diy.net/photo/rc-1_hacked/
-  //#define PHOTOGRAPH_PIN 23
+  #define PHOTOGRAPH_PIN PB13
+  #define PHOTO_PIN_ACTIVE_STATE LOW  // 相机引脚触发模式
+  #define MINGDA_MODE
 
   // Canon Hack Development Kit
   // https://captain-slow.dk/2014/03/09/3d-printing-timelapses/

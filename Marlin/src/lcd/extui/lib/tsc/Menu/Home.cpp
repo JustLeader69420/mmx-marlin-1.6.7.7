@@ -6,17 +6,17 @@ bool stop_home = false; // 停止复位的标志，注该标志影响到阻塞�
 
   //1title, ITEM_PER_PAGE item
   const MENUITEMS homeItems = {
-  // title
-  LABEL_HOME,
-  // icon                       label
-  {{ICON_HOME,                 LABEL_HOME},
-    {ICON_X_HOME,               LABEL_X_HOME},
-    {ICON_Y_HOME,               LABEL_Y_HOME},
-    {ICON_Z_HOME,               LABEL_Z_HOME},
-    {ICON_EM_STOP,              LABEL_EMERGENCYSTOP},
-    {ICON_BACKGROUND,           LABEL_BACKGROUND},
-    {ICON_BACKGROUND,           LABEL_BACKGROUND},
-    {ICON_BACK,                 LABEL_BACK},}
+    // title
+    LABEL_HOME,
+    // icon                       label
+    { {ICON_HOME,                 LABEL_HOME},
+      {ICON_X_HOME,               LABEL_X_HOME},
+      {ICON_Y_HOME,               LABEL_Y_HOME},
+      {ICON_Z_HOME,               LABEL_Z_HOME},
+      {ICON_EM_STOP,              LABEL_EMERGENCYSTOP},
+      {ICON_BACKGROUND,           LABEL_BACKGROUND},
+      {ICON_BACKGROUND,           LABEL_BACKGROUND},
+      {ICON_BACK,                 LABEL_BACK},}
   };
 
   void menuCallBackHome(void)

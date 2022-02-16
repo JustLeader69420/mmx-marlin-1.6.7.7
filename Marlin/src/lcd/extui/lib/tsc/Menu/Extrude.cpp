@@ -6,12 +6,13 @@ MENUITEMS extrudeItems = {
 // title
 LABEL_EXTRUDE,
 // icon                       label
-//  {{ICON_UNLOAD,               LABEL_UNLOAD},  
- {{ICON_STATUSNOZZLE,         LABEL_NOZZLE},
+//  {{ICON_UNLOAD,               LABEL_UNLOAD}, 
+ {{ICON_EM_STOP,              LABEL_EMERGENCYSTOP}, 
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_LOAD,                 LABEL_LOAD},
-  {ICON_NOZZLE,               LABEL_NOZZLE},
+  // {ICON_NOZZLE,               LABEL_NOZZLE},
+  {ICON_STATUSNOZZLE,         LABEL_NOZZLE},
   {ICON_NORMAL_SPEED,         LABEL_NORMAL_SPEED},
   {ICON_E_5_MM,               LABEL_5_MM},
   {ICON_BACK,                 LABEL_BACK},}
@@ -51,7 +52,7 @@ static uint8_t top_info_ai = 0, top_info_bi = 0, top_info_ci = 0;    // 用于�
 
 bool pause_extrude_flag = false;  // 暂停挤出机的标志
 #define HOTEND_SEPARATOR_X      (START_X + 0 * ICON_WIDTH + 0 * SPACE_X + (ICON_WIDTH-BYTE_WIDTH)/2)
-#define STATUS_START_Y          (TITLE_END_Y +  0 * ICON_HEIGHT + 0 * SPACE_Y + SSICON_VAL_Y0)
+#define STATUS_START_Y          (TITLE_END_Y +  1 * ICON_HEIGHT + 1 * SPACE_Y + SSICON_VAL_Y0)
 
 /************************************************************************************/
 void extrudeCoordinateReDraw(void)
@@ -124,6 +125,9 @@ void menuCallBackExtrude(void)
     //   else
     //     e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
     //   break;
+    case KEY_ICON_0:
+      quickstop_stepper();
+      break;
     
     case KEY_ICON_3:
       if(pause_extrude_flag)
@@ -135,6 +139,17 @@ void menuCallBackExtrude(void)
     case KEY_ICON_4:
       item_extruder_i = (ExtUI::extruder_t)((item_extruder_i + 1) % ITEM_EXTRUDER_NUM);
       showExtrudeCoordinate();
+      {
+        GUI_SetColor(VAL_COLOR);
+        GUI_SetBkColor(WHITE);
+        GUI_DispString(HOTEND_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Ext value
+        statusMsg.actHotend = tempMsg.actHotend;
+        redrawHotendAct(tempMsg.actHotend);
+        statusMsg.tagHotend = tempMsg.tagHotend;
+        redrawToolTag(tempMsg.tagHotend);
+        GUI_SetColor(WHITE);
+        GUI_SetBkColor(VAL_COLOR);
+      }
       break;
 
     case KEY_ICON_5:
@@ -197,14 +212,14 @@ void menuCallBackExtrude(void)
     GUI_SetBkColor(WHITE);
     GUI_DispString(HOTEND_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Ext value
     // Refresh hotend temperature
-    // if (statusMsg.actHotend != tempMsg.actHotend) {
+    if (statusMsg.actHotend != tempMsg.actHotend) {
       statusMsg.actHotend = tempMsg.actHotend;
       redrawHotendAct(tempMsg.actHotend);
-    // }
-    // if (statusMsg.tagHotend != tempMsg.tagHotend) {
+    }
+    if (statusMsg.tagHotend != tempMsg.tagHotend) {
       statusMsg.tagHotend = tempMsg.tagHotend;
       redrawToolTag(tempMsg.tagHotend);
-    // }
+    }
     GUI_SetColor(WHITE);
     GUI_SetBkColor(VAL_COLOR);
   }

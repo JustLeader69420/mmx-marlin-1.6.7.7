@@ -165,10 +165,10 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         controllerAddress |= (uint32_t)pinmap_peripheral(digitalPinToPinName(TFT_RS_PIN), PinMap_FSMC_RS);
 
         //
-        #if ENABLED(NEW_BOARD)
+        #if ENABLED(ST32_SHIP)
           HAL_SRAM_Init(&SRAMx, &Timing, &ExtTiming);
-        #else
-          HAL_SRAM_Init(&SRAMx, &Timing, &ExtTiming);
+        #elif ENABLED(USE_GD32)
+          HAL_SRAM_Init(&SRAMx, &Timing, NULL);
           // MX_FSMC_Init();
         #endif
         // SRAMx.Instance->BTCR[0] = FSMC_BCR1_WREN | FSMC_BCR_MTYP_SRAM  | FSMC_BCR_MWID_16BITS | FSMC_BCR_MBKEN;   //BCR1
@@ -194,7 +194,7 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         DMAtx.Init.Priority = DMA_PRIORITY_HIGH;
 
         LCD = (TFTLCD_TypeDef *)controllerAddress;
-        
+
     #endif
 }
 #if 0
