@@ -14,7 +14,7 @@
   #define W25QXX_MOSI_PIN PB5
   #define W25QXX_MISO_PIN PB4
   #define W25QXX_SCLK_PIN PB3
-  #define W25QXX_CS_PIN   PG11
+  #define W25QXX_CS_PIN   PA15
 #else
   #define W25QXX_SPIX SPI2
   #define W25QXX_MOSI_PIN PC3
@@ -124,12 +124,12 @@ void W25Qxx_Init(void)
     
     __HAL_RCC_GPIOG_CLK_ENABLE();           // 使能时钟
     
-    //W25QXX_CS_PIN PG11
-    GPIO_Initure.Pin=GPIO_PIN_11;           //11脚
+    //W25QXX_CS_PIN PA15
+    GPIO_Initure.Pin=GPIO_PIN_15;           //11脚
     GPIO_Initure.Mode=GPIO_MODE_OUTPUT_PP;  //堆挽输出
     GPIO_Initure.Pull=GPIO_PULLUP;          //上拉
     GPIO_Initure.Speed=GPIO_SPEED_HIGH;     //快速         
-    HAL_GPIO_Init(GPIOG,&GPIO_Initure);     //初始化
+    HAL_GPIO_Init(GPIOA,&GPIO_Initure);     //初始化
     // SET_OUTPUT(W25QXX_CS_PIN);
     
     W25Qxx_SPI_CS_Set(1);                   //SPI FLASH不选中
