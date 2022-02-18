@@ -33,20 +33,27 @@ void redrawTestCurrent(void){
 
   memset(tempstr, 0, 100);
   GUI_ClearPrect(&TestCurrentRect_0);
-  // motors_v = (motors_num/GETTIME*3300)/(1024*21*4);
-  sprintf_P(tempstr, "Motors ocp: %d", motors_num/GETTIME);
+  // 计算电机的电流(放大1000倍变成mA)
+  // 330-->3.3v放大100倍
+  // 1024-->ADC分辨率10bit, 1000-->放大倍数, 1-->采样电阻0.01欧放大100倍与前面3.3v放大100倍刚好抵消
+  motors_A = ((motors_num/GETTIME*330/2)*1000)/(1024*100*1);
+  sprintf_P(tempstr, "Motors ocp: %d, Motors: %dmA", motors_num/GETTIME, motors_A);
   GUI_DispStringInPrect(&TestCurrentRect_0,(uint8_t *)tempstr);
 
   memset(tempstr, 0, 100);
   GUI_ClearPrect(&TestCurrentRect_1);
-  sprintf_P(tempstr, "Bed ocp: %d", bed_num/GETTIME);
+  // 计算热床加热的电流(放大1000倍变成mA)
+  // 3300-->3.3v放大1000倍
+  // 1024-->ADC分辨率10bit, 1000-->放大倍数, 2-->采样电阻0.002欧放大1000倍与前面3.3v放大1000倍刚好抵消
+  bed_A = ((bed_num/GETTIME*3300)*1000)/(1024*100*2);
+  sprintf_P(tempstr, "Bed ocp: %d, Bed: %dmA", bed_num/GETTIME, bed_A);
   GUI_DispStringInPrect(&TestCurrentRect_1,(uint8_t *)tempstr);
 
   memset(tempstr, 0, 100);
   GUI_ClearPrect(&TestCurrentRect_2);
   // 计算加热头的电流(放大1000倍变成mA)
   // 330-->3.3v放大100倍
-  // 1024-->ADC分辨率10bit, 1000-->放大倍数, 1-->采样电阻0.01欧放大100倍与前面3.3v放大100倍刚好抵消
+  // 1024-->ADC分辨率10bit, 100-->放大倍数, 1-->采样电阻0.01欧放大100倍与前面3.3v放大100倍刚好抵消
   hotend_A = ((hotend_num/GETTIME*330)*1000)/(1024*100*1);
   sprintf_P(tempstr, "Hotend_ocp: %d, Hotend: %dmA", (hotend_num/GETTIME), hotend_A);
   GUI_DispStringInPrect(&TestCurrentRect_2,(uint8_t *)tempstr);
