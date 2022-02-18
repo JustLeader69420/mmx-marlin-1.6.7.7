@@ -204,8 +204,8 @@ xyz_pos_t cartes;
 
 /**
  * Output the current position to serial
+ * 输出当前位置到串口
  */
-
 inline void report_more_positions() {
   stepper.report_positions();
   TERN_(IS_SCARA, scara_report_positions());
@@ -259,6 +259,7 @@ void report_current_position_projected() {
  *
  * Set the planner/stepper positions directly from current_position with
  * no kinematic translation. Used for homing axes and cartesian/core syncing.
+ * 直接从current_position设置规划器/步进器位置，不需要运动平移。用于自导轴和笛卡儿/核心同步
  */
 void sync_plan_position() {
   if (DEBUGGING(LEVELING)) DEBUG_POS("sync_plan_position", current_position);
@@ -275,6 +276,9 @@ void sync_plan_position_e() { planner.set_e_position_mm(current_position.e); }
  * leveling applied. The coordinates need to be run through
  * unapply_leveling to obtain the "ideal" coordinates
  * suitable for current_position, etc.
+ * 
+ * 获取cartes[]数组中的步进位置。正运动学应用于"三角洲"和"机械臂"。
+ * 结果是在当前的坐标空间应用水准。坐标需要通过unapply_level来获得适合current_position的“理想”坐标，等等。
  */
 void get_cartesian_from_steppers() {
   #if ENABLED(DELTA)
@@ -836,12 +840,14 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
      * This calls planner.buffer_line several times, adding
      * small incremental moves. This allows the planner to
      * apply more detailed bed leveling to the full move.
+     * 
+     * 在直角坐标系下准备分段移动。这计划。Buffer_line多次，添加小的增量移动。这允许规划者应用更详细的床的水平，以充分移动。
      */
     inline void segmented_line_to_destination(const feedRate_t &fr_mm_s, const float segment_size=LEVELED_SEGMENT_LENGTH) {
 
       const xyze_float_t diff = destination - current_position;
 
-      // If the move is only in Z/E don't split up the move
+      // If the move is only in Z/E don't split up the move //如果移动只是在Z/E轴移动，就不用分割移动
       if (!diff.x && !diff.y) {
         planner.buffer_line(destination, fr_mm_s, active_extruder);
         return;
@@ -854,12 +860,13 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
       if (UNEAR_ZERO(cartesian_mm)) cartesian_mm = ABS(diff.e);
       if (UNEAR_ZERO(cartesian_mm)) return;
 
+      // 分段
       // The length divided by the segment size
       // At least one segment is required
       uint16_t segments = cartesian_mm / segment_size;
       NOLESS(segments, 1U);
 
-      // The approximate length of each segment
+      // The approximate length of each segment // 每个线段的大概长度
       const float inv_segments = 1.0f / float(segments),
                   cartesian_segment_mm = cartesian_mm * inv_segments;
       const xyze_float_t segment_distance = diff * inv_segments;
@@ -875,7 +882,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
       // Get the raw current position as starting point
       xyze_pos_t raw = current_position;
 
-      // Calculate and execute the segments
+      // Calculate and execute the segments // 计算和执行段
       millis_t next_idle_ms = millis() + 200UL;
       while (--segments) {
         segment_idle(next_idle_ms);
@@ -889,6 +896,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
 
       // Since segment_distance is only approximate,
       // the final move must be to the exact destination.
+      // 因为segment_distance只是近似值，最后一步必须是到达确切的目的地。
       planner.buffer_line(destination, fr_mm_s, active_extruder, cartesian_segment_mm
         #if ENABLED(SCARA_FEEDRATE_SCALING)
           , inv_duration
@@ -905,6 +913,9 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
    * according to the configuration of the leveling system.
    *
    * Return true if 'current_position' was set to 'destination'
+   * 
+   * 准备一个笛卡尔式的线性移动。当基于网格的调平系统处于活动状态时，根据调平系统的结构对动作进行分段。
+   * 如果'current_position'被设置为'destination'则返回true
    */
   inline bool line_to_destination_cartesian() {
     const float scaled_fr_mm_s = MMS_SCALED(feedrate_mm_s);
@@ -1048,15 +1059,20 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
  * before calling or cold/lengthy extrusion may get missed.
  *
  * Before exit, current_position is set to destination.
+ * 
+ * 预备好一个动作，准备下一个动作
+ * 这可能会导致多次呼叫planner。buffer_line来为三角洲, 机械臂, mesh移动做小动作，等等。
+ * 在执行之前，确保current_position的e和e的目的地是可执行的，因为冷挤出/过长时间的挤出都有可能会错过。
+ * 在退出之前，current_position被设置为destination。
  */
 void prepare_line_to_destination() {
   apply_motion_limits(destination);
 
   #if EITHER(PREVENT_COLD_EXTRUSION, PREVENT_LENGTHY_EXTRUDE)
-
+    // 确认E轴是否为可执行的。
     if (!DEBUGGING(DRYRUN) && destination.e != current_position.e) {
       bool ignore_e = false;
-
+      // 判断是否冷挤出
       #if ENABLED(PREVENT_COLD_EXTRUSION)
         ignore_e = thermalManager.tooColdToExtrude(active_extruder);
        #if ENABLED(USART_LCD)
@@ -1073,6 +1089,7 @@ void prepare_line_to_destination() {
        #endif
       #endif
 
+      // e轴执行长度是否超过最大挤出长度
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)
         const float e_delta = ABS(destination.e - current_position.e) * planner.e_factor[active_extruder];
         if (e_delta > (EXTRUDE_MAXLENGTH)) {
@@ -1102,6 +1119,7 @@ void prepare_line_to_destination() {
         }
       #endif
 
+      // 执行e轴的动作
       if (ignore_e) {
         current_position.e = destination.e;       // Behave as if the E move really took place
         planner.set_e_position_mm(destination.e); // Prevent the planner from complaining too

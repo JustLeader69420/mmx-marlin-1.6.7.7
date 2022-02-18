@@ -119,6 +119,7 @@ TemporaryBedLevelingState::TemporaryBedLevelingState(const bool enable) : saved(
 
 /**
  * Reset calibration results to zero.
+ * 将校准结果重置为零。
  */
 void reset_bed_level() {
   if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("reset_bed_level");

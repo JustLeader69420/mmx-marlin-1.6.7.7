@@ -95,7 +95,7 @@ void statusMsg_GetCurMsg(STATUS_MSG *msg)
   msg->z = ExtUI::getAxisPosition_mm(ExtUI::Z);
   msg->e0 = ExtUI::getAxisPosition_mm(ExtUI::E0);
   msg->babystep_v = getBabyStepZAxisTotalMM();
-  msg->leveling_v = getLevelingOffset();
+  TERN_(LEVELING_OFFSET, msg->leveling_v = getLevelingOffset();)
   msg->progress = getPrintProgress();
 }
 

@@ -1,10 +1,7 @@
-#include "BabyStep.h"
 #include "../TSC_Menu.h"
 #include "../../../../../feature/babystep.h"
 #include "../../../../../module/settings.h"
 
-#define BABYSTEP_MAX_HIGH 2.0f
-#define WHO_AXIS Z_AXIS
 
 //1 title, ITEM_PER_PAGE items(icon+label) 
 MENUITEMS babyStepItems = {
@@ -39,8 +36,10 @@ const ITEM itemBabyStepUnit[ITEM_BABYSTEP_UNIT_NUM] = {
 const float item_babystep_unit[ITEM_BABYSTEP_UNIT_NUM] = {0.01f, 0.1f, 1};
 
 static ELEMENTS elementsUnit;
+// static float tempData = 0.0f;
 float old_baby_step_value = 0.0f;
-bool autoCloseBabysetp = false;
+bool autoCloseBabysetp = false;   // 是否自动关闭babystep界面
+// float old_z_offset = 0.0f;
 
 static void initElements(uint8_t position)
 {
@@ -84,15 +83,16 @@ static int WhatIsBabyStepMM(float mm){
 }
 
 void setBabyStepZAxisIncMM(float mm){
-  float oldmm = getBabyStepZAxisTotalMM();
+  float oldbabystep = getBabyStepZAxisTotalMM();
+  float oldoffset = getLevelingOffset();
   switch (WhatIsBabyStepMM(mm))
   {
     case 1:
-      babystep.add_mm(WHO_AXIS, BABYSTEP_MAX_HIGH - oldmm);    // 值快到顶了
+      babystep.add_mm(WHO_AXIS, BABYSTEP_MAX_HIGH - oldbabystep);    // 值快到顶了
       break;
 
     case 2:
-      babystep.add_mm(WHO_AXIS, -BABYSTEP_MAX_HIGH - oldmm);   // 值快到底了
+      babystep.add_mm(WHO_AXIS, -BABYSTEP_MAX_HIGH - oldbabystep);   // 值快到底了
       break;
 
     case 3:
@@ -102,11 +102,22 @@ void setBabyStepZAxisIncMM(float mm){
     default:                                    // 其它
       break;
   }
+ #if 0
+  setLevelingOffset(oldoffset + (getBabyStepZAxisTotalMM()-oldbabystep));
+ #endif
 }
 
 void showBabyStep(void)
 {
+ #if 1
   GUI_DispFloat(CENTER_X - 5*BYTE_WIDTH/2, CENTER_Y, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
+ #else
+  GUI_ClearPrect(&exhibitRect);
+  GUI_DispString(CENTER_X - 10*BYTE_WIDTH, CENTER_Y-BYTE_HEIGHT, (const uint8_t *)"BabyStep:");
+  GUI_DispFloat(CENTER_X, CENTER_Y-BYTE_HEIGHT, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
+  GUI_DispString(CENTER_X - 10*BYTE_WIDTH, CENTER_Y+BYTE_HEIGHT, (const uint8_t *)"z offset:");
+  GUI_DispFloat(CENTER_X, CENTER_Y+BYTE_HEIGHT, getLevelingOffset(), 3, 2, RIGHT);
+ #endif
 }
 
 void menuCallBackBabyStep(void)
@@ -122,11 +133,22 @@ void menuCallBackBabyStep(void)
       setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
       break;
     case KEY_ICON_4:
-       #ifdef AUTO_BED_LEVELING_BILINEAR
-        setLevelingOffset(getBabyStepZAxisTotalMM() - old_baby_step_value); // 将当前BabyStep的值赋给z_offset
+       #if ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
+        TERN_(LEVELING_OFFSET, setLevelingOffset(getBabyStepZAxisTotalMM() - old_baby_step_value);) // 将当前BabyStep的值赋给z_offset
         old_baby_step_value = getBabyStepZAxisTotalMM();
-        popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_SYCHRONZIED_VALUE));
-        // infoMenu.cur--;
+        popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_SYCHRONZIED_VALUE));  // 提示并自动退出
+       #else
+        if(old_z_offset != getLevelingOffset()){
+          if(settings.save()){
+            old_z_offset = getLevelingOffset();
+            popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_SUCCESS), true);
+          }else{
+            popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_FAILED), false);
+          }
+        }
+        else{
+          popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_FAILED), false);
+        }
        #endif
       // settings.save();                              // 保存，注意保存的是z_offset的值，而不是BabyStep的值，BabyStep每次复位都会被清零，防止干扰
       break;

@@ -65,7 +65,7 @@ void GcodeSuite::G0_G1(TERN_(HAS_FAST_MOVES, const bool fast_move/*=false*/)) {
       #endif
     #endif
 
-    get_destination_from_command();                 // Get X Y Z E F (and set cutter power)
+    get_destination_from_command();                 // Get X Y Z E F (and set cutter power) //获取终点的位置
 
     #ifdef G0_FEEDRATE
       if (fast_move) {
@@ -98,7 +98,7 @@ void GcodeSuite::G0_G1(TERN_(HAS_FAST_MOVES, const bool fast_move/*=false*/)) {
     #if IS_SCARA
       fast_move ? prepare_fast_move_to_destination() : prepare_line_to_destination();
     #else
-      prepare_line_to_destination();
+      prepare_line_to_destination();  // 准备到终点的直线
     #endif
 
     #ifdef G0_FEEDRATE

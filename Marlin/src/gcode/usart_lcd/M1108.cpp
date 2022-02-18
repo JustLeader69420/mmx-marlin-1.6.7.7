@@ -7,9 +7,11 @@
 #include "../../lcd/mingda_lcd/print_list.h"
 #include "../../lcd/extui/ui_api.h"
 #include "../../lcd/extui/lib/tsc/Menu/Speed.h"
-#include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
 #include "../../lcd/extui/lib/tsc/Menu/Printing.h"
 #include "../../lcd/extui/lib/tsc/Menu/Babystep.h"
+#if ENABLED(LEVELING_OFFSET)
+#include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+#endif
 
 char Send_Success[] = "Save successfully";
 char Send_Failed[] = "Fail to save ";
@@ -19,6 +21,7 @@ void GcodeSuite::M1107(){
   uint16_t n=0,m=0;
   feedRate_t the_feedrate = 0;
   float s,e_v;
+ #if ENABLED(LEVELING_OFFSET)
   if (parser.seenval('S')){
     if(saveOffset()){
       char dwin_send_W[32] = {0};
@@ -47,6 +50,7 @@ void GcodeSuite::M1107(){
       setLevelingOffset(s);
     }
   }
+ #endif
   else if ((parser.seenval('E')) && (parser.linearval('F') > 0)){ // E value and speed
     e_v = parser.value_axis_units(E_AXIS);
     the_feedrate = parser.value_feedrate();

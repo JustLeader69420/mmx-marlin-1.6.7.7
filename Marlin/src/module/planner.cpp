@@ -1471,6 +1471,7 @@ void Planner::check_axes_activity() {
   /**
    * rx, ry, rz - Cartesian positions in mm
    *              Leveled XYZ on completion
+   * 获取某坐标的z轴调平数据
    */
   void Planner::apply_leveling(xyz_pos_t &raw) {
     if (!leveling_active) return;

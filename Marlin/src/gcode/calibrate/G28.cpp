@@ -67,7 +67,9 @@
 #include "../../lcd/extui/lib/tsc/Menu/Print.h"
 
 #ifdef AUTO_BED_LEVELING_BILINEAR
-  #include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+  #if ENABLED(LEVELING_OFFSET)
+    #include "../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+  #endif
   #include "../../lcd/extui/lib/tsc/Menu/BabyStep.h"
 #endif
 #include "../../lcd/extui/lib/tsc/Menu/Home.h"
@@ -206,7 +208,7 @@
  */
 void GcodeSuite::G28() {
   can_print_flag = false;   // 不能进行打印
-  #ifdef AUTO_BED_LEVELING_BILINEAR
+  #if ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
     saveOffset();           // 在复位之前先尝试保存z-offset的数据
   #endif
 
@@ -505,7 +507,7 @@ void GcodeSuite::G28() {
   stop_home = false;        // 关闭停止复位标志，防干扰
   
   #ifdef AUTO_BED_LEVELING_BILINEAR
-    old_baby_step_value = getBabyStepZAxisTotalMM();
+    old_baby_step_value = getBabyStepZAxisTotalMM();  // 临时babystep数据清零
   #endif
   
   #if ENABLED(USART_LCD)

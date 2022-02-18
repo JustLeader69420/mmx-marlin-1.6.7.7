@@ -73,7 +73,9 @@
 #endif
 
 #include "../../../lcd/extui/lib/tsc/Menu/Popup.h"
+#if ENABLED(LEVELING_OFFSET)
 #include "../../../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+#endif
 
 #if ABL_GRID
   #if ENABLED(PROBE_Y_FIRST)
@@ -739,7 +741,7 @@ G29_TYPE GcodeSuite::G29() {
     TERN_(LCD_BED_LEVELING, ui.wait_for_move = false);
   #endif
 
-  // Calculate leveling, print reports, correct the position
+  // Calculate leveling, print reports, correct the position.// 计算水准，打印报表，校正位置
   if (!isnan(measured_z)) {
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
@@ -874,11 +876,11 @@ G29_TYPE GcodeSuite::G29() {
 
     #endif // ABL_PLANAR
 
-    // Auto Bed Leveling is complete! Enable if possible.
+    // Auto Bed Leveling is complete! Enable if possible.完成自动调平！如果可以的话
     planner.leveling_active = dryrun ? abl_should_enable : true;
   } // !isnan(measured_z)
 
-  // Restore state after probing
+  // Restore state after probing.//探测完成后重置状态(速度和缩放比例)
   if (!faux) restore_feedrate_and_scaling();
 
   // Sync the planner from the current_position
@@ -901,7 +903,7 @@ G29_TYPE GcodeSuite::G29() {
   report_current_position();
 
   ABL_STATUS = ABL_DONE;
-  oldLevelingOffset = 0;
+  TERN_(LEVELING_OFFSET, oldLevelingOffset = 0;)
   G29_RETURN(isnan(measured_z));
 }
 

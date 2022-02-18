@@ -41,6 +41,7 @@ bed_mesh_t z_values;
 
 /**
  * Extrapolate a single point from its neighbors
+ * 从它的邻居推断出一个点
  */
 static void extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir) {
   if (!isnan(z_values[x][y])) return;
@@ -134,6 +135,7 @@ void extrapolate_unprobed_bed_level() {
 
 }
 
+// 将双线性水平网格值发送到串口
 void print_bilinear_leveling_grid() {
   SERIAL_ECHOLNPGM("Bilinear Leveling Grid:");
   print_2d_array(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y, 3,
@@ -257,6 +259,7 @@ void refresh_bed_level() {
 #endif
 
 // Get the Z adjustment for non-linear bed leveling
+// 得到非线性床层调平的Z形调整
 float bilinear_z_offset(const xy_pos_t &raw) {
 
   static float z1, d2, z3, d4, L, D;
@@ -270,16 +273,16 @@ float bilinear_z_offset(const xy_pos_t &raw) {
   xy_pos_t rel = raw - bilinear_start.asFloat();
 
   #if ENABLED(EXTRAPOLATE_BEYOND_GRID)
-    #define FAR_EDGE_OR_BOX 2   // Keep using the last grid box
+    #define FAR_EDGE_OR_BOX 2   // Keep using the last grid box // 继续使用最后一个网格盒
   #else
-    #define FAR_EDGE_OR_BOX 1   // Just use the grid far edge
+    #define FAR_EDGE_OR_BOX 1   // Just use the grid far edge // 用远处的网格就行了
   #endif
 
   if (prev.x != rel.x) {
     prev.x = rel.x;
     ratio.x = rel.x * ABL_BG_FACTOR(x);
     const float gx = constrain(FLOOR(ratio.x), 0, ABL_BG_POINTS_X - (FAR_EDGE_OR_BOX));
-    ratio.x -= gx;      // Subtract whole to get the ratio within the grid box
+    ratio.x -= gx;      // Subtract whole to get the ratio within the grid box // 减去整体以得到网格框内的比例
 
     #if DISABLED(EXTRAPOLATE_BEYOND_GRID)
       // Beyond the grid maintain height at grid edges

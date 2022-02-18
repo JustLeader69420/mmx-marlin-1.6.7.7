@@ -1,7 +1,7 @@
 #include "../TSC_Menu.h"
 #include "../../../../../module/settings.h"
 
-
+#if ENABLED(LEVELING_OFFSET)
 
 //1 titl, ITEM_PER_PAGE item
 MENUITEMS LevelingOffsetItems = {
@@ -62,10 +62,14 @@ float getLevelingOffset(void)
 }
 /* 设置调平补偿 */
 void setLevelingOffset(float offset)
-{  
+{ 
+ #if 1
   LevelingOffset += offset;
-  if(LevelingOffset>= 2.0f)  LevelingOffset =  2.0f;
-  if(LevelingOffset<=-2.0f)  LevelingOffset = -2.0f;
+  if(LevelingOffset>= (BABYSTEP_MAX_HIGH*2))  LevelingOffset =  (BABYSTEP_MAX_HIGH*2);
+  if(LevelingOffset<=(-BABYSTEP_MAX_HIGH*2))  LevelingOffset = (-BABYSTEP_MAX_HIGH*2);
+ #else
+  LevelingOffset = offset;
+ #endif
 }
 // 置零
 void resetLevelingOffset(void){
@@ -79,9 +83,9 @@ bool saveOffset(){
       LOOP_L_N(px, GRID_MAX_POINTS_X) {
         z_values[px][py] += newLevelingOffset;
       }
-    }
+    } // 循环将数组内的数据和并。
     
-    oldLevelingOffset = LevelingOffset;
+    oldLevelingOffset = LevelingOffset; // 告知已将偏移值合并到调平数据内
     return settings.save(); //判断是否保存成功
   }
   return false; // 没触发保存，保存失败
@@ -150,3 +154,4 @@ void menuLevelingOffset()
   menuSetFrontCallBack(menuCallBackLevelingOffset);
 }
 
+#endif

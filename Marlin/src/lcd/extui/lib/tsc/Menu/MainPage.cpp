@@ -33,7 +33,11 @@ LABEL_MAINMENU,
     {ICON_SETTINGS,             LABEL_SETTINGS},
     {ICON_FAN,                  LABEL_FAN},
     #ifdef AUTO_BED_LEVELING_BILINEAR
+     #ifdef LEVELING_OFFSET
       {ICON_PROBE_OFFSET,         LABEL_PROBE_OFFSET},
+     #else
+      {ICON_BABYSTEP,         LABEL_BABYSTEP},
+     #endif
     #else
       {ICON_BACKGROUND,           LABEL_BACKGROUND},
     #endif
@@ -116,7 +120,11 @@ void menuCallBackMainPage() {
 
      #ifdef AUTO_BED_LEVELING_BILINEAR
       case KEY_ICON_6:
-        infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;
+        #if ENABLED(LEVELING_OFFSET)
+          infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;
+        #else
+          infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+        #endif
         break;
      #endif
 

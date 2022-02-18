@@ -153,7 +153,9 @@
 #if ENABLED(MD_FSMC_LCD)
   // #include "../lcd/extui/lib/tsc/TSC_Menu.h"
   #include "../lcd/extui/lib/tsc/Menu/Settings.h"
-  #include "../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+  #if ENABLED(LEVELING_OFFSET)
+    #include "../lcd/extui/lib/tsc/Menu/LevelingOffset.h"
+  #endif
 #endif
 
 // #if ENABLED(BABYSTEPPING)
@@ -451,7 +453,7 @@ typedef struct SettingsDataStruct {
   //   int16_t babystep_z_steps;
   // #endif
   uint16_t Preheat_Temp[THE_MATERIAL_NUM][2];
-  float leveling_offset;
+  TERN_(LEVELING_OFFSET, float leveling_offset;)
 
 } SettingsData;
 
@@ -1420,7 +1422,7 @@ void MarlinSettings::postprocess() {
     //
     // Leveling Offset
     //
-    EEPROM_WRITE(LevelingOffset);
+    TERN_(LEVELING_OFFSET, EEPROM_WRITE(LevelingOffset);)
 
     
 
@@ -2294,7 +2296,7 @@ void MarlinSettings::postprocess() {
       //
       // Leveling Offset
       //
-      EEPROM_READ(LevelingOffset);
+      TERN_(LEVELING_OFFSET, EEPROM_READ(LevelingOffset);)
 
 
       eeprom_error = size_error(eeprom_index - (EEPROM_OFFSET));
@@ -2922,7 +2924,7 @@ void MarlinSettings::reset() {
   //
   // Leveling Offset
   //
-  LevelingOffset = LODEVA;
+  TERN_(LEVELING_OFFSET, LevelingOffset = LODEVA;)
 
   postprocess();
 
@@ -3862,7 +3864,7 @@ void MarlinSettings::reset() {
 
     CONFIG_ECHO_HEADING("The Leveling Offset:");
     CONFIG_ECHO_START();
-    SERIAL_ECHOLNPAIR("  Z: ", LevelingOffset);
+    TERN_(LEVELING_OFFSET, SERIAL_ECHOLNPAIR("  Z: ", LevelingOffset);)
 
   }
 

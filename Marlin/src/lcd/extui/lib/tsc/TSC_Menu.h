@@ -60,13 +60,15 @@
 #include "Menu/FeatureSettings.h"
 #include "Menu/leveling.h"
 #include "Menu/ProbeOffset.h"
-#include "Menu/LevelingOffset.h"
 #include "Menu/PrintUdisk.h"
 #include "Menu/ChooseStorage.h"
 #include "Menu/PreheatSet.h"
 #if ENABLED(NEW_BOARD)
   #include "Menu/Test_current.h"
   #include "Menu/Test_music.h"
+#endif
+#if ENABLED(LEVELING_OFFSET)
+  #include "Menu/LevelingOffset.h"
 #endif
 #include "Menu/Developer_mode.h"
 
