@@ -38,6 +38,7 @@ const float item_babystep_unit[ITEM_BABYSTEP_UNIT_NUM] = {0.01f, 0.1f, 1};
 static ELEMENTS elementsUnit;
 // static float tempData = 0.0f;
 float old_baby_step_value = 0.0f;
+float babystep_value = 0.0f;      // 存放babystep的值，只有合并入调平数据才会清零
 bool autoCloseBabysetp = false;   // 是否自动关闭babystep界面
 // float old_z_offset = 0.0f;
 
@@ -133,7 +134,14 @@ void menuCallBackBabyStep(void)
       setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
       break;
     case KEY_ICON_4:
-       #if ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
+       #if 1
+        #if ENABLED(LEVELING_OFFSET)
+          babystep_value = getBabyStepZAxisTotalMM();     // 获取当前babystep的值
+          old_baby_step_value = babystep_value;
+          if(settings.save())
+            popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_SYCHRONZIED_VALUE));  // 保存成功，提示并自动退出
+        #endif
+       #elif ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
         TERN_(LEVELING_OFFSET, setLevelingOffset(getBabyStepZAxisTotalMM() - old_baby_step_value);) // 将当前BabyStep的值赋给z_offset
         old_baby_step_value = getBabyStepZAxisTotalMM();
         popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_SYCHRONZIED_VALUE));  // 提示并自动退出

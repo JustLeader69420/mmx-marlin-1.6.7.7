@@ -209,6 +209,10 @@
 void GcodeSuite::G28() {
   can_print_flag = false;   // 不能进行打印
   #if ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
+    if((babystep_value>0.000001) || (babystep_value<-0.000001)){
+      setLevelingOffset(babystep_value);
+      babystep_value = 0.0f;
+    }
     saveOffset();           // 在复位之前先尝试保存z-offset的数据
   #endif
 

@@ -267,7 +267,7 @@ float bilinear_z_offset(const xy_pos_t &raw) {
   static xy_pos_t prev { -999.999, -999.999 }, ratio;
 
   // Whole units for the grid line indices. Constrained within bounds.
-  static xy_int8_t thisg, nextg, lastg { -99, -99 };
+  static xy_int8_t thisg, nextg, lastg { -99, -99 };  // 当前网格，下一个网格，最后一个网格
 
   // XY relative to the probed area
   xy_pos_t rel = raw - bilinear_start.asFloat();

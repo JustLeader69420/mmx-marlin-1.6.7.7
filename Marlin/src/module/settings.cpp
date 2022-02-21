@@ -158,9 +158,10 @@
   #endif
 #endif
 
-// #if ENABLED(BABYSTEPPING)
-//   #include "../../src/feature/babystep.h"
-// #endif
+#if ENABLED(BABYSTEPPING)
+  // #include "../../src/feature/babystep.h"
+  #include  "../../src/lcd/extui/lib/tsc/Menu/BabyStep.h"
+#endif
 #include "../lcd/extui/lib/tsc/Menu/PreheatMenu.h"
 
 #pragma pack(push, 1) // No padding between variables
@@ -449,11 +450,12 @@ typedef struct SettingsDataStruct {
     uint32_t TSC_Para[7];
   #endif
 
-  // #if ENABLED(BABYSTEPPING)
-  //   int16_t babystep_z_steps;
-  // #endif
   uint16_t Preheat_Temp[THE_MATERIAL_NUM][2];
   TERN_(LEVELING_OFFSET, float leveling_offset;)
+  #if ENABLED(BABYSTEPPING)
+    //int16_t babystep_z_steps;
+    float babystep_z_value;
+  #endif
 
 } SettingsData;
 
@@ -1408,13 +1410,6 @@ void MarlinSettings::postprocess() {
     #endif
 
     //
-    // BABYSTEPPING
-    //
-    // #if ENABLED(BABYSTEPPING)
-    //   EEPROM_WRITE( babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] );
-    // #endif
-
-    //
     // Preheat
     //
     EEPROM_WRITE(PreheatTemp);
@@ -1424,7 +1419,14 @@ void MarlinSettings::postprocess() {
     //
     TERN_(LEVELING_OFFSET, EEPROM_WRITE(LevelingOffset);)
 
-    
+    //
+    // BABYSTEPPING
+    //
+    #if ENABLED(BABYSTEPPING)
+      // EEPROM_WRITE( babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] );
+      EEPROM_WRITE(babystep_value);
+    #endif
+
 
     //
     // Validate CRC and Data Size
@@ -2284,10 +2286,6 @@ void MarlinSettings::postprocess() {
         EEPROM_READ(touch.calibration);
       #endif
 
-      // #if ENABLED(BABYSTEPPING)
-      //   EEPROM_READ(babystep.axis_total[BS_TOTAL_IND(Z_AXIS)]);
-      // #endif
-
       //
       // Preheat
       //
@@ -2297,6 +2295,14 @@ void MarlinSettings::postprocess() {
       // Leveling Offset
       //
       TERN_(LEVELING_OFFSET, EEPROM_READ(LevelingOffset);)
+
+      //
+      // BABYSTEPPING
+      //
+      #if ENABLED(BABYSTEPPING)
+        // EEPROM_READ(babystep.axis_total[BS_TOTAL_IND(Z_AXIS)]);
+        EEPROM_READ(babystep_value);
+      #endif
 
 
       eeprom_error = size_error(eeprom_index - (EEPROM_OFFSET));
@@ -2909,10 +2915,6 @@ void MarlinSettings::reset() {
     #endif
   #endif
 
-  // #if ENABLED(BABYSTEPPING)
-  //   babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
-  // #endif
-
   //
   // Preheat
   //
@@ -2925,6 +2927,14 @@ void MarlinSettings::reset() {
   // Leveling Offset
   //
   TERN_(LEVELING_OFFSET, LevelingOffset = LODEVA;)
+
+  //
+  // BABYSTEPPING
+  //
+  #if ENABLED(BABYSTEPPING)
+    // babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
+    babystep_value = 0.0f;
+  #endif
 
   postprocess();
 
@@ -3865,6 +3875,14 @@ void MarlinSettings::reset() {
     CONFIG_ECHO_HEADING("The Leveling Offset:");
     CONFIG_ECHO_START();
     TERN_(LEVELING_OFFSET, SERIAL_ECHOLNPAIR("  Z: ", LevelingOffset);)
+
+    //
+    // Babystep
+    //
+    #if ENABLED(BABYSTEPPING)
+      // babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] = 0;
+      SERIAL_ECHOLNPAIR("The babystep value: ", babystep_value);
+    #endif
 
   }
 

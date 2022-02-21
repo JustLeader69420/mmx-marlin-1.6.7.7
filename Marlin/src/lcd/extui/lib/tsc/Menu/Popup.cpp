@@ -227,10 +227,10 @@ void menuCallBackPopup_ABL(void)
                             break;
 
         case ABL_START :    if(queue.length>0){break;}
-                            storeCmd("G28");     //reset 
+                            storeCmd("G28");     //home 
                             storeCmd("G29");     //start ABL
                             storeCmd("M500");    //save ABL info
-                            storeCmd("G28");
+                            storeCmd("G28");     //home
 
                             sprintf_P(context, "%s %s\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
                             popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)context, NULL, NULL);

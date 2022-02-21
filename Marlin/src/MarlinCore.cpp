@@ -1211,6 +1211,14 @@ void setup() {
   
   SETUP_RUN(settings.first_load());   // Load data from EEPROM if available (or use defaults)
                                       // This also updates variables in the planner, elsewhere
+  #if ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
+    oldLevelingOffset = LevelingOffset;
+    if((babystep_value>0.000001) || (babystep_value<-0.000001)){
+      setLevelingOffset(babystep_value);
+      babystep_value = 0.0f;
+    }
+    saveOffset();           // 更新调平数据
+  #endif
   // set_bed_leveling_enabled();
   
   #if HAS_TOUCH_XPT2046
@@ -1435,7 +1443,7 @@ void setup() {
  #endif
   // old_z_offset = LevelingOffset;
   stop_home = false;  // 关闭停止复位标志，防干扰
-  oldLevelingOffset = LevelingOffset;
+
   SETUP_LOG("setup() completed.");
 
   #if ENABLED(USART_LCD)
