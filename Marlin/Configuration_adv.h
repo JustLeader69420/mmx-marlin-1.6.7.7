@@ -2917,7 +2917,7 @@
   // Canon RC-1 or homebrew digital camera trigger
   // Data from: https://www.doc-diy.net/photo/rc-1_hacked/
   #define PHOTOGRAPH_PIN PB13
-  #define PHOTO_PIN_ACTIVE_STATE LOW  // 相机引脚触发模式
+  #define PHOTO_PIN_ACTIVE_STATE HIGH  // 相机引脚触发模式
   #define MINGDA_MODE
 
   // Canon Hack Development Kit
