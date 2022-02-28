@@ -2180,6 +2180,12 @@ void Temperature::disable_all_heaters() {
   // Unpause and reset everything
   TERN_(PROBING_HEATERS_OFF, pause(false));
 
+  #if HAS_HEATED_BED
+    setTargetBed(0);
+    temp_bed.soft_pwm_amount = 0;
+    WRITE_HEATER_BED(LOW);
+  #endif
+  
   #if HAS_HOTEND
     HOTEND_LOOP() {
       setTargetHotend(0, e);
@@ -2192,11 +2198,6 @@ void Temperature::disable_all_heaters() {
     REPEAT(HOTENDS, DISABLE_HEATER);
   #endif
 
-  #if HAS_HEATED_BED
-    setTargetBed(0);
-    temp_bed.soft_pwm_amount = 0;
-    WRITE_HEATER_BED(LOW);
-  #endif
 
   #if HAS_HEATED_CHAMBER
     setTargetChamber(0);
