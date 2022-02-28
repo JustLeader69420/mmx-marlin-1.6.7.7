@@ -99,7 +99,7 @@ bool setPrintPause(bool is_pause)
         ExtUI::setFilamentRunoutState(false);
     #endif
     
-        ExtUI::setUserConfirmed();
+        ExtUI::setUserConfirmed();  // 停止等待
         ExtUI::resumePrint();
 
     #if ENABLED(FILAMENT_RUNOUT_SENSOR)

@@ -63,8 +63,8 @@ void gocdeListDraw(void)
   uint8_t i = 0;
 
   for(i=0;(i + curPage * NUM_PER_PAGE < filelist.count())
-          &&(i < NUM_PER_PAGE)                                  ; i++)                  // folder
-  {
+          &&(i < NUM_PER_PAGE)                                  ; i++)                 
+  { // folder
     if (!filelist.seek(i + curPage * NUM_PER_PAGE)) continue;
     if (filelist.isDir()) 
       printItems.items[i].icon = CHAR_FOLDER;
@@ -75,7 +75,7 @@ void gocdeListDraw(void)
   }
 
   for(; (i<NUM_PER_PAGE); i++)			//background
-  {		
+  {
     printItems.items[i].icon = NULL;
     menuDrawListItem(&printItems.items[i], i);
   }

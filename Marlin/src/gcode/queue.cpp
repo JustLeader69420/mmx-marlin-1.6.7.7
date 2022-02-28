@@ -275,6 +275,11 @@ void GCodeQueue::enqueue_now_P(PGM_P const pgcode) {
   }
 }
 
+//This is executive the command
+void GCodeQueue::executiveCommand(const char *cmd){
+  gcode.process_subcommands_now_P(cmd);
+}
+
 /**
  * Send an "ok" message to the host, indicating
  * that a command was successfully processed.

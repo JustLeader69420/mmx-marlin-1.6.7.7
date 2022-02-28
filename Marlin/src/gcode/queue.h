@@ -117,6 +117,9 @@ public:
    */
   static bool has_commands_queued();
 
+  // Direct command execution
+  static void executiveCommand(const char *cmd);
+
   /**
    * Get the next command in the queue, optionally log it to SD, then dispatch it
    */

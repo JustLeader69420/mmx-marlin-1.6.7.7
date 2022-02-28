@@ -7,7 +7,8 @@ MENUITEMS extrudeItems = {
 LABEL_EXTRUDE,
 // icon                       label
 //  {{ICON_UNLOAD,               LABEL_UNLOAD}, 
- {{ICON_EM_STOP,              LABEL_EMERGENCYSTOP}, 
+ {{ICON_BACKGROUND,           LABEL_BACKGROUND},
+  // {ICON_EM_STOP,              LABEL_STOP}, 
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_LOAD,                 LABEL_LOAD},
@@ -27,6 +28,10 @@ const ITEM itemSpeed[ITEM_SPEED_NUM] = {
   {ICON_SLOW_SPEED,           LABEL_SLOW_SPEED},
   {ICON_NORMAL_SPEED,         LABEL_NORMAL_SPEED},
   {ICON_FAST_SPEED,           LABEL_FAST_SPEED},
+};
+const ITEM itemStop[2] = {
+  {ICON_EM_STOP,              LABEL_STOP},
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
 };
 const  uint32_t item_speed[ITEM_SPEED_NUM] = {EXTRUDE_SLOW_SPEED, EXTRUDE_NORMAL_SPEED, EXTRUDE_FAST_SPEED};
 static uint8_t  item_speed_i = 1;
@@ -126,10 +131,14 @@ void menuCallBackExtrude(void)
     //     e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
     //   break;
     case KEY_ICON_0:
-      quickstop_stepper();
+      if(!pause_extrude_flag){
+        stop_home = true;
+        quickstop_stepper();
+      }
       break;
     
     case KEY_ICON_3:
+      stop_home = false;
       if(pause_extrude_flag)
         ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) + item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
       else
@@ -164,7 +173,8 @@ void menuCallBackExtrude(void)
       menuDrawItem(&extrudeItems.items[key_num], key_num);
       break;
 
-    case KEY_ICON_7: 
+    case KEY_ICON_7:
+      stop_home = false;
       if(pause_extrude_flag){
         pause_extrude_flag = false;
         // wait_for_user = false;   //wait touch continue button
@@ -235,6 +245,11 @@ void menuExtrude()
   e_add_mm = top_info_ai = top_info_bi = top_info_ci = 0;   // 防止上一次界面的干扰
   statusMsg.actHotend = -1;
   statusMsg.tagHotend = -1;
+  if(!pause_extrude_flag){
+    extrudeItems.items[0] = itemStop[0];
+  }else{
+    extrudeItems.items[0] = itemStop[1];
+  }
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
   menuSetFrontCallBack(menuCallBackExtrude);
