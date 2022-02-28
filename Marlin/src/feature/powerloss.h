@@ -142,19 +142,7 @@ class PrintJobRecovery {
     static void init();
     static void prepare();
 
-    static inline void setup() {
-      #if PIN_EXISTS(POWER_LOSS)
-        #if ENABLED(POWER_LOSS_PULL)
-          #if POWER_LOSS_STATE == LOW
-            SET_INPUT_PULLUP(POWER_LOSS_PIN);
-          #else
-            SET_INPUT_PULLDOWN(POWER_LOSS_PIN);
-          #endif
-        #else
-          SET_INPUT(POWER_LOSS_PIN);
-        #endif
-      #endif
-    }
+    static /*inline*/ void setup();
 
     // Track each command's file offsets
     static inline uint32_t command_sdpos() { return sdpos[queue_index_r]; }
@@ -181,12 +169,12 @@ class PrintJobRecovery {
 
     #if PIN_EXISTS(POWER_LOSS)
       static inline void outage() {
-        static uint8_t outage_num = 0;
-        if (enabled && READ(POWER_LOSS_PIN) == POWER_LOSS_STATE) {
-          outage_num++;
-          if (outage_num >= READ_POWER_LOSS_PIN_NUM)  _outage();
+        // static uint8_t outage_num = 0;
+        if (enabled /*&& READ(POWER_LOSS_PIN) == POWER_LOSS_STATE*/) {
+          /*outage_num++;
+          if (outage_num >= READ_POWER_LOSS_PIN_NUM)*/  _outage();
         }
-        else outage_num = 0;
+        // else outage_num = 0;
       }
     #endif
 

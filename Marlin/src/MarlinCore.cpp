@@ -394,9 +394,9 @@ void disable_e_stepper(const uint8_t e) {
 }
 
 void disable_all_steppers() {
-  DISABLE_AXIS_X();
-  DISABLE_AXIS_Y();
   DISABLE_AXIS_Z();
+  DISABLE_AXIS_Y();
+  DISABLE_AXIS_X();
   disable_e_steppers();
 }
 
@@ -1213,7 +1213,7 @@ void setup() {
                                       // This also updates variables in the planner, elsewhere
   #if ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
     oldLevelingOffset = LevelingOffset;
-    if((babystep_value>0.000001) || (babystep_value<-0.000001)){
+    if((babystep_value>0.0001) || (babystep_value<-0.0001)){
       setLevelingOffset(babystep_value);
       babystep_value = 0.0f;
     }

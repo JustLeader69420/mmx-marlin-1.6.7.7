@@ -109,6 +109,53 @@ PrintJobRecovery recovery;
  */
 void PrintJobRecovery::init() { memset(&info, 0, sizeof(info)); }
 
+// init the pin PC6
+// extern "C" {
+// void EXIT6_Init(void){
+//   // 设置好中断线和GPIO映射关系，设置好中断触发模式
+//   GPIO_InitTypeDef GPIO_Initure;
+//   __HAL_RCC_GPIOC_CLK_ENABLE();     // enabled the pin_c clock
+
+//   GPIO_Initure.Pin = GPIO_PIN_6;    // the 6 pin
+//   GPIO_Initure.Mode = GPIO_MODE_IT_FALLING; // External Interrupt Mode with Falling edge trigger detection ,下降沿触发的外部中断
+//   GPIO_Initure.Pull = GPIO_PULLUP;  // Pull-up activation, 默认上拉
+//   HAL_GPIO_Init(GPIOC, &GPIO_Initure);
+
+//   // 设置中断优先级
+//   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0); // Sets the priority of an interrupt.设置中断的优先级。优先级最高（抢占优先级为1，子优先级为1）
+//   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);         // 使能中断线5~9.
+// }
+// void EXTI9_5_IRQHandler(){
+//   if(print_job_timer.isRunning()) recovery.outage();
+//   __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);     // 清除中断6引脚的标志位
+// }
+// }
+#if PIN_EXISTS(POWER_LOSS)
+void StartSavePLR(void){
+  thermalManager.disable_all_heaters();
+  disable_all_steppers();
+  // recovery.write();
+  if(print_job_timer.isRunning()) recovery.outage();
+}
+#endif
+void PrintJobRecovery::setup(){
+  #if PIN_EXISTS(POWER_LOSS)
+   #if 0
+    #if ENABLED(POWER_LOSS_PULL)
+      #if POWER_LOSS_STATE == LOW
+        SET_INPUT_PULLUP(POWER_LOSS_PIN);
+      #else
+        SET_INPUT_PULLDOWN(POWER_LOSS_PIN);
+      #endif
+    #else
+      SET_INPUT(POWER_LOSS_PIN);
+    #endif
+   #else
+    stm32_interrupt_enable(GPIOC, GPIO_PIN_6, StartSavePLR, GPIO_MODE_IT_FALLING);
+   #endif
+  #endif
+}
+
 /**
  * Enable or disable then call changed()
  */
@@ -390,11 +437,12 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
   }
 
 #endif
-
+static uint8_t test_file[] = "1234567890abcdefghijklmnopqrstuvwxyz";
 /**
  * Save the recovery info the recovery file
  */
 void PrintJobRecovery::write() {
+ #if 1
   debug(PSTR("Write"));
 
   open(false);
@@ -402,6 +450,14 @@ void PrintJobRecovery::write() {
   const int16_t ret = file.write(&info, sizeof(info));
   if (ret == -1) DEBUG_ECHOLNPGM("Power-loss file write failed.");
   if (!file.close()) DEBUG_ECHOLNPGM("Power-loss file close failed.");
+ #else
+  open(false);
+  file.seekSet(0);
+  file.write(&test_file, sizeof(test_file));
+  file.write(&test_file, sizeof(test_file));
+  file.write(&test_file, sizeof(test_file));
+  file.close();
+ #endif
 }
 #ifdef HAS_UDISK
   void PrintJobRecovery::usb_write() {
@@ -683,6 +739,8 @@ void PrintJobRecovery::resume() {
         DEBUG_EOL();
 
         DEBUG_ECHOLNPAIR("zraise: ", info.zraise);
+        
+        DEBUG_ECHOLNPAIR("z_current_position: ", info.z_current_position);
 
         #if HAS_HOME_OFFSET
           DEBUG_ECHOPGM("home_offset: ");

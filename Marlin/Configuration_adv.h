@@ -1236,10 +1236,12 @@
     //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
     //#define POWER_LOSS_RECOVER_ZHOME  // Z homing is needed for proper recovery. 99.9% of the time this should be disabled!
     // #define POWER_LOSS_ZRAISE       2 // (mm) Z axis raise on resume (on power loss with UPS)
-    // #define POWER_LOSS_PIN         PC6 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
-    // #define POWER_LOSS_STATE       LOW // State of pin indicating power loss
-    // #define READ_POWER_LOSS_PIN_NUM 3 // 读取引脚的次数
-    //#define POWER_LOSS_PULL           // Set pullup / pulldown as appropriate
+   #ifdef NEW_BOARD
+    #define POWER_LOSS_PIN         PC6 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
+    #define POWER_LOSS_STATE       LOW // State of pin indicating power loss
+    #define READ_POWER_LOSS_PIN_NUM 1 // 读取引脚的次数
+    #define POWER_LOSS_PULL           // Set pullup / pulldown as appropriate
+   #endif
     #define POWER_LOSS_PURGE_LEN   10 // (mm) Length of filament to purge on resume
     #define POWER_LOSS_RETRACT_LEN 10 // (mm) Length of filament to retract on fail. Requires backup power.
 
