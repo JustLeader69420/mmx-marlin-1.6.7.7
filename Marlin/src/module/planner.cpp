@@ -2773,7 +2773,7 @@ bool Planner::buffer_segment(const float &a, const float &b, const float &c, con
       , fr_mm_s, extruder, millimeters)
   ) return false;
 
-  stepper.wake_up();
+  stepper.wake_up();  // 唤醒步进电机的定时器
   return true;
 } // buffer_segment()
 

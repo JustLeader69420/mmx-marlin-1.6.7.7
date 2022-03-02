@@ -1291,6 +1291,12 @@
  * - Individual axes can be disabled, if desired.
  * - X and Y only apply to Cartesian robots.
  * - Use 'M211' to set software endstops on/off or report current state
+ * 
+ * 软件限位(指不穿过床的大小)
+ * - 防止移动超出设定的机器界限。
+ * - 如果需要，可以禁用单个轴。
+ * - X和Y只适合用于Cartesian机器。
+ * - 使用“M211”设置软件结束开关或报告当前状态
  */
 
 // Min software endstops constrain movement within minimum coordinate bounds

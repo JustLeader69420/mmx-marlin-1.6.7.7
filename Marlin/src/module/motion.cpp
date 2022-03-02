@@ -80,12 +80,13 @@
 
 /**
  * axis_homed
- *   Flags that each linear axis was homed.
+ *   Flags that each linear axis was homed. // 每个线性轴复位的标志。
  *   XYZ on cartesian, ABC on delta, ABZ on SCARA.
  *
  * axis_known_position
  *   Flags that the position is known in each linear axis. Set when homed.
  *   Cleared whenever a stepper powers off, potentially losing its position.
+ *   标记每个线性轴中已知的位置。当复位时设置。
  */
 uint8_t axis_homed, axis_known_position; // = 0
 
@@ -645,6 +646,8 @@ void restore_feedrate_and_scaling() {
    *
    * For DELTA/SCARA the XY constraint is based on the smallest
    * radius within the set software endstops.
+   * 
+   * 用于检测XYZ轴坐标是否超越了机器的最大最小界限。
    */
   void apply_motion_limits(xyz_pos_t &target) {
 
@@ -925,7 +928,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
           ubl.line_to_destination_cartesian(scaled_fr_mm_s, active_extruder); // UBL's motion routine needs to know about
           return true;                                                        // all moves, including Z-only moves.
         #elif ENABLED(SEGMENT_LEVELED_MOVES)
-          segmented_line_to_destination(scaled_fr_mm_s);
+          segmented_line_to_destination(scaled_fr_mm_s);  // 走线分段，获取分段后的调平数据
           return false; // caller will update current_position
         #else
           /**
@@ -1066,7 +1069,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
  * 在退出之前，current_position被设置为destination。
  */
 void prepare_line_to_destination() {
-  apply_motion_limits(destination);
+  apply_motion_limits(destination); // 查看获取的即将执行的坐标是否超过界限
 
   #if EITHER(PREVENT_COLD_EXTRUSION, PREVENT_LENGTHY_EXTRUDE)
     // 确认E轴是否为可执行的。
