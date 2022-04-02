@@ -131,14 +131,15 @@ LABEL_SETTINGS,
   static uint8_t item_silent_i = 0;
 #endif
 
+#define TOUCH_CLICKS 3
 
 void menuCallBackSettings(void)
 {
   KEY_VALUES key_num = menuKeyGetValue();
   static uint32_t nextTime_ms = 0;
-  static uint8_t touch_clicks = 2;
+  static uint8_t touch_clicks = TOUCH_CLICKS-1;
   if(nextTime_ms < millis()){
-    touch_clicks = 2;
+    touch_clicks = TOUCH_CLICKS-1;
   }
   switch(key_num)
   {
@@ -147,14 +148,14 @@ void menuCallBackSettings(void)
       menuDrawPage(&settingsItems);
       break;
 
-    #ifdef BEEPER_PIN
+   #ifdef BEEPER_PIN
     case BUZZER_KEY_INDEX:
       item_silent_i = (item_silent_i + 1) % ITEM_SILENT_NUM;                
       settingsItems.items[key_num] = itemSilent[item_silent_i];
       menuDrawItem(&settingsItems.items[key_num], key_num);
       infoSettings.silent = item_silent[item_silent_i];
       break;
-    #endif
+   #endif
     
     // case KEY_ICON_0:
     //   infoMenu.menu[++infoMenu.cur] = menuScreenSettings;
@@ -167,7 +168,7 @@ void menuCallBackSettings(void)
     //   infoMenu.menu[++infoMenu.cur] = menuFeatureSettings;
     //   break;
 
-    #ifdef FIL_RUNOUT_PIN
+   #ifdef FIL_RUNOUT_PIN
     case KEY_ICON_2:
       item_runout_i = (item_runout_i + 1) % ITEM_RUNOUT_NUM;
       settingsItems.items[key_num] = itemRunout[item_runout_i];
@@ -176,7 +177,7 @@ void menuCallBackSettings(void)
       ExtUI::setFilamentRunoutEnabled(infoSettings.runout);
       needSave = true;
       break;
-    #endif
+   #endif
     
     case KEY_ICON_3:
       infoMenu.menu[++infoMenu.cur] = menuInfo;
@@ -186,13 +187,11 @@ void menuCallBackSettings(void)
     //   recovery.save(true);
     //   break;
 
-    
-
     case KEY_ICON_6:
       switch (touch_clicks)
       {
         case 0:
-          touch_clicks = 2;
+          touch_clicks = TOUCH_CLICKS-1;
           infoMenu.menu[++infoMenu.cur] = menuDeveloper;
           break;
         case 1:
@@ -215,7 +214,6 @@ void menuCallBackSettings(void)
         default:
           break;
       }
-      
       break;
 
     case KEY_ICON_7:
@@ -232,8 +230,8 @@ void menuCallBackSettings(void)
 }
 
 void menuSettings(void)
-{  
-  #ifdef BEEPER_PIN
+{
+ #ifdef BEEPER_PIN
   for(uint8_t i=0; i<ITEM_SILENT_NUM; i++)
   {
     if(infoSettings.silent == item_silent[i])
@@ -242,8 +240,8 @@ void menuSettings(void)
       settingsItems.items[BUZZER_KEY_INDEX] = itemSilent[i];
     }
   }
-  #endif 
-  #ifdef FIL_RUNOUT_PIN
+ #endif
+ #ifdef FIL_RUNOUT_PIN
   for(uint8_t i=0; i<ITEM_RUNOUT_NUM; i++)
   {
     if(infoSettings.runout == item_runout[i])
@@ -252,7 +250,7 @@ void menuSettings(void)
       settingsItems.items[KEY_ICON_2] = itemRunout[item_runout_i];
     }
   }
-  #endif  
+ #endif
 
   menuDrawPage(&settingsItems);
   menuSetFrontCallBack(menuCallBackSettings);
