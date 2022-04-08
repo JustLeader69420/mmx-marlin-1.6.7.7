@@ -1,10 +1,10 @@
-#include "Print.h"
 #include "../TSC_Menu.h"
 
 static ExtUI::FileList filelist;
 
 bool enter_by_icon = false; // 是否通过点击图标进入Prinf
 bool can_print_flag = true; // 能够进行打印的标志
+uint8_t auto_close_flag = 0;// 界面是否需要自动关闭 0:无需自动关闭  1:需要自动关闭  2:判断文件打印需要执行自动关闭
 
 
 LISTITEMS printItems = {
@@ -62,8 +62,7 @@ void gocdeListDraw(void)
 
   uint8_t i = 0;
 
-  for(i=0;(i + curPage * NUM_PER_PAGE < filelist.count())
-          &&(i < NUM_PER_PAGE)                                  ; i++)                 
+  for(i=0;  (i + curPage*NUM_PER_PAGE < filelist.count())&&(i < NUM_PER_PAGE);  i++)                 
   { // folder
     if (!filelist.seek(i + curPage * NUM_PER_PAGE)) continue;
     if (filelist.isDir()) 
@@ -147,8 +146,9 @@ void menuCallBackPrint(void)
             curPage = 0;
             filelist.changeDir(filelist.shortFilename());
           } else { //gcode
+           #if 0
             if(can_print_flag){ // 如果可以打印就开始打印，否则跳过
-            
+              if(LongTimeTouch){}
               #ifdef AUTO_BED_LEVELING_BILINEAR
                 set_bed_leveling_enabled(true);
               #endif
@@ -158,6 +158,14 @@ void menuCallBackPrint(void)
 
               ExtUI::printFile(filelist.shortFilename());
             }
+           #else
+            if(can_print_flag){ // 如果可以打印就开始打印，否则跳过
+              if(LongTimeTouch)
+                infoMenu.menu[++infoMenu.cur] = menuDeleteFile;
+              else
+                infoMenu.menu[++infoMenu.cur] = menuWhetherToPtint;
+            }
+           #endif
           }
         }
       }
@@ -202,6 +210,96 @@ void menuPrint(void)
     ExtUI::delay_ms(1000);
     infoMenu.cur--;
   }
+}
+
+// 选择是否打印界面，有"Yes""No""Delete"选择
+#if 0
+void menuCallBackChoseFileList()
+{
+  uint16_t key_num = KEY_GetValue(3, threeBtnRect);
+  switch(key_num){
+    case KEY_POPUP_CONFIRM:
+    infoMenu.cur--;
+
+      break;
+    case KEY_POPUP_CANCEL:
+    infoMenu.cur--;
+      
+      break;
+    case KEY_POPUP_DELETE:
+      
+    infoMenu.cur--;
+      break;
+
+    default:break;
+  }
+}
+void menuChoseFileList()
+{
+  uint8_t printText[128];
+  sprintf_P((char*)printText, "%s %s ?", textSelect(LABEL_PRINT), filelist.longFilename());
+  popupDrawPage_T(bottomThreeBtn, textSelect(LABEL_PRINT), printText, (uint8_t*)"Yes", (uint8_t*)"No", (uint8_t*)"Delete");
+  menuSetFrontCallBack(menuCallBackChoseFileList);
+}
+#endif
+
+void menuCallBackWhetherToPtint()
+{
+  uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
+  switch(key_num)
+  {
+    case KEY_POPUP_CONFIRM:
+      // infoMenu.cur--;
+      #ifdef AUTO_BED_LEVELING_BILINEAR
+        set_bed_leveling_enabled(true);
+      #endif
+      #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+        ExtUI::setFilamentRunoutState(false);   // 重置断料检测
+      #endif
+
+      ExtUI::printFile(filelist.shortFilename());
+      auto_close_flag = 2;
+      break;
+    case KEY_POPUP_CANCEL:
+      infoMenu.cur--;
+      break;
+    default:break;
+  }
+  if(auto_close_flag == 1)
+  {
+    auto_close_flag = 0;
+    infoMenu.cur--;
+  }
+}
+void menuWhetherToPtint()
+{
+  uint8_t printText[128];
+  sprintf_P((char*)printText, "%s \n%s ?", textSelect(LABEL_PRINT), filelist.longFilename());
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_PRINT), printText, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+  menuSetFrontCallBack(menuCallBackWhetherToPtint);
+}
+void menuCallBackDeleteFile()
+{
+  uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
+  switch(key_num)
+  {
+    case KEY_POPUP_CONFIRM:
+      card.removeFile(filelist.shortFilename());
+      infoMenu.cur--;
+      break;
+    case KEY_POPUP_CANCEL:
+      infoMenu.cur--;
+      break;
+    default:break;
+  }
+}
+void menuDeleteFile()
+{
+  uint8_t printText[128];
+  sprintf_P((char*)printText, "Delete file \n%s ?", filelist.longFilename());
+  changeSOF(false);
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_WARNING), printText, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+  menuSetFrontCallBack(menuCallBackDeleteFile);
 }
 
 /*

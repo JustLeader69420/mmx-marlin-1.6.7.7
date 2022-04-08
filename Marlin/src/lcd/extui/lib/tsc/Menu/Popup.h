@@ -22,6 +22,9 @@
   #define POPUP_RECT_SINGLE_CONFIRM {180, 210, 300, 260}
   #define POPUP_RECT_DOUBLE_CONFIRM {90,  210, 210, 260}
   #define POPUP_RECT_DOUBLE_CANCEL  {270, 210, 390, 260}
+  #define POPUP_RECT_THREE_CONFIRM  { 85, 210, 185, 260}
+  #define POPUP_RECT_THREE_DELETE   {190, 210, 290, 260}
+  #define POPUP_RECT_THREE_CANCEL   {295, 210, 395, 260}
   
   #define POPUP_TITLE_HEIGHT  40
   #define POPUP_TEXT_HEIGHT   110
@@ -40,19 +43,24 @@ enum
 {
   KEY_POPUP_CONFIRM = 0,
   KEY_POPUP_CANCEL,
+  KEY_POPUP_DELETE,
 };
 
 extern BUTTON bottomSingleBtn;
 extern BUTTON bottomDoubleBtn[];
+extern BUTTON bottomThreeBtn[];
+extern GUI_RECT threeBtnRect[];
 extern GUI_RECT doubleBtnRect[];
 extern GUI_RECT singleBtnRect;
 extern WINDOW window;
 
 extern uint8_t ABL_STATUS;
 
+void changeSOF(bool _SOF);
 void windowSetButton(const BUTTON *btn);
 void windowReDrawButton(uint8_t positon, uint8_t is_press);
 void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no);
+void popupDrawPage_T(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no, const uint8_t *del);
 void popupReminder_p(uint8_t* info, uint8_t* context);
 void popupReminder_B(uint8_t* info, uint8_t* context);
 void popupReminder_SF(uint8_t* info, uint8_t* context, bool _SOF);

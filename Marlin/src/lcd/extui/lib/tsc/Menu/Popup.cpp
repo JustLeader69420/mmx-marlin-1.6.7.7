@@ -15,12 +15,17 @@ BUTTON bottomSingleBtn = {
   //button location                       color before pressed   color after pressed
   POPUP_RECT_SINGLE_CONFIRM, NULL, 5, 1, GREEN, BLACK, WHITE,   GREEN, WHITE, BLACK
 };
-
 BUTTON bottomDoubleBtn[] = {
   {POPUP_RECT_DOUBLE_CONFIRM, NULL, 5, 1, GREEN, BLACK, WHITE,   GREEN, WHITE, BLACK},
   {POPUP_RECT_DOUBLE_CANCEL,  NULL, 5, 1, GREEN, BLACK, WHITE,   GREEN, WHITE, BLACK},
 };
+BUTTON bottomThreeBtn[] = {
+  {POPUP_RECT_THREE_CONFIRM, NULL, 5, 1, GREEN, BLACK, WHITE,   GREEN, WHITE, BLACK},
+  {POPUP_RECT_THREE_CANCEL,  NULL, 5, 1, GREEN, BLACK, WHITE,   GREEN, WHITE, BLACK},
+  {POPUP_RECT_THREE_DELETE,  NULL, 5, 1, GREEN, BLACK, WHITE,   GREEN, WHITE, BLACK},
+};
 
+GUI_RECT threeBtnRect[] = {POPUP_RECT_THREE_CONFIRM, POPUP_RECT_THREE_CANCEL, POPUP_RECT_THREE_DELETE};
 GUI_RECT doubleBtnRect[] = {POPUP_RECT_DOUBLE_CONFIRM, POPUP_RECT_DOUBLE_CANCEL};
 GUI_RECT singleBtnRect = POPUP_RECT_SINGLE_CONFIRM;
 
@@ -38,7 +43,7 @@ static BUTTON *windowButton =  NULL;
 static uint16_t buttonNum = 0;
 static bool filament_runout_flag = false;   //no filament start
 static bool SF_popup = false;               // 是否为提示成功或失败的窗口
-static bool SOF = true;                     //success or failed
+static bool SOF = true;                     //success or failed,can change color
 
 void windowReDrawButton(uint8_t positon, uint8_t pressed)
 {
@@ -49,8 +54,11 @@ void windowReDrawButton(uint8_t positon, uint8_t pressed)
 
   GUI_DrawButton(windowButton + positon, pressed);
 }
-
-
+void changeSOF(bool _SOF)
+{
+  SOF = _SOF;
+  SF_popup = true;
+}
 void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no)
 {
  #if ENABLED(USART_LCD)
@@ -138,6 +146,31 @@ void popupDrawPage(BUTTON *btn, const uint8_t *title, const uint8_t *context, co
     GUI_DrawButton(&windowButton[i], 0);
 
  #endif
+}
+void popupDrawPage_T(BUTTON *btn, const uint8_t *title, const uint8_t *context, const uint8_t *yes, const uint8_t *no, const uint8_t *del)
+{
+  buttonNum = 0;
+  windowButton = btn;
+  if(yes){
+    windowButton[buttonNum++].context = yes;
+  }
+  if(no){
+    windowButton[buttonNum++].context = no;
+  }
+  if(del){
+    windowButton[buttonNum++].context = del;
+  }
+  
+  TSC_ReDrawIcon = windowReDrawButton;
+  if(SF_popup){
+    SF_popup = false;
+    GUI_DrawWindow_SF(&window, title, context, SOF);
+  }
+  else
+    GUI_DrawWindow(&window, title, context);
+  
+  for(uint8_t i = 0; i < buttonNum; i++)
+    GUI_DrawButton(&windowButton[i], 0);
 }
 
 void menuCallBackPopup(void)

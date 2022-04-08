@@ -29,5 +29,7 @@ void loopTouchScreen(void);
 extern void (*TSC_ReDrawIcon)(uint8_t positon, uint8_t is_press);
 extern void TS_Get_Coordinates(uint16_t *x, uint16_t *y);
 
+extern bool LongTimeTouch;
+
 #endif
 

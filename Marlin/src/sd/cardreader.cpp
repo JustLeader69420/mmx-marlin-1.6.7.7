@@ -67,6 +67,10 @@ int8_t CardReader::autostart_index;
   int8_t CardReader::transfer_port_index;
 #endif
 
+#if ENABLED(SDCARD_SORT_CHRONOLOGICAL)  // 按时间顺序排序
+  uint32_t CardReader::filetime;
+#endif
+
 // private:
 
 SdFile CardReader::root, CardReader::workDir, CardReader::workDirParents[MAX_DIR_DEPTH];
@@ -97,6 +101,8 @@ uint8_t CardReader::workDirDepth;
         char CardReader::sortshort[SDSORT_LIMIT][FILENAME_LENGTH];
         char CardReader::sortnames[SDSORT_LIMIT][SORTED_LONGNAME_STORAGE];
       #endif
+    #elif ENABLED(SDCARD_SORT_CHRONOLOGICAL)  // 按时间顺序排序
+      uint32_t CardReader::sorttime[SDSORT_LIMIT];
     #elif DISABLED(SDSORT_USES_STACK)
       char CardReader::sortnames[SDSORT_LIMIT][SORTED_LONGNAME_STORAGE];
     #endif
@@ -209,6 +215,7 @@ bool CardReader::is_dir_or_gcode(const dir_t &p, char *a) {
 
 //
 // Get the number of (compliant) items in the folder
+// 获取文件夹中(兼容的)项的数量
 //
 int CardReader::countItems(SdFile dir) {
   dir_t p;
@@ -225,6 +232,7 @@ int CardReader::countItems(SdFile dir) {
 
 //
 // Get file/folder info for an item by index
+// 通过索引获取项目的 文件/文件夹 信息
 //
 void CardReader::selectByIndex(SdFile dir, const uint8_t index) {
   dir_t p;
@@ -232,6 +240,7 @@ void CardReader::selectByIndex(SdFile dir, const uint8_t index) {
     if (is_dir_or_gcode(p)) {
       if (cnt == index) {
         createFilename(filename, p);
+        TERN_(SDCARD_SORT_CHRONOLOGICAL, filetime = p.creationDate<<16 | p.creationTime;)
         return;  // 0 based index
       }
       cnt++;
@@ -241,6 +250,7 @@ void CardReader::selectByIndex(SdFile dir, const uint8_t index) {
 
 //
 // Get file/folder info for an item by name
+// 通过名称获取项目的 文件/文件夹 信息
 //
 void CardReader::selectByName(SdFile dir, const char * const match) {
   dir_t p;
@@ -254,6 +264,7 @@ void CardReader::selectByName(SdFile dir, const char * const match) {
 
 //
 // Recursive method to list all files within a folder
+// 递归方法列出文件夹中的所有文件
 //
 void CardReader::printListing(SdFile parent, const char * const prepend/*=nullptr*/) {
   dir_t p;
@@ -293,6 +304,10 @@ void CardReader::printListing(SdFile parent, const char * const prepend/*=nullpt
       if (prepend) SERIAL_ECHO(prepend);
       SERIAL_ECHO(filename);
       SERIAL_CHAR(' ');
+      SERIAL_ECHO(p.creationDate);
+      SERIAL_CHAR(':');
+      SERIAL_ECHO(p.creationTime);
+      SERIAL_CHAR(' ');
       SERIAL_ECHOLN(p.fileSize);
     }
   }
@@ -300,6 +315,7 @@ void CardReader::printListing(SdFile parent, const char * const prepend/*=nullpt
 
 //
 // List all files on the SD card
+// 列出SD卡上的所有文件
 //
 void CardReader::ls() {
   if (flag.mounted) {
@@ -667,6 +683,7 @@ bool CardReader::fileExists(const char * const path) {
 
 //
 // Delete a file by name in the working directory
+// 在工作目录中按名称删除文件
 //
 void CardReader::removeFile(const char * const name) {
   if (!isMounted()) return;
@@ -771,6 +788,7 @@ void CardReader::closefile(const bool store_location/*=false*/) {
 
 //
 // Get info for a file in the working directory by index
+// 通过索引（文件指数）获取工作目录中文件的信息
 //
 void CardReader::selectFileByIndex(const uint16_t nr) {
   #if ENABLED(SDSORT_CACHE_NAMES)
@@ -960,6 +978,21 @@ void CardReader::clearDirPath(){
       #else
         #define SET_SORTSHORT(I) NOOP
       #endif
+    #elif ENABLED(SDCARD_SORT_CHRONOLOGICAL)  // 按时间顺序排序
+      // Copy filenames into the static array
+      #define _SET_SORTNAME(I) (sorttime[I] = filetime)
+      #if SORTED_LONGNAME_MAXLEN == LONG_FILENAME_LENGTH
+        // Short name sorting always use LONG_FILENAME_LENGTH with no trailing nul
+        #define SET_SORTNAME(I) _SET_SORTNAME(I)
+      #else
+        // Copy multiple name blocks. Add a nul for the longest case.
+        #define SET_SORTNAME(I) do{ _SET_SORTNAME(I); sortnames[I][SORTED_LONGNAME_MAXLEN] = '\0'; }while(0)
+      #endif
+      #if ENABLED(SDSORT_CACHE_NAMES)
+        #define SET_SORTSHORT(I) strcpy(sortshort[I], filename)
+      #else
+        #define SET_SORTSHORT(I) NOOP
+      #endif
     #else
       // Copy filenames into the static array
       #define _SET_SORTNAME(I) strncpy(sortnames[I], longest_filename(), SORTED_LONGNAME_MAXLEN)
@@ -979,7 +1012,7 @@ void CardReader::clearDirPath(){
   #endif
 
   /**
-   * Read all the files and produce a sort key
+   * Read all the files and produce a sort key  // 读取所有文件并生成排序密钥
    *
    * We can do this in 3 ways...
    *  - Minimal RAM: Read two filenames at a time sorting along...
@@ -988,7 +1021,7 @@ void CardReader::clearDirPath(){
    */
   void CardReader::presort() {
 
-    // Throw away old sort index
+    // Throw away old sort index  // 扔掉旧的排序索引
     flush_presort();
 
     // Sorting may be turned off
@@ -1039,13 +1072,13 @@ void CardReader::clearDirPath(){
 
       if (fileCnt > 1) {
 
-        // Init sort order.
+        // Init sort order. // Init排序顺序。
         for (uint16_t i = 0; i < fileCnt; i++) {
           sort_order[i] = i;
           // If using RAM then read all filenames now.
           #if ENABLED(SDSORT_USES_RAM)
             selectFileByIndex(i);
-            SET_SORTNAME(i);
+            SET_SORTNAME(i);  // 获取要排序的文件名 sortnames
             SET_SORTSHORT(i);
             // char out[30];
             // sprintf_P(out, PSTR("---- %i %s %s"), i, flag.filenameIsDir ? "D" : " ", sortnames[i]);
@@ -1058,7 +1091,7 @@ void CardReader::clearDirPath(){
           #endif
         }
 
-        // Bubble Sort
+        // Bubble Sort  // 冒泡排序
         for (uint16_t i = fileCnt; --i;) {
           bool didSwap = false;
           uint8_t o1 = sort_order[0];
@@ -1072,8 +1105,14 @@ void CardReader::clearDirPath(){
             const uint16_t o2 = sort_order[j + 1];
 
             // Compare names from the array or just the two buffered names
+            // 比较数组中的名称或两个缓冲的名称
+            // strcasecmp 忽略大小写比较字符串
             #if ENABLED(SDSORT_USES_RAM)
-              #define _SORT_CMP_NODIR() (strcasecmp(sortnames[o1], sortnames[o2]) > 0)
+              #if ENABLED(SDCARD_SORT_CHRONOLOGICAL)
+                #define _SORT_CMP_NODIR() (sorttime[o1] < sorttime[o2])
+              #else
+                #define _SORT_CMP_NODIR() (strcasecmp(sortnames[o1], sortnames[o2]) > 0)
+              #endif
             #else
               #define _SORT_CMP_NODIR() (strcasecmp(name1, name2) > 0)
             #endif
@@ -1081,21 +1120,22 @@ void CardReader::clearDirPath(){
             #if HAS_FOLDER_SORTING
               #if ENABLED(SDSORT_USES_RAM)
                 // Folder sorting needs an index and bit to test for folder-ness.
+                // 文件夹排序需要一个索引和位来测试文件夹的大小。
                 #define _SORT_CMP_DIR(fs) (IS_DIR(o1) == IS_DIR(o2) ? _SORT_CMP_NODIR() : IS_DIR(fs > 0 ? o1 : o2))
               #else
                 #define _SORT_CMP_DIR(fs) ((dir1 == flag.filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? dir1 : !dir1))
               #endif
             #endif
 
-            // The most economical method reads names as-needed
-            // throughout the loop. Slow if there are many.
+            // The most economical method reads names as-needed throughout the loop. Slow if there are many.
+            // 最经济的方法在整个循环中按需读取名称。如果有很多，那就慢一点。
             #if DISABLED(SDSORT_USES_RAM)
               selectFileByIndex(o2);
               const bool dir2 = flag.filenameIsDir;
               char * const name2 = longest_filename(); // use the string in-place
             #endif // !SDSORT_USES_RAM
 
-            // Sort the current pair according to settings.
+            // Sort the current pair according to settings. //根据设置对当前对进行排序。
             if (
               #if HAS_FOLDER_SORTING
                 #if ENABLED(SDSORT_GCODE)

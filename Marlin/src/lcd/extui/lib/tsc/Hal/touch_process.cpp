@@ -31,6 +31,7 @@
 
 
 uint32_t TSC_Para[7] = {5200, 513600, 4247661336, 4294598656, 2160, 687023640, 1972341};
+bool LongTimeTouch = false;
 
 void TS_Get_Coordinates(uint16_t *x, uint16_t *y)
 {
@@ -161,14 +162,19 @@ uint16_t Key_value(uint8_t total_rect,const GUI_RECT* menuRect)
 
 uint8_t isPress(void)
 {
-  static bool pressed = false;
+  // static bool pressed = false;
+  static uint8_t pressed = 0;
   static uint32_t nextTime = 0;
 
   bool nowPressed = !XPT2046_Read_Pen();
 
   if (nowPressed) {
     if (nextTime <= millis()) {
-      pressed = true;
+      // pressed = true;
+      if(millis() >= (nextTime+3000))
+        pressed = 3;
+      else
+        pressed = 1;
     }
   } else {
     pressed = false;
@@ -185,9 +191,9 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
 {
   static uint16_t key_num = IDLE_TOUCH;
   static bool firstPress = true;
+  static uint32_t touchTime = 0;
 
   uint16_t key_return=IDLE_TOUCH;
-
   if (isPress())
   {
     if(firstPress)
@@ -196,6 +202,10 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
       firstPress = false;
       if(TSC_ReDrawIcon)
         TSC_ReDrawIcon(key_num, 1);
+      
+      LongTimeTouch = false;
+      touchTime = millis()+3000;
+      SERIAL_ECHOLN("touch start");
     }
   }
   else
@@ -207,6 +217,12 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
       key_return = key_num;
       key_num = IDLE_TOUCH;
       firstPress = true;
+      if(touchTime <= millis()){
+        LongTimeTouch = true;
+      SERIAL_ECHOLN("touch end");
+      }else{
+        LongTimeTouch = false;
+      }
     }
   }
   return key_return;

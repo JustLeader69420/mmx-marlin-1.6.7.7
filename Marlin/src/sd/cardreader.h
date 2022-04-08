@@ -68,6 +68,8 @@ public:
   static card_flags_t flag;                         // Flags (above)
   static char filename[FILENAME_LENGTH],            // DOS 8.3 filename of the selected item
               longFilename[LONG_FILENAME_LENGTH];   // Long name of the selected item
+  
+  static uint32_t filetime;
 
   // Fast! binary file transfer
   #if ENABLED(BINARY_FILE_TRANSFER)
@@ -235,7 +237,11 @@ private:
       #endif
 
       #if (ENABLED(SDSORT_CACHE_NAMES) && DISABLED(SDSORT_DYNAMIC_RAM)) || NONE(SDSORT_CACHE_NAMES, SDSORT_USES_STACK)
+       #if ENABLED(SDCARD_SORT_CHRONOLOGICAL)  // 按时间顺序排序
+        static uint32_t sorttime[SDSORT_LIMIT];
+       #else
         static char sortnames[SDSORT_LIMIT][SORTED_LONGNAME_STORAGE];
+       #endif
       #endif
 
       // Folder sorting uses an isDir array when caching items.
