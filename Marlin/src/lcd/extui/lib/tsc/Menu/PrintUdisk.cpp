@@ -1,4 +1,4 @@
-#include "PrintUdisk.h"
+// #include "PrintUdisk.h"
 #include "../TSC_Menu.h"
 // #include "stm32_usb.h"
 
@@ -268,7 +268,7 @@ void menuCallBackPrintUdisk(void)
 
     default:                   
       if(key_num <= KEY_ICON_4)
-      {	
+      {
         if (udisk_seek(curPageUdisk * NUM_PER_PAGE + key_num))
         {
           if (workFileinfo.fattrib & AM_DIR) {
@@ -290,7 +290,7 @@ void menuCallBackPrintUdisk(void)
             else {
               ExtUI::printFile(workFileinfo.altname);
             }
-           #else
+           #elif 0
             if(can_print_flag){ // 如果可以打印就开始打印，否则跳过
             
               #ifdef AUTO_BED_LEVELING_BILINEAR
@@ -311,6 +311,13 @@ void menuCallBackPrintUdisk(void)
               udisk.startUdiskPrint(workFileinfo.fsize);
               // infoMenu.menu[++infoMenu.cur] = menuPrinting;
               queue.enqueue_now_P("M24\n");
+            }
+           #else
+            if(can_print_flag){ // 如果可以打印就开始打印，否则跳过
+              if(LongTimeTouch)
+                infoMenu.menu[++infoMenu.cur] = menuDeleteUdiskFile;
+              else
+                infoMenu.menu[++infoMenu.cur] = menuWhetherToPtintUdisk;
             }
            #endif
           }
@@ -351,6 +358,72 @@ void menuPrintUdisk(void)
   //   ExtUI::delay_ms(1000);
   //   infoMenu.cur--;
   // }
+}
+
+void menuCallBackWhetherToPtintUdisk()
+{
+  uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
+  switch(key_num)
+  {
+    case KEY_POPUP_CONFIRM:
+      #ifdef AUTO_BED_LEVELING_BILINEAR
+        set_bed_leveling_enabled(true);
+      #endif
+      #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+        ExtUI::setFilamentRunoutState(false);   // 重置断料检测
+      #endif
+
+      memset(filePath, 0, sizeof(filePath));
+      sprintf_P(filePath, "%s/%s", gUdiskPath, workFileinfo.altname);
+      f_open(&udisk_fp, filePath,  FA_READ | FA_OPEN_ALWAYS);
+      UDiskPrint = true;UDiskPrintFinish = false;UDiskStopPrint=false;
+      udisk.startUdiskPrint(workFileinfo.fsize);
+      queue.enqueue_now_P("M24\n");
+      auto_close_flag = 2;
+      break;
+    case KEY_POPUP_CANCEL:
+      infoMenu.cur--;
+      break;
+    default:break;
+  }
+  if(auto_close_flag == 1)
+  {
+    auto_close_flag = 0;
+    infoMenu.cur--;
+  }
+}
+void menuWhetherToPtintUdisk()
+{
+  uint8_t printText[128];
+  sprintf_P((char*)printText, "%s \n%s ?", textSelect(LABEL_PRINT), workFileinfo.fname);
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_PRINT), printText, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+  menuSetFrontCallBack(menuCallBackWhetherToPtintUdisk);
+}
+void menuCallBackDeleteUdiskFile()
+{
+  uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
+  switch(key_num)
+  {
+    case KEY_POPUP_CONFIRM:
+      memset(filePath, 0, sizeof(filePath));
+      sprintf_P(filePath, "%s/%s", gUdiskPath, workFileinfo.altname);
+      f_unlink(filePath);
+      udisk.ResetUdisk();
+      infoMenu.cur--;
+      break;
+    case KEY_POPUP_CANCEL:
+      infoMenu.cur--;
+      break;
+    default:break;
+  }
+}
+void menuDeleteUdiskFile()
+{
+  uint8_t printText[128];
+  sprintf_P((char*)printText, "Delete file \n%s ?", workFileinfo.fname);
+  changeSOF(false);
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_WARNING), printText, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+  menuSetFrontCallBack(menuCallBackDeleteUdiskFile);
 }
 
 #endif

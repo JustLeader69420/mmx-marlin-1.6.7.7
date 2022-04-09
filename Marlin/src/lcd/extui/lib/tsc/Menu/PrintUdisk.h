@@ -16,6 +16,9 @@ extern FILINFO workFileinfo;
 extern char filePath[256];
 // void menuPrintFromSource(void);
 void menuPrintUdisk(void);
+void menuDeleteUdiskFile();
+void menuWhetherToPtintUdisk();
+
 
 #endif
 

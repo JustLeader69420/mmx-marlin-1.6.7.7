@@ -513,7 +513,6 @@ void startOrResumeJob() {
     #endif
 
     card.flag.abort_sd_printing = false;  // 结束停止打印状态
-    if(auto_close_flag == 2)  auto_close_flag = 1;
     TERN_( HAS_UDISK, UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;)
 
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
@@ -529,7 +528,7 @@ void startOrResumeJob() {
       marlin_state = MF_RUNNING;
       TERN_(PASSWORD_AFTER_SD_PRINT_END, password.lock_machine());
     }
-    if(auto_close_flag == 2)  auto_close_flag = 1;
+    // if(auto_close_flag == 2)  auto_close_flag = 1;
     #if ENABLED(USART_LCD)
       // 串口屏切换到上一个界面
       back_printlist();
@@ -1101,9 +1100,11 @@ void setup() {
 
  #ifdef HAS_UDISK
   #if ENABLED(USE_GD32)
+    udisk.InitUdiskPin();
     // gd32_usb_device_cdc_init();
     gd32_usb_host_msc_init();
   #else
+    udisk.InitUdiskPin();
     MX_USB_HOST_Init();
   #endif
  #endif

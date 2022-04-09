@@ -174,6 +174,7 @@ void menuUpdate(void) {
       }
       
       if (infoMenu.cur) infoMenu.cur--;
+      if(auto_close_flag == 2)  auto_close_flag = 1;
       // Abort print not print completed, need not popup
       if (!card.flag.abort_sd_printing) {
         if(infoSettings.auto_off) {
