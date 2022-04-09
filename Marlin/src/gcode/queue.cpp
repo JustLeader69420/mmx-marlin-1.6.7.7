@@ -647,14 +647,13 @@ void GCodeQueue::get_serial_commands() {
     int sd_count = 0;uint8_t i=0;
     bool udisk_eof = udisk.eof();
     while (length < BUFSIZE-2 && !udisk_eof) {
-      udisk_eof = udisk.eof();                              // 文件是否已经读取完毕
-      if(udisk_eof) {udisk.fileHasFinish(&udisk_fp);SERIAL_ECHOLNPAIR("finish:", (int)udisk.getPrintSize());}         // 文件读完
       const int n = udisk.get(rbuf, sizeof(rbuf), &udisk_fp);
-      if(error_num >= 1000){
+      udisk_eof = udisk.eof();                              // 文件是否已经读取完毕
+      if(error_num >= 100){
         // 读取失败
         break;
       }
-      if(n==0 && !udisk_eof){
+      if(n<=0 && !udisk_eof){
         error_num++;
         continue;
       }else error_num = 0;
@@ -672,6 +671,8 @@ void GCodeQueue::get_serial_commands() {
         // SERIAL_ECHOLNPAIR("psize:", (int)udisk.getPrintSize());
         // break;
       }
+      if(udisk_eof) {udisk.fileHasFinish(&udisk_fp);SERIAL_ECHOLNPAIR("finish:", (int)udisk.getPrintSize());}// 文件读完
+      
     }
   }
 
