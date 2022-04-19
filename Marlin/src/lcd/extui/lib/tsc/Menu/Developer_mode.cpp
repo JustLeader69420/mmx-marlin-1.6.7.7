@@ -32,6 +32,11 @@ void menuCallBackDeveloper(void)
   static uint16_t touch_num = IDLE_TOUCH;
   static uint8_t send_gcode_num = 0;
   static bool Fil_pin_flag = false;
+  static uint32_t nextTime_ms = 0;
+  static uint8_t touch_clicks = TOUCH_CLICKS-1;
+  if(nextTime_ms < millis()){
+    touch_clicks = TOUCH_CLICKS-1;
+  }
   switch(key_num)
   {
     case KEY_ICON_0:
@@ -46,7 +51,7 @@ void menuCallBackDeveloper(void)
     case KEY_ICON_2:
       for(int read_num=0; read_num<READ_FIL_NUM; read_num++)
       {
-        if(READ(FIL_RUNOUT_PIN) != FIL_RUNOUT_STATE)    // 断料检测开关触发（有料）
+        if(READ(FIL_RUNOUT_PIN) != FIL_RUNOUT_STATE)    // 断料检测开关触发（有料）,当开关断开意味着有料，接通无料
         {
           Fil_pin_flag = true;
         }else
@@ -75,11 +80,40 @@ void menuCallBackDeveloper(void)
       case KEY_ICON_5:
         infoMenu.menu[++infoMenu.cur] = menuTestC;
         break;
-      case KEY_ICON_6: mustStoreCmd("M240\n"); break;
+      case KEY_ICON_6:
+        switch (touch_clicks)
+        {
+          case 0:
+            touch_clicks = TOUCH_CLICKS-1;
+            infoMenu.menu[++infoMenu.cur] = menuDeveloper2;
+            break;
+          case 1:
+            touch_clicks--;
+            break;
+          case 2:
+            touch_clicks--;
+            nextTime_ms = (millis() + 1000);
+            break;
+          case 3:
+            touch_clicks--;
+            break;
+          case 4:
+            touch_clicks--;
+            break;
+          case 5:
+            touch_clicks--;
+            break;
+          
+          default:
+            break;
+        }
+        break;
     #endif
 
     case KEY_ICON_7:
       infoMenu.cur--; 
+      break;
+    default:
       break;
   }
   // 发送测试的G代码，注意测试G代码比较多，需要排队入队，防止丢失
@@ -101,4 +135,41 @@ void menuDeveloper()
   menuDrawPage(&developerItems);
   menuSetFrontCallBack(&menuCallBackDeveloper);
 }
+
+void menuCallBackDeveloper2()
+{
+  KEY_VALUES key_num = menuKeyGetValue();
+  static uint8_t heat_num = 0;
+  switch (key_num)
+  {
+    case KEY_ICON_0:
+      if ((heat_num++)%2)
+        WRITE(HEATER_0_PIN, LOW);
+      else
+        WRITE(HEATER_0_PIN, HIGH);
+      break;
+    case KEY_ICON_1:
+      char cmd[16];
+      sprintf_P(cmd, "G1 X%dY%dZ5\n", X_MAX_BED/2, Y_BED_SIZE/2);
+      mustStoreCmd("M420 S1\n");
+      mustStoreCmd("G28\n");
+      mustStoreCmd(cmd);
+      mustStoreCmd("G1 Z0\n");
+      infoMenu.menu[++infoMenu.cur] = menuSetLevelingOffset;
+      break;
+    case KEY_ICON_6: mustStoreCmd("M240\n"); break;
+    case KEY_ICON_7:
+      infoMenu.cur--; 
+      break;
+
+    default:
+      break;
+  }
+
+}
+// void menuDeveloper2()
+// {
+//   menuDrawPage(&developer2Items);
+//   menuSetFrontCallBack(&menuCallBackDeveloper2);
+// }
 

@@ -2,5 +2,6 @@
 #define __DEVELOPER_H
 
 void menuDeveloper();
+void menuDeveloper2();
 
 #endif  // __DEVELOPER_H

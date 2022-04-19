@@ -154,4 +154,60 @@ void menuLevelingOffset()
   menuSetFrontCallBack(menuCallBackLevelingOffset);
 }
 
+
+void menuCallBackSetLevelingOffset()
+{
+  bool leveling_offset_value_change = false;    // 值是否发生变化
+  float ts_value = 0.0f;   // 临时存放数据
+  KEY_VALUES key_num =  menuKeyGetValue();
+  switch(key_num)
+  {
+    case KEY_ICON_0:
+      setBabyStepZAxisIncMM(-elementsUnit.ele[elementsUnit.cur]);
+      setLevelingOffset(- elementsUnit.ele[elementsUnit.cur]);
+      leveling_offset_value_change = true;
+      break;
+    case KEY_ICON_3:
+      setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
+      setLevelingOffset(elementsUnit.ele[elementsUnit.cur]);
+      leveling_offset_value_change = true;
+      break;
+    case KEY_ICON_4:
+      if(saveOffset())
+        popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_SUCCESS), true);
+      else
+        popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_FAILED), false);
+      
+      break;
+    case KEY_ICON_5:
+      elementsUnit.cur = (elementsUnit.cur + 1) % elementsUnit.totaled;
+      LevelingOffsetItems.items[key_num] = elementsUnit.list[elementsUnit.cur];
+      menuDrawItem(&LevelingOffsetItems.items[key_num], key_num);
+      break;
+    case KEY_ICON_6:
+      resetLevelingOffset(); // 置零
+      leveling_offset_value_change = true;
+      break;
+    case KEY_ICON_7:
+      mustStoreCmd("M420 S0\n");
+      mustStoreCmd("G28\n");
+      infoMenu.cur--;
+      break;
+    default :
+      break;
+  }
+  if(leveling_offset_value_change)  // 值发生变化，显示刷新
+  {
+    leveling_offset_value_change = false;
+    LevelingOffsetReDraw();
+  }
+}
+void menuSetLevelingOffset()
+{
+  initElements(KEY_ICON_5);
+  menuDrawPage(&LevelingOffsetItems);
+  showLevelingOffset();
+  menuSetFrontCallBack(menuCallBackSetLevelingOffset);
+}
+
 #endif

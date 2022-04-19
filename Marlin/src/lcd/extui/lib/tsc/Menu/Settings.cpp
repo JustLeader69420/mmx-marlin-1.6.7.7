@@ -131,7 +131,6 @@ LABEL_SETTINGS,
   static uint8_t item_silent_i = 0;
 #endif
 
-#define TOUCH_CLICKS 3
 
 void menuCallBackSettings(void)
 {

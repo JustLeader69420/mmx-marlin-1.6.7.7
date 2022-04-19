@@ -23,6 +23,7 @@ typedef struct
   uint8_t  auto_off;
 }SETTINGS;
 
+#define TOUCH_CLICKS 3
 
 extern SETTINGS infoSettings;
 
