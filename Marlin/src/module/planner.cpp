@@ -1382,14 +1382,14 @@ void Planner::check_axes_activity() {
     #endif
     #define FAN_SET(F) do{ KICKSTART_FAN(F); _FAN_SET(F); }while(0)
 
-    TERN_(HAS_FAN0, FAN_SET(0));
-    TERN_(HAS_FAN1, FAN_SET(1));
-    TERN_(HAS_FAN2, FAN_SET(2));
-    TERN_(HAS_FAN3, FAN_SET(3));
-    TERN_(HAS_FAN4, FAN_SET(4));
-    TERN_(HAS_FAN5, FAN_SET(5));
-    TERN_(HAS_FAN6, FAN_SET(6));
-    TERN_(HAS_FAN7, FAN_SET(7));
+    // TERN_(HAS_FAN0, FAN_SET(0));
+    // TERN_(HAS_FAN1, FAN_SET(1));
+    // TERN_(HAS_FAN2, FAN_SET(2));
+    // TERN_(HAS_FAN3, FAN_SET(3));
+    // TERN_(HAS_FAN4, FAN_SET(4));
+    // TERN_(HAS_FAN5, FAN_SET(5));
+    // TERN_(HAS_FAN6, FAN_SET(6));
+    // TERN_(HAS_FAN7, FAN_SET(7));
   #endif // HAS_FAN
 
   TERN_(AUTOTEMP, getHighESpeed());

@@ -169,6 +169,9 @@ const char str_t_thermal_runaway[] PROGMEM = STR_T_THERMAL_RUNAWAY,
 #endif
 
 #if HAS_FAN
+  #define FAN_PERIOD      2786
+  #define FAN_PRESCALER   3
+  #define DUTY_RATIO      ((float)(FAN_PERIOD-1))/255
 
   uint8_t Temperature::fan_speed[FAN_COUNT]; // = { 0 }
 
@@ -220,7 +223,14 @@ const char str_t_thermal_runaway[] PROGMEM = STR_T_THERMAL_RUNAWAY,
     if (target >= FAN_COUNT) return;
 
     fan_speed[target] = speed;
-    TIM8->CCR2=(uint16_t)((float)speed*219.604);
+    uint16_t fan_frequency = (((float)(80+speed)*(DUTY_RATIO)));
+    // TIM8->CCR2=(uint16_t)((float)speed*219.604);
+    if(speed > 0){
+      NOMORE(fan_frequency, FAN_PERIOD-1);
+      TIM8->CCR2=(uint16_t)fan_frequency;
+    }
+    else
+      TIM8->CCR2=(uint16_t)0;
 
     TERN_(REPORT_FAN_CHANGE, report_fan_speed(target));
   }
@@ -1794,9 +1804,10 @@ void Temperature::init() {
 
 
   #if HAS_FAN0 
-    INIT_FAN_PIN(FAN_PIN);
-    TIM8_CH2_PWM_Init(2240-1,3-1);
+    // INIT_FAN_PIN(FAN_PIN);
+    // TIM8_CH2_PWM_Init(2240-1,3-1);
     // TIM8_CH2_PWM_Init(55999,2);
+    TIM8_CH2_PWM_Init(FAN_PERIOD-1,FAN_PRESCALER-1);  // 屏率：168M/FAN_PERIOD/FAN_PRESCALER
   #endif
   #if HAS_FAN1
     INIT_FAN_PIN(FAN1_PIN);

@@ -18,6 +18,22 @@ LABEL_EXTRUDE,
   {ICON_E_5_MM,               LABEL_5_MM},
   {ICON_BACK,                 LABEL_BACK},}
 };
+MENUITEMS extrude2Items = {
+// title
+LABEL_EXTRUDE,
+// icon                       label
+ {{ICON_UNLOAD,               LABEL_UNLOAD}, 
+//  {{ICON_BACKGROUND,           LABEL_BACKGROUND},
+  // {ICON_EM_STOP,              LABEL_STOP}, 
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  {ICON_LOAD,                 LABEL_LOAD},
+  // {ICON_NOZZLE,               LABEL_NOZZLE},
+  {ICON_STATUSNOZZLE,         LABEL_NOZZLE},
+  {ICON_NORMAL_SPEED,         LABEL_NORMAL_SPEED},
+  {ICON_E_5_MM,               LABEL_5_MM},
+  {ICON_BACK,                 LABEL_BACK},}
+};
 
 #define ITEM_EXTRUDER_NUM EXTRUDERS
 static ExtUI::extruder_t item_extruder_i = ExtUI::E0;
@@ -253,4 +269,162 @@ void menuExtrude()
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
   menuSetFrontCallBack(menuCallBackExtrude);
+}
+
+void menuCallBackExtrude2(void)
+{
+  STATUS_MSG tempMsg;
+  statusMsg_GetCurMsg(&tempMsg);
+  // Position refresh per 1 sec
+  static uint32_t nowTime_ms = 0;
+  KEY_VALUES key_num = menuKeyGetValue();
+
+  if(queue.length == 0 && (!pause_extrude_flag)){   // G命令队列为空,且为非暂停状态（注：暂停状态属于阻塞状态，无法通过G代码移动电机）
+    isBusy = false;
+    if(e_add_mm != 0){
+      e_add_mm_t = (getAxisPosition_mm(item_extruder_i) + e_add_mm);
+      e_add_mm = 0;
+
+      memset(G1_STR, 0, sizeof(G1_STR));    // 清空数组
+      switch(item_speed_i){   // 选择进料速度
+        case 0:
+          sprintf(G1_STR, "G1 E%d F%d\n", e_add_mm_t, item_speed[item_speed_i]);
+          break;
+        case 1:
+          sprintf(G1_STR, "G1 E%d F%d\n", e_add_mm_t, item_speed[item_speed_i]);
+          break;
+        case 2:
+          sprintf(G1_STR, "G1 E%d F%d\n", e_add_mm_t, item_speed[item_speed_i]);
+          break;
+      }
+      queue.enqueue_one_now(G1_STR);    // 命令填入队列
+    }
+  }else isBusy = true;
+
+  switch(key_num)
+  {
+    case KEY_ICON_0:
+      if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
+        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      else
+        e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
+      break;
+    // case KEY_ICON_0:
+    //   if(!pause_extrude_flag){
+    //     stop_home = true;
+    //     quickstop_stepper();
+    //   }
+    //   break;
+    
+    case KEY_ICON_3:
+      stop_home = false;
+      if(pause_extrude_flag)
+        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) + item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      else
+        e_add_mm += item_len[item_len_i];   // 点击了进料按钮，数值增大
+      break;
+    
+    case KEY_ICON_4:
+      item_extruder_i = (ExtUI::extruder_t)((item_extruder_i + 1) % ITEM_EXTRUDER_NUM);
+      showExtrudeCoordinate();
+      {
+        GUI_SetColor(VAL_COLOR);
+        GUI_SetBkColor(WHITE);
+        GUI_DispString(HOTEND_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Ext value
+        statusMsg.actHotend = tempMsg.actHotend;
+        redrawHotendAct(tempMsg.actHotend);
+        statusMsg.tagHotend = tempMsg.tagHotend;
+        redrawToolTag(tempMsg.tagHotend);
+        GUI_SetColor(WHITE);
+        GUI_SetBkColor(VAL_COLOR);
+      }
+      break;
+
+    case KEY_ICON_5:
+      item_speed_i = (item_speed_i+1) % ITEM_SPEED_NUM;
+      extrudeItems.items[key_num] = itemSpeed[item_speed_i];
+      menuDrawItem(&extrudeItems.items[key_num], key_num);
+      break;
+    
+    case KEY_ICON_6:
+      item_len_i = (item_len_i+1) % ITEM_LEN_NUM;
+      extrudeItems.items[key_num] = itemLen[item_len_i];
+      menuDrawItem(&extrudeItems.items[key_num], key_num);
+      break;
+
+    case KEY_ICON_7:
+      mustStoreCmd("M302 P0\n");
+      stop_home = false;
+      if(pause_extrude_flag){
+        pause_extrude_flag = false;
+        // wait_for_user = false;   //wait touch continue button
+      }
+      infoMenu.cur--;
+      break;
+    
+    default:
+      break;
+  }
+  
+  // if (extrudeCoordinate != ExtUI::getAxisPosition_mm(item_extruder_i)){
+  //   extrudeCoordinate = ExtUI::getAxisPosition_mm(item_extruder_i);
+  //   extrudeCoordinateReDraw();
+  // }
+
+  // 显示在屏幕上
+  if (millis() - nowTime_ms > 1000) { // Refresh per 1 sec
+    nowTime_ms = millis();
+    // Refresh position
+    if(isBusy && (!pause_extrude_flag)){
+      if(top_info_ai == 0){
+        top_info_ai++;  top_info_bi = 0;  top_info_ci = 0;
+        GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+      }
+      drawTopInfo(LABEL_BUSY);  // 绘制繁忙信息
+    }
+   #if 0 //def PREVENT_COLD_EXTRUSION
+    else if(tempMsg.actHotend < EXTRUDE_MINTEMP){
+      if(top_info_bi == 0){
+        top_info_bi++;  top_info_ai = 0;  top_info_ci = 0;
+        GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+      }
+      drawTopInfo((uint8_t*)"NOZZLE tempreature is too low !");
+    }
+   #endif
+    else{
+      if(top_info_ci == 0){
+        top_info_ci++;  top_info_bi = 0; top_info_ai = 0;
+        GUI_ClearRect(95, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+      }
+    }
+
+    GUI_SetColor(VAL_COLOR);
+    GUI_SetBkColor(WHITE);
+    GUI_DispString(HOTEND_SEPARATOR_X, STATUS_START_Y, (uint8_t *)"/"); // Ext value
+    // Refresh hotend temperature
+    if (statusMsg.actHotend != tempMsg.actHotend) {
+      statusMsg.actHotend = tempMsg.actHotend;
+      redrawHotendAct(tempMsg.actHotend);
+    }
+    if (statusMsg.tagHotend != tempMsg.tagHotend) {
+      statusMsg.tagHotend = tempMsg.tagHotend;
+      redrawToolTag(tempMsg.tagHotend);
+    }
+    GUI_SetColor(WHITE);
+    GUI_SetBkColor(VAL_COLOR);
+  }
+
+  if (extrudeCoordinate2 != (int)ExtUI::getAxisPosition_mm(item_extruder_i)){
+    extrudeCoordinate2 = (int)ExtUI::getAxisPosition_mm(item_extruder_i);
+    extrudeCoordinateReDraw();
+  }
+}
+void menuExtrude2()
+{
+  e_add_mm = top_info_ai = top_info_bi = top_info_ci = 0;   // 防止上一次界面的干扰
+  statusMsg.actHotend = -1;
+  statusMsg.tagHotend = -1;
+  menuDrawPage(&extrude2Items);
+  showExtrudeCoordinate();
+  menuSetFrontCallBack(menuCallBackExtrude2);
 }

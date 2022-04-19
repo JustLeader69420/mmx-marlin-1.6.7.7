@@ -10,5 +10,6 @@
 extern bool pause_extrude_flag;
 
 void menuExtrude(void);
+void menuExtrude2();
 
 #endif

@@ -15,15 +15,15 @@ LABEL_BACKGROUND,
 };
 #define TEST_GCODE_NUM 9
 static char Gcode_str[TEST_GCODE_NUM][24] = {
-  "M104 S170",
-  "M140 S50",
   "G28",
   "M302 P1",
   "M106 S255",
   "G1 X10 Y10 Z10",
   "G1 E10",
   "G1 E-10",
-  "M302 P0",};
+  "M302 P0",
+  "M140 S50",
+  "M104 S170",};
 #define READ_FIL_NUM 5
 
 void menuCallBackDeveloper(void)
@@ -65,8 +65,7 @@ void menuCallBackDeveloper(void)
 
     case KEY_ICON_3:
       mustStoreCmd("M302 P1\n");
-      mustStoreCmd("G1 E-5\n");
-      mustStoreCmd("M302 P0\n");
+      infoMenu.menu[++infoMenu.cur] = menuExtrude2;
       break;
 
     #if ENABLED(NEW_BOARD)
