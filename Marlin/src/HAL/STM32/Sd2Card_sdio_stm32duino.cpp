@@ -163,15 +163,35 @@
   }
 
   void HAL_SD_MspInit(SD_HandleTypeDef *hsd) { // application specific init
+   #if 0
     UNUSED(hsd);   /* Prevent unused argument(s) compilation warning */
     __HAL_RCC_SDIO_CLK_ENABLE();  // turn on SDIO clock
+   #else
+    GPIO_InitTypeDef GPIO_Initure;
+    
+    __HAL_RCC_SDIO_CLK_ENABLE();    //使能SDIO时钟
+    __HAL_RCC_GPIOC_CLK_ENABLE();   //使能GPIOC时钟
+    __HAL_RCC_GPIOD_CLK_ENABLE();   //使能GPIOD时钟
+    
+    //PC8,9,10,11,12
+    GPIO_Initure.Pin=GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+    GPIO_Initure.Mode=GPIO_MODE_AF_PP;      //推挽复用
+    GPIO_Initure.Pull=GPIO_PULLUP;          //上拉
+    GPIO_Initure.Speed=GPIO_SPEED_HIGH;     //高速
+    GPIO_Initure.Alternate=GPIO_AF12_SDIO;  //复用为SDIO
+    HAL_GPIO_Init(GPIOC,&GPIO_Initure);     //初始化
+    
+    //PD2
+    GPIO_Initure.Pin=GPIO_PIN_2;            
+    HAL_GPIO_Init(GPIOD,&GPIO_Initure);     //初始化
+   #endif
   }
 
   constexpr uint8_t SD_RETRY_COUNT = TERN(SD_CHECK_AND_RETRY, 3, 1);
 
   bool SDIO_Init() {
     //init SDIO and get SD card info
-
+   #if 0
     uint8_t retryCnt = SD_RETRY_COUNT;
 
     bool status;
@@ -220,6 +240,25 @@
     #endif
 
     return true;
+   #else
+    uint8_t retryCnt = SD_RETRY_COUNT;
+    bool status;
+
+    hsd.Instance = SDIO;
+    hsd.State = (HAL_SD_StateTypeDef) 0;              // HAL_SD_STATE_RESET
+    hsd.Init.BusWide = SDIO_BUS_WIDE_1B;              //1位数据线，后面再更改4位
+    hsd.Init.ClockDiv = SDIO_TRANSFER_CLK_DIV;        //SD传输时钟频率最大25MHZ
+    hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;      //上升沿触发
+    hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE; //不使用bypass模式，直接用HCLK进行分频得到时钟
+    hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;            //空闲时不关闭时钟电源
+    hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;  //硬件控制流关闭
+
+    status = HAL_SD_Init(&hsd);
+    if(!!status){
+      return status;
+    }
+    status = HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_8B);     //使用8位
+   #endif
   }
   /*
   void init_SDIO_pins(void) {
@@ -299,9 +338,9 @@
       return false;
     }
     SDIO_CLEAR_FLAG(SDIO_ICR_CMD_FLAGS | SDIO_ICR_DATA_FLAGS);
-    */
 
     return true;
+    */
   }
 
   bool SDIO_WriteBlock(uint32_t block, const uint8_t *src) {

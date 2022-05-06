@@ -68,7 +68,7 @@ void HAL_init() {
   #endif
 
   #if PIN_EXISTS(LED)
-    OUT_WRITE(LED_PIN, HIGH); //test pass
+    OUT_WRITE(LED_PIN, LOW); //test pass
   #endif
 
   #if ENABLED(SRAM_EEPROM_EMULATION)
@@ -251,7 +251,7 @@ void HAL_SYSTICK_Callback() { if (systick_user_callback) systick_user_callback()
       uint8_t num = 0;
       num = get_AdcPinNum(adc_pin);
 
-      ADC_ChannelConfTypeDef ADC_ChanConf; 
+      ADC_ChannelConfTypeDef ADC_ChanConf;
       ADC_ChanConf.Channel= get_adc_channel(digitalPinToPinName(adc_pin), ADC_Channel);          //通道
       ADC_ChanConf.Rank=1;                                    //第1 个序列，序列1
       ADC_ChanConf.SamplingTime=ADC_SAMPLETIME_480CYCLES;     //采样时间
