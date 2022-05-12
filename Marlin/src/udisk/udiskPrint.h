@@ -25,8 +25,10 @@ public:
     static void setFileSize(uint64_t _size){}
     static uint8_t getPrintProgress(void);
     static void abortUdiskPrint(FIL *fp);
+  #ifdef USB_CONNECT_PIN
     static void InitUdiskPin(){OUT_WRITE(USB_CONNECT_PIN,HIGH);}
     static void ResetUdisk(){WRITE(USB_CONNECT_PIN, LOW); delay(10); WRITE(USB_CONNECT_PIN, HIGH);}
+  #endif
 private:
     static uint64_t fsize;  // 文件大小
     static uint64_t psize;  // 已经读取到的文件大小
