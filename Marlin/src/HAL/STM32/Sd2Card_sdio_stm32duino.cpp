@@ -257,7 +257,7 @@
     if(!!status){
       return status;
     }
-    status = HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_8B);     //使用8位
+    status = HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B);     //使用4位
    #endif
   }
   /*
