@@ -52,6 +52,9 @@
 #ifndef TEMP_TIMER_NUM
   #define TEMP_TIMER_NUM        14  // Timer Index for Temperature
 #endif
+#ifndef NUM_HARDWARE_TIMERS
+  #define NUM_HARDWARE_TIMERS 15
+#endif
 
 #define TEMP_TIMER_FREQUENCY 1000   // Temperature::isr() is expected to be called at around 1kHz
 

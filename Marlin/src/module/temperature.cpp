@@ -223,14 +223,28 @@ const char str_t_thermal_runaway[] PROGMEM = STR_T_THERMAL_RUNAWAY,
     if (target >= FAN_COUNT) return;
 
     fan_speed[target] = speed;
+    // // TIM8->CCR2=(uint16_t)((float)speed*219.604);
     uint16_t fan_frequency = (((float)(80+speed)*(DUTY_RATIO)));
-    // TIM8->CCR2=(uint16_t)((float)speed*219.604);
     if(speed > 0){
       NOMORE(fan_frequency, FAN_PERIOD-1);
-      TIM8->CCR2=(uint16_t)fan_frequency;
     }
-    else
-      TIM8->CCR2=(uint16_t)0;
+    else{
+      // TIM8->CCR2=(uint16_t)0;
+      fan_frequency = 0;
+    }
+    switch(target){
+      case 0:
+        #ifdef NEW_BOARD
+          TIM11->CCR1 = fan_frequency;
+        #else
+          TIM8->CCR2=(uint16_t)fan_frequency;
+        #endif
+        break;
+      case 1:
+        TIM10->CCR1 = fan_frequency;
+        break;
+      default:break;
+    }
 
     TERN_(REPORT_FAN_CHANGE, report_fan_speed(target));
   }
@@ -1689,42 +1703,119 @@ void Temperature::updateTemperaturesFromRawValues() {
   #define INIT_CHAMBER_AUTO_FAN_PIN(P) SET_OUTPUT(P)
 #endif
 
+  
 
-TIM_HandleTypeDef TIM8_Handler;         
-TIM_OC_InitTypeDef TIM8_CH2Handler;	   
-
-/*fix extruder fan doesn't work*/ 
-void TIM8_CH2_PWM_Init(uint16_t arr,uint16_t psc)
-{ 
-    TIM8_Handler.Instance=TIM8;           
-    TIM8_Handler.Init.Prescaler=psc;       
-    TIM8_Handler.Init.CounterMode=TIM_COUNTERMODE_UP;
-    TIM8_Handler.Init.Period=arr;         
-    TIM8_Handler.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
-    HAL_TIM_PWM_Init(&TIM8_Handler);      
+/*fix extruder fan doesn't work*/
+#ifdef NEW_BOARD
+  static TIM_HandleTypeDef TIM10_Handler, TIM11_Handler;
+  static TIM_OC_InitTypeDef TIM10_CH1Handler,TIM11_CH1Handler;	
+  void TIM10_PWM_Init(uint16_t arr,uint16_t psc)
+  {
+    TIM10_Handler.Instance=TIM10;
+    TIM10_Handler.Init.Period=arr;
+    TIM10_Handler.Init.Prescaler=psc;
+    TIM10_Handler.Init.CounterMode=TIM_COUNTERMODE_UP;
+    TIM10_Handler.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_PWM_Init(&TIM10_Handler);
     
-    TIM8_CH2Handler.OCMode=TIM_OCMODE_PWM1; 
-    TIM8_CH2Handler.Pulse=0;           
-    TIM8_CH2Handler.OCPolarity=TIM_OCPOLARITY_HIGH; 
-    HAL_TIM_PWM_ConfigChannel(&TIM8_Handler,&TIM8_CH2Handler,TIM_CHANNEL_2);
-	
-    HAL_TIM_PWM_Start(&TIM8_Handler,TIM_CHANNEL_2);
-}
+    TIM10_CH1Handler.OCMode=TIM_OCMODE_PWM1;
+    TIM10_CH1Handler.Pulse=0;
+    TIM10_CH1Handler.OCPolarity=TIM_OCPOLARITY_HIGH;
+    HAL_TIM_PWM_ConfigChannel(&TIM10_Handler,&TIM10_CH1Handler,TIM_CHANNEL_1);
 
-void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
-{
+    HAL_TIM_PWM_Start(&TIM10_Handler,TIM_CHANNEL_1);
+  }
+  void TIM11_PWM_Init(uint16_t arr,uint16_t psc)
+  {
+    TIM11_Handler.Instance=TIM11;
+    TIM11_Handler.Init.Period=arr;
+    TIM11_Handler.Init.Prescaler=psc;
+    TIM11_Handler.Init.CounterMode=TIM_COUNTERMODE_UP;
+    TIM11_Handler.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_PWM_Init(&TIM11_Handler);
+    
+    TIM11_CH1Handler.OCMode=TIM_OCMODE_PWM1;
+    TIM11_CH1Handler.Pulse=0;
+    TIM11_CH1Handler.OCPolarity=TIM_OCPOLARITY_HIGH;
+    HAL_TIM_PWM_ConfigChannel(&TIM11_Handler,&TIM11_CH1Handler,TIM_CHANNEL_1);
+
+    HAL_TIM_PWM_Start(&TIM11_Handler,TIM_CHANNEL_1);
+  }
+  void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
+  {
+   #if 1
     GPIO_InitTypeDef GPIO_Initure;
-	__HAL_RCC_TIM8_CLK_ENABLE();			
-	__HAL_RCC_GPIOC_CLK_ENABLE();			
-	
-    GPIO_Initure.Pin=GPIO_PIN_7;           
-    GPIO_Initure.Mode=GPIO_MODE_AF_PP;  	
-    GPIO_Initure.Pull=GPIO_PULLUP;         
-    GPIO_Initure.Speed=GPIO_SPEED_HIGH;     
-	 GPIO_Initure.Alternate= GPIO_AF3_TIM8;	
-    HAL_GPIO_Init(GPIOC,&GPIO_Initure);
-}
+    if(TIM10 == htim->Instance){
+      __HAL_RCC_TIM10_CLK_ENABLE();
+  	  __HAL_RCC_GPIOB_CLK_ENABLE();
+    
+      GPIO_Initure.Pin=GPIO_PIN_8;
+      GPIO_Initure.Mode=GPIO_MODE_AF_PP;
+      GPIO_Initure.Pull=GPIO_PULLUP;
+      GPIO_Initure.Speed=GPIO_SPEED_HIGH;
+      GPIO_Initure.Alternate= GPIO_AF3_TIM10;
+      HAL_GPIO_Init(GPIOB,&GPIO_Initure);
+    }
+    if(TIM11 == htim->Instance){
+      __HAL_RCC_TIM11_CLK_ENABLE();
+  	  __HAL_RCC_GPIOB_CLK_ENABLE();
+    
+      GPIO_Initure.Pin=GPIO_PIN_9;
+      GPIO_Initure.Mode=GPIO_MODE_AF_PP;
+      GPIO_Initure.Pull=GPIO_PULLUP;
+      GPIO_Initure.Speed=GPIO_SPEED_HIGH;
+      GPIO_Initure.Alternate= GPIO_AF3_TIM11;
+      HAL_GPIO_Init(GPIOB,&GPIO_Initure);
+    }
+   #else
+    GPIO_InitTypeDef GPIO_Initure;
 
+	  __HAL_RCC_GPIOB_CLK_ENABLE();
+	  __HAL_RCC_TIM11_CLK_ENABLE();
+    TERN_(HAS_FAN1, __HAL_RCC_TIM10_CLK_ENABLE();)
+	
+    TERN(HAS_FAN1, GPIO_Initure.Pin=GPIO_PIN_9|GPIO_PIN_8, GPIO_Initure.Pin=GPIO_PIN_9);
+    GPIO_Initure.Mode=GPIO_MODE_AF_PP;
+    GPIO_Initure.Pull=GPIO_PULLUP;
+    GPIO_Initure.Speed=GPIO_SPEED_HIGH;
+	  GPIO_Initure.Alternate= GPIO_AF3_TIM8;
+    HAL_GPIO_Init(GPIOB,&GPIO_Initure);
+   #endif
+  }
+#else
+  TIM_HandleTypeDef TIMx_Handler;
+  TIM_OC_InitTypeDef TIM8_CH2Handler;	 
+  void TIM8_CH2_PWM_Init(uint16_t arr,uint16_t psc)
+  {
+    TIMx_Handler.Instance=TIM8;
+    TIMx_Handler.Init.Prescaler=psc;
+    TIMx_Handler.Init.CounterMode=TIM_COUNTERMODE_UP;
+    TIMx_Handler.Init.Period=arr;
+    TIMx_Handler.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_PWM_Init(&TIMx_Handler);
+    
+    TIM8_CH2Handler.OCMode=TIM_OCMODE_PWM1;
+    TIM8_CH2Handler.Pulse=0;
+    TIM8_CH2Handler.OCPolarity=TIM_OCPOLARITY_HIGH;
+    HAL_TIM_PWM_ConfigChannel(&TIMx_Handler,&TIM8_CH2Handler,TIM_CHANNEL_2);
+  
+    HAL_TIM_PWM_Start(&TIMx_Handler,TIM_CHANNEL_2);
+  }
+
+  void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
+  {
+    GPIO_InitTypeDef GPIO_Initure;
+    __HAL_RCC_TIM8_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    
+    GPIO_Initure.Pin=GPIO_PIN_7;
+    GPIO_Initure.Mode=GPIO_MODE_AF_PP;
+    GPIO_Initure.Pull=GPIO_PULLUP;
+    GPIO_Initure.Speed=GPIO_SPEED_HIGH;
+    GPIO_Initure.Alternate= GPIO_AF3_TIM8;
+    HAL_GPIO_Init(GPIOC,&GPIO_Initure);
+  }
+#endif
 /**
  * Initialize the temperature manager
  * The manager is implemented by periodic calls to manage_heater()
@@ -1805,12 +1896,19 @@ void Temperature::init() {
 
   #if HAS_FAN0 
     // INIT_FAN_PIN(FAN_PIN);
-    // TIM8_CH2_PWM_Init(2240-1,3-1);
-    // TIM8_CH2_PWM_Init(55999,2);
+    // TIM8_CH2_PWM_Init(55999,2);  // 1000Hz
+   #ifdef NEW_BOARD
+    TIM11_PWM_Init(FAN_PERIOD-1, FAN_PRESCALER-1);
+   #else
     TIM8_CH2_PWM_Init(FAN_PERIOD-1,FAN_PRESCALER-1);  // 屏率：168M/FAN_PERIOD/FAN_PRESCALER
+   #endif
   #endif
   #if HAS_FAN1
-    INIT_FAN_PIN(FAN1_PIN);
+   #ifdef NEW_BOARD
+    TIM10_PWM_Init(FAN_PERIOD-1, FAN_PRESCALER-1);
+   #else
+    // INIT_FAN_PIN(FAN1_PIN);
+   #endif
   #endif
   #if HAS_FAN2
     INIT_FAN_PIN(FAN2_PIN);
