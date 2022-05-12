@@ -250,4 +250,30 @@ extern LEDLights leds;
 
   extern LEDLights2 leds2;
 
+#elif ENABLED(R_B_LED)
+  class LEDLights3{
+    public:
+      static void setup(){
+        SET_OUTPUT(RB_LED_PIN);
+        WRITE(RB_LED_PIN, HIGH);
+      }
+      static void set_color(bool r_or_b){
+        if(r_or_b){
+          WRITE(RB_LED_PIN, LOW);
+        }
+        else{
+          WRITE(RB_LED_PIN, HIGH);
+        }
+      }
+  };
+  
+  extern LEDLights3 led3;
+
+#elif ENABLED(WS2812_LED)
+  class LEDLights4{
+    public:
+      static void setup();
+      static void set_color(uint32_t color);
+  };
+  extern LEDLights4 led4;
 #endif // NEOPIXEL2_SEPARATE

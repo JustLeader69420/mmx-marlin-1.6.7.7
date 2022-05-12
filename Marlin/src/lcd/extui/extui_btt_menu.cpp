@@ -65,7 +65,7 @@ namespace ExtUI {
   void onMediaError() {
     volumeReminderMessage(LABEL_READ_TFTSD_ERROR, STATUS_NORMAL);
   };
-  void onMediaRemoved() {    
+  void onMediaRemoved() {
     volumeReminderMessage(LABEL_TFTSD_REMOVED, STATUS_NORMAL);
   };
 

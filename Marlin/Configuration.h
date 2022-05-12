@@ -26,11 +26,11 @@
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
-// #define ST32_SHIP
-#define USE_GD32
+#define ST32_SHIP
+// #define USE_GD32
 
 #define HAS_UDISK
-// #define QUICK_PRINT
+#define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
 
@@ -2530,6 +2530,8 @@
  */
 //#define RGB_LED
 //#define RGBW_LED
+// #define R_B_LED   // Magician X or PTC_board had red and blue led seat
+// #define WS2812_LED  // has ws2812 led
 
 #if EITHER(RGB_LED, RGBW_LED)
   //#define RGB_LED_R_PIN 34

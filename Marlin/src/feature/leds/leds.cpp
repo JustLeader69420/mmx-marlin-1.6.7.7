@@ -197,4 +197,17 @@ void LEDLights::set_color(const LEDColor &incol
 
 #endif  // NEOPIXEL2_SEPARATE
 
+#elif ENABLED(R_B_LED)
+  #include "leds.h"
+  LEDLights3 led3;
+
+#elif ENABLED(WS2812_LED)
+  #include "leds.h"
+  LEDLights4 led4;
+
+  void LEDLights4::setup(){
+    OUT_WRITE(WS2812_LED_PIN, LOW);
+  }
+  void LEDLights4::set_color(uint32_t color){}
+  
 #endif  // HAS_COLOR_LEDS

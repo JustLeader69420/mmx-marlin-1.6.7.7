@@ -97,7 +97,13 @@
 // #define Z_MAX_PIN                           PD15
 
 // #define LED_RED_PIN               PG9
+#if ENABLED(R_B_LED)
+  #define RB_LED_PIN                         PD7
+#endif
 
+#if ENABLED(WS2812_LED)
+  #define WS2812_LED_PIN    PD7
+#endif
 
 /**
  * TMC2208/TMC2209 stepper drivers

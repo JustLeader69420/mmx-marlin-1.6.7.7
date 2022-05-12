@@ -110,7 +110,7 @@
   #include "feature/max7219.h"
 #endif
 
-#if HAS_COLOR_LEDS
+#if HAS_COLOR_LEDS || ENABLED(R_B_LED) || ENABLED(WS2812_LED)
   #include "feature/leds/leds.h"
 #endif
 
@@ -1185,6 +1185,12 @@ void setup() {
 
   #if ENABLED(NEOPIXEL2_SEPARATE)
     SETUP_RUN(leds2.setup());
+  #endif
+  #ifdef R_B_LED
+    SETUP_RUN(led3.setup());
+  #endif
+  #ifdef WS2812_LED
+    SETUP_RUN(led4.setup());
   #endif
 
   #if ENABLED(USE_CONTROLLER_FAN)     // Set up fan controller to initialize also the default configurations.
