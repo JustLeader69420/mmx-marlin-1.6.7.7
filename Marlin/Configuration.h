@@ -30,7 +30,7 @@
 // #define USE_GD32
 
 #define HAS_UDISK
-#define QUICK_PRINT
+// #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
 
@@ -1412,7 +1412,7 @@
   // Gradually reduce leveling correction until a set height is reached,
   // at which point movement will be level to the machine's XY plane.
   // The height can be set with M420 Z<height>
-  #define ENABLE_LEVELING_FADE_HEIGHT
+  // #define ENABLE_LEVELING_FADE_HEIGHT
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
     // #define DEFAULT_LEVELING_FADE_HEIGHT 10.0f // (mm) Default fade height. 默认渐变高度
     #define DEFAULT_LEVELING_FADE_HEIGHT 0.0f // (mm) Default fade height. 默认渐变高度,0不开启
