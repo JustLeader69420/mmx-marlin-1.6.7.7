@@ -93,9 +93,9 @@ void LCD_FSMCInit(uint8_t cs, uint8_t rs)
         HAL_Delay(100);
       #endif
 
-      #if PIN_EXISTS(TFT_BACKLIGHT)
-        OUT_WRITE(TFT_BACKLIGHT_PIN, HIGH);
-      #endif
+      // #if PIN_EXISTS(TFT_BACKLIGHT)
+      //   OUT_WRITE(TFT_BACKLIGHT_PIN, HIGH);
+      // #endif
 
         FSMC_NORSRAM_TimingTypeDef Timing, ExtTiming;
 

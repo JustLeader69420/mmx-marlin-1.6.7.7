@@ -476,7 +476,7 @@ void LCD_Init(void)
   //   delay(200);
   // }
   
- // Delay_ms(20);
+ Delay_ms(20);
   
 #ifdef LCD_BACKLIGHT_PIN
   LCD_LED_Init();

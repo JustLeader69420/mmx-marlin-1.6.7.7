@@ -36,7 +36,11 @@
 #endif
 
 #ifndef BOARD_INFO_NAME
+ #ifdef NEW_BOARD
+  #define BOARD_INFO_NAME "F4Z_MC"
+ #else
   #define BOARD_INFO_NAME "BC.DZ.PC000007.03"
+ #endif
 
   #ifdef ST32_SHIP
     #define CHIP_NAME "(S)"

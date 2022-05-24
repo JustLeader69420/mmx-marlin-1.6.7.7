@@ -43,9 +43,13 @@ void redrawTestCurrent(void){
   memset(tempstr, 0, 100);
   GUI_ClearPrect(&TestCurrentRect_1);
   // 计算热床加热的电流(放大1000倍变成mA)
-  // 3300-->3.3v放大1000倍
-  // 1024-->ADC分辨率10bit, 1000-->放大倍数, 2-->采样电阻0.002欧放大1000倍与前面3.3v放大1000倍刚好抵消
+  // 分子:3300-->3.3v放大1000倍,与下面采样电阻相抵消, 1000-->V变为mV
+  // 分母:1024-->ADC分辨率10bit, 100-->放大倍数, 2-->采样电阻0.002欧放大1000倍与前面3.3v放大1000倍刚好抵消
+ #ifdef R4_PRO
+  bed_A = ((bed_num/GETTIME*3300)*1000)/(1024*68*2);
+ #else
   bed_A = ((bed_num/GETTIME*3300)*1000)/(1024*100*2);
+ #endif
   sprintf_P(tempstr, "Bed ocp: %d, Bed: %dmA", bed_num/GETTIME, bed_A);
   GUI_DispStringInPrect(&TestCurrentRect_1,(uint8_t *)tempstr);
 
