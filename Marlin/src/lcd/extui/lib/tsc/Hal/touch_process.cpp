@@ -205,7 +205,7 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
       
       LongTimeTouch = false;
       touchTime = millis()+3000;
-      SERIAL_ECHOLN("touch start");
+      // SERIAL_ECHOLN("touch start");
     }
   }
   else
@@ -219,7 +219,7 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
       firstPress = true;
       if(touchTime <= millis()){
         LongTimeTouch = true;
-      SERIAL_ECHOLN("touch end");
+      // SERIAL_ECHOLN("touch end");
       }else{
         LongTimeTouch = false;
       }

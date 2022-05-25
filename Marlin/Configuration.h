@@ -26,8 +26,8 @@
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
-#define ST32_SHIP
-// #define USE_GD32
+// #define ST32_SHIP
+#define USE_GD32
 
 #define HAS_UDISK
 // #define QUICK_PRINT
@@ -35,6 +35,7 @@
 // #define NEW_BOARD
 
 // #define TEST_FW
+#define OTHER_CUSTOM
 
 /* D2:230*230*260
  * R3:320*320*400
@@ -118,7 +119,11 @@
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "(langgo, MD d301)" // Who made the changes.
+#ifdef OTHER_CUSTOM
+  #define STRING_CONFIG_H_AUTHOR "(d301)" // Who made the changes.
+#else
+  #define STRING_CONFIG_H_AUTHOR "(langgo, MD d301)" // Who made the changes.
+#endif
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -186,8 +191,11 @@
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "MD D301 F4"
-
+#ifdef OTHER_CUSTOM
+  #define CUSTOM_MACHINE_NAME "D301 F4"
+#else
+  #define CUSTOM_MACHINE_NAME "MD D301 F4"
+#endif
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
 //#define MACHINE_UUID "00000000-0000-0000-0000-000000000000"

@@ -1241,6 +1241,7 @@
     #define POWER_LOSS_STATE       LOW // State of pin indicating power loss
     #define READ_POWER_LOSS_PIN_NUM 1 // 读取引脚的次数
     #define POWER_LOSS_PULL           // Set pullup / pulldown as appropriate
+    #define POWER_LOSS_INTERRUPT_MODE
    #endif
     #define POWER_LOSS_PURGE_LEN   10 // (mm) Length of filament to purge on resume
     #define POWER_LOSS_RETRACT_LEN 10 // (mm) Length of filament to retract on fail. Requires backup power.
@@ -1690,10 +1691,10 @@
  *
  * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  */
-#define LIN_ADVANCE
+// #define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   #define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
-  #define LIN_ADVANCE_K 0.0    // Unit: mm compression per 1mm/s extruder speed
+  #define LIN_ADVANCE_K 0    // Unit: mm compression per 1mm/s extruder speed
   //#define LA_DEBUG            // If enabled, this will generate debug information output over USB.
   #define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
 #endif
@@ -2313,7 +2314,11 @@
     #define X_CURRENT       500        // (mA) RMS current. Multiply by 1.414 for peak current.
    #endif
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
+   #ifdef QUICK_PRINT
+    #define X_MICROSTEPS     32    // 0..256
+   #else
     #define X_MICROSTEPS     16    // 0..256
+   #endif
     #define X_RSENSE          0.11
     #define X_CHAIN_POS      -1    // <=0 : Not chained. 1 : MCU MOSI connected. 2 : Next in chain, ...
   #endif
@@ -2359,7 +2364,11 @@
     #define Z_CURRENT       600
    #endif
     #define Z_CURRENT_HOME  Z_CURRENT
+   #ifdef QUICK_PRINT
+    #define Z_MICROSTEPS     32
+   #else
     #define Z_MICROSTEPS     16
+   #endif
     #define Z_RSENSE          0.11
     #define Z_CHAIN_POS      -1
   #endif

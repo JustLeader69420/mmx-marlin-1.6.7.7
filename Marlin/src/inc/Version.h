@@ -73,7 +73,11 @@
  * Define a generic printer name to be output to the LCD after booting Marlin.
  */
 #ifndef MACHINE_NAME
+ #ifdef OTHER_CUSTOM
+  #define MACHINE_NAME "3D Printer"
+ #else
   #define MACHINE_NAME "MingDa Magician"
+ #endif
 #endif
 
 /**
