@@ -2371,16 +2371,32 @@
   #define PROBING_MARGIN_BACK 0
 #else
   #ifndef PROBING_MARGIN_LEFT
-    #define PROBING_MARGIN_LEFT PROBING_MARGIN
+    #ifdef PROBING_MARGIN_X
+      #define PROBING_MARGIN_LEFT PROBING_MARGIN_X
+    #else
+      #define PROBING_MARGIN_LEFT PROBING_MARGIN
+    #endif
   #endif
   #ifndef PROBING_MARGIN_RIGHT
-    #define PROBING_MARGIN_RIGHT PROBING_MARGIN
+    #ifdef PROBING_MARGIN_X
+      #define PROBING_MARGIN_RIGHT PROBING_MARGIN_X
+    #else
+      #define PROBING_MARGIN_RIGHT PROBING_MARGIN
+    #endif
   #endif
   #ifndef PROBING_MARGIN_FRONT
-    #define PROBING_MARGIN_FRONT PROBING_MARGIN
+    #ifdef PROBING_MARGIN_Y
+      #define PROBING_MARGIN_FRONT PROBING_MARGIN_Y
+    #else
+      #define PROBING_MARGIN_FRONT PROBING_MARGIN
+    #endif
   #endif
   #ifndef PROBING_MARGIN_BACK
-    #define PROBING_MARGIN_BACK PROBING_MARGIN
+    #ifdef PROBING_MARGIN_Y
+      #define PROBING_MARGIN_BACK PROBING_MARGIN_Y
+    #else
+      #define PROBING_MARGIN_BACK PROBING_MARGIN
+    #endif
   #endif
 #endif
 

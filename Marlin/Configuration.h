@@ -29,7 +29,7 @@
 // #define ST32_SHIP
 #define USE_GD32
 
-#define HAS_UDISK
+// #define HAS_UDISK
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
@@ -1118,6 +1118,13 @@
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
 #define PROBING_MARGIN 30
+#if ENABLED(R3_PRO) || ENABLED(R4_PRO)
+  #define PROBING_MARGIN_X (int)X_BED_SIZE*10/35
+  #define PROBING_MARGIN_Y 60
+#else
+  #define PROBING_MARGIN_X (int)X_BED_SIZE/3
+  #define PROBING_MARGIN_Y 40
+#endif
 
 // 探针在X轴和Y轴之间的移动速度(mm/min)
 #if ENABLED(R4_PRO)
@@ -1451,11 +1458,11 @@
 
   // Set the number of grid points per dimension.
   #if ENABLED(R4_PRO)
-    #define GRID_MAX_POINTS_X 6 //调平点阵6*6
-    #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+    #define GRID_MAX_POINTS_X 3 //调平点阵6*6
+    #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X*2
   #else
-    #define GRID_MAX_POINTS_X 4 //调平点阵4*4
-    #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+    #define GRID_MAX_POINTS_X 2 //调平点阵4*4
+    #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X*2
   #endif
 
 
