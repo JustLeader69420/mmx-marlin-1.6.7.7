@@ -210,4 +210,32 @@ void menuSetLevelingOffset()
   menuSetFrontCallBack(menuCallBackSetLevelingOffset);
 }
 
+// LEVELINGITEMS levelingSetItems = 
+uint8_t *levelingSetItems[ITEM_CUBE_NUM] = 
+{
+  CHAR_INCREASE,
+  CHAR_LOWER,
+  CHAR_SAVE,
+  CHAR_SBACK,
+};
+void menuCallBackSetLevelingValue()
+{
+  KEY_VALUES key_num =  menuKeyGetLevelingValue();
+  switch(key_num)
+  {
+    case 0:break;
+    case 1:break;
+    case 2:break;
+    case 3:
+      infoMenu.cur--;
+    break;
+  }
+}
+void menuSetLevelingValue()
+{
+  GUI_Clear(BLACK);
+  menuDrawCubePage(levelingSetItems);
+  menuSetFrontCallBack(menuCallBackSetLevelingValue);
+}
+
 #endif

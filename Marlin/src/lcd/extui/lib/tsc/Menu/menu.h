@@ -29,7 +29,7 @@ typedef enum
 }KEY_VALUES;
 
 #define ITEM_PER_PAGE  8
-
+#define ITEM_CUBE_NUM 4
 
 typedef union
 {
@@ -90,6 +90,10 @@ typedef struct
 #define CHAR_PAGEUP                (uint8_t *)"\u0867\u0868"
 #define CHAR_PAGEDOWN              (uint8_t *)"\u0869\u086A"
 #define CHAR_BACK                  (uint8_t *)"\u086B\u086C"
+#define CHAR_LOWER                 (uint8_t *)"\u089E"
+#define CHAR_INCREASE              (uint8_t *)"\u089F"
+#define CHAR_SBACK                 (uint8_t *)"\u08A1"    // 小退出图标
+#define CHAR_SAVE                  (uint8_t *)"\u08A7"
 
 
 extern const GUI_RECT exhibitRect;
@@ -104,10 +108,13 @@ void menuDrawListItem(const LISTITEM *item, uint8_t position);
 void menuDrawItem (const ITEM *menuItem, uint8_t positon);
 void menuDrawTitle(const uint8_t *content);
 void menuDrawPage (const MENUITEMS *menuItems);
+void menuDrawCubePage(uint8_t** cubeItems);
 
 void menuDrawListPage(const LISTITEMS *listItems);
 void itemDrawIconPress(uint8_t positon, uint8_t is_press);
+void itemDrawCubeIconPress(uint8_t position, uint8_t is_press);
 KEY_VALUES menuKeyGetValue(void);
+KEY_VALUES menuKeyGetLevelingValue(void);
 
 
 void loopBackEnd(void);

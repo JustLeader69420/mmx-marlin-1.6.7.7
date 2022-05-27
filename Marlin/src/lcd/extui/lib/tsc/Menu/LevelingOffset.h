@@ -14,5 +14,6 @@ void setLevelingOffset(float offset);
 void resetLevelingOffset(void);
 bool saveOffset();
 void menuSetLevelingOffset();
+void menuSetLevelingValue();
 
 #endif

@@ -181,10 +181,10 @@ void menuCallBackSettings(void)
     case KEY_ICON_3:
       infoMenu.menu[++infoMenu.cur] = menuInfo;
       break;
-    // case KEY_ICON_4:
-    //   // infoMenu.menu[++infoMenu.cur] = menuBabyStep;
-    //   recovery.save(true);
-    //   break;
+    case KEY_ICON_4:
+      infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
+      // recovery.save(true);
+      break;
 
     case KEY_ICON_6:
       switch (touch_clicks)

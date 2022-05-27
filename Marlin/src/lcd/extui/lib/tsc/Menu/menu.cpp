@@ -32,7 +32,8 @@ typedef enum
 {
   MENU_TYPE_ICON,
   MENU_TYPE_LISTVIEW,
-  MENU_TYPE_DIALOG
+  MENU_TYPE_DIALOG,
+  MENU_TYPE_CUBE
 } MENU_TYPE;
 
 MENU_TYPE menuType = MENU_TYPE_ICON;
@@ -57,6 +58,24 @@ void menuClearGaps(void)
 }
 
 static const MENUITEMS *curMenuItems = 0;   //current menu
+
+#define LEVELING_BUTTON_WIDTH 85
+#define LEVELING_BUTTON_HEIGHT 65
+#define BLANK 10
+#define GAP   5
+const GUI_RECT levelingButtonView[ITEM_CUBE_NUM] = {
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH, 0*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP,  LCD_WIDTH_PIXEL-GAP, 1*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP},
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH, 1*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP,  LCD_WIDTH_PIXEL-GAP, 2*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP},
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH, 2*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP,  LCD_WIDTH_PIXEL-GAP, 3*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP},
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH, 3*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP,  LCD_WIDTH_PIXEL-GAP, 4*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP},
+};
+const GUI_RECT levelingButtonView2[ITEM_CUBE_NUM] = {
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH-1, 0*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP-1,  LCD_WIDTH_PIXEL-GAP+1, 1*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP+1},
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH-1, 1*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP-1,  LCD_WIDTH_PIXEL-GAP+1, 2*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP+1},
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH-1, 2*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP-1,  LCD_WIDTH_PIXEL-GAP+1, 3*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP+1},
+  {LCD_WIDTH_PIXEL-GAP-LEVELING_BUTTON_WIDTH-1, 3*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK+GAP-1,  LCD_WIDTH_PIXEL-GAP+1, 4*(LEVELING_BUTTON_HEIGHT+2*GAP)+BLANK-GAP+1},
+};
+static const uint8_t *curCubeItems = 0;   //current small cube
 
 uint8_t *labelGetAddress(const LABEL *label)
 {
@@ -276,6 +295,36 @@ void menuDrawListPage(const LISTITEMS *listItems)
       menuDrawListItem(&listItems->items[i], i);
   }
 }
+void menuDrawCubeItem(const uint8_t *icon, uint8_t position)
+{
+  if (icon == NULL) return;
+  
+  const GUI_RECT *rect = levelingButtonView + position;
+
+  GUI_ClearRect(rect->x0, rect->y0+1, rect->x1, rect->y1+1);
+  GUI_SetBkColor(MD_GRAY);
+  GUI_Clear_RCRect(rect->x0,rect->y0,rect->x1,rect->y1,25);
+  GUI_DispStringInPrect(rect, icon);
+  GUI_SetBkColor(BK_COLOR);
+}
+void menuDrawCubePage(uint8_t** cubeItems)
+{
+  menuType = MENU_TYPE_CUBE;
+  TSC_ReDrawIcon = itemDrawCubeIconPress;
+  curCubeItems = *cubeItems;
+
+  GUI_SetBkColor(TITLE_COLOR);
+  GUI_ClearRect(0, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+  GUI_SetBkColor(BK_COLOR);
+  GUI_ClearRect(0, TITLE_END_Y-10, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL);
+
+  for (uint8_t i = 0; i < ITEM_CUBE_NUM; i++)
+  {
+    //const GUI_RECT *rect = rect_of_keyListView + i;
+    if (cubeItems != NULL)
+      menuDrawCubeItem(cubeItems[i], i);
+  }
+}
 
 //When there is a button value, the icon changes color and redraws
 void itemDrawIconPress(uint8_t position, uint8_t is_press)
@@ -315,6 +364,37 @@ void itemDrawIconPress(uint8_t position, uint8_t is_press)
 
   }
 }
+// this is draw small boxes
+void itemDrawCubeIconPress(uint8_t position, uint8_t is_press)
+{
+  
+  // if (curCubeItems == 0) return;
+  // const GUI_RECT *rect = levelingButtonView + position;
+
+  // if (is_press) // Turn green when pressed
+  //   ICON_PressedDisplay(rect->x0, rect->y0, *curCubeItems);
+  // else // Redraw normal icon when released
+  //   ICON_ReadDisplay(rect->x0, rect->y0, *curCubeItems);
+  //  //draw rec over list item if pressed
+  if (menuType != MENU_TYPE_CUBE) return;
+  if (curCubeItems == NULL) return;
+
+  const GUI_RECT *rect = levelingButtonView2 + position;
+
+  if (curCubeItems == NULL)
+  {
+    GUI_ClearPrect(rect);
+    return;
+  }
+  if (is_press){
+    GUI_DrawPrect(rect);
+  }
+  else{
+    GUI_SetColor(BK_COLOR);
+    GUI_DrawPrect(rect);
+    GUI_SetColor(FK_COLOR);
+  }
+}
 
 // Get button value
 KEY_VALUES menuKeyGetValue(void)
@@ -328,6 +408,12 @@ KEY_VALUES menuKeyGetValue(void)
     return (KEY_VALUES)KEY_GetValue(COUNT(rect_of_keyListView), rect_of_keyListView); //for listview
   }
   else return KEY_IDLE;
+}
+KEY_VALUES menuKeyGetLevelingValue(void)
+{
+  if (menuType == MENU_TYPE_CUBE)
+    return (KEY_VALUES)KEY_GetValue(ITEM_CUBE_NUM, levelingButtonView); //for listview
+
 }
 
 void loopFrontEnd(void)
