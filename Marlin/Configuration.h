@@ -29,13 +29,13 @@
 // #define ST32_SHIP
 #define USE_GD32
 
-// #define HAS_UDISK
+#define HAS_UDISK
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
 
 // #define TEST_FW
-#define OTHER_CUSTOM
+// #define OTHER_CUSTOM
 
 /* D2:230*230*260
  * R3:320*320*400
