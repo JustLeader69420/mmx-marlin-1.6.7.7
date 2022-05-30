@@ -1,5 +1,6 @@
 #include "../TSC_Menu.h"
 #include "Extrude.h"
+#include "../../../../../module/stepper/trinamic.h"
 
 //1title, ITEM_PER_PAGE items
 MENUITEMS extrudeItems = {
@@ -304,10 +305,34 @@ void menuCallBackExtrude2(void)
   switch(key_num)
   {
     case KEY_ICON_0:
+     #if 0
       if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
         ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
       else
         e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
+     #else
+      uint32_t sr;
+      char str[64];
+      write_tmc_reg(0x6C, 0xD4028103);
+      sr = read_tmc_reg(0x6C);
+      //sprintf_P(str, "reg:%B");
+      str[0] = '6';
+      str[1] = 'C';
+      str[2] = ':';
+      itoa(sr, str+3, 16);
+      // GUI_SetColor(VAL_COLOR);
+      // GUI_SetBkColor(WHITE);
+      GUI_SetColor(WHITE);
+      GUI_SetBkColor(VAL_COLOR);
+      GUI_DispString(180, 5, (uint8_t*)str);
+      sr = read_tmc_reg(0x6F);
+      //sprintf_P(str, "reg:%B");
+      str[0] = '6';
+      str[1] = 'F';
+      str[2] = ':';
+      itoa(sr, str+3, 16);
+      GUI_DispString(180, 30, (uint8_t*)str);
+     #endif
       break;
     // case KEY_ICON_0:
     //   if(!pause_extrude_flag){

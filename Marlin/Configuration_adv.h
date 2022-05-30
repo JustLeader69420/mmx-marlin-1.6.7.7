@@ -2304,6 +2304,7 @@
 
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
+  #define SHORT_PROTECTION  false// Low side short protection disable
 
   #if AXIS_IS_TMC(X)
    #ifdef QUICK_PRINT

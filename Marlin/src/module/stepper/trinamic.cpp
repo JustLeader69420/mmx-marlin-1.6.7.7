@@ -500,7 +500,20 @@ enum StealthIndex : uint8_t { STEALTH_AXIS_XY, STEALTH_AXIS_Z, STEALTH_AXIS_E };
     chopconf.hend = chopper_timing.hend + 3;
     chopconf.hstrt = chopper_timing.hstrt - 1;
     TERN_(SQUARE_WAVE_STEPPING, chopconf.dedge = true);
+    if(!SHORT_PROTECTION){
+      chopconf.diss2g  = 1;
+      chopconf.diss2vs = 1;
+    }
     st.CHOPCONF(chopconf.sr);
+    
+    // TMC2208_n::CHOPCONF_t chopconf{0};
+    // chopconf.toff = chopper_timing.toff;
+    // chopconf.hstrt = chopper_timing.hstrt - 1;
+    // chopconf.hend = chopper_timing.hend + 3;
+    // chopconf.tbl = 0b01; // blank_time = 24
+    // chopconf.intpol = INTERPOLATE;
+    // TERN_(SQUARE_WAVE_STEPPING, chopconf.dedge = true);
+    // st.CHOPCONF(chopconf.sr);
 
     st.rms_current(mA, HOLD_MULTIPLIER);
     st.microsteps(microsteps);
@@ -873,5 +886,16 @@ void reset_trinamic_drivers() {
   SA_NO_TMC_SW_C(Z);SA_NO_TMC_SW_C(Z2);SA_NO_TMC_SW_C(Z3);SA_NO_TMC_SW_C(Z4);
   SA_NO_TMC_SW_C(E0);SA_NO_TMC_SW_C(E1);SA_NO_TMC_SW_C(E2);SA_NO_TMC_SW_C(E3);SA_NO_TMC_SW_C(E4);SA_NO_TMC_SW_C(E5);SA_NO_TMC_SW_C(E6);SA_NO_TMC_SW_C(E7);
 #endif
+
+uint32_t read_tmc_reg(uint8_t addr)
+{
+  // stepperE0.test_connection();
+  return stepperY.myreadreg(addr);
+}
+void write_tmc_reg(uint8_t addr, uint32_t regVal)
+{
+  // stepperE0.test_connection();
+  stepperY.mywritereg(addr, regVal);
+}
 
 #endif // HAS_TRINAMIC_CONFIG

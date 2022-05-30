@@ -294,3 +294,6 @@ void reset_trinamic_drivers();
     #define E7_STEP_WRITE(STATE) do{ if(STATE) TOGGLE(E7_STEP_PIN); }while(0)
   #endif
 #endif
+
+uint32_t read_tmc_reg(uint8_t addr);
+void write_tmc_reg(uint8_t addr, uint32_t regVal);
