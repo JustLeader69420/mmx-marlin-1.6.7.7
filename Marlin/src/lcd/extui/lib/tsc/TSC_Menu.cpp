@@ -48,6 +48,7 @@ TSCBoot boot;
 
 #define Buzzer_TurnOn(fre, ms) BUZZ(ms, fre)
 void Buzzer_play(SOUND sound){
+  if(infoSettings.silent) return;
   switch (sound)
   {
     case sound_ok:
