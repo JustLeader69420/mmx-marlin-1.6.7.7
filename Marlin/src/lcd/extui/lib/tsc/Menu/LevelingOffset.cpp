@@ -233,6 +233,20 @@ void menuCallBackSetLevelingValue()
 }
 void menuSetLevelingValue()
 {
+  int the_value = 0;
+  uint8_t x,y;
+  for(y=0; y<GRID_MAX_POINTS_Y; y++){
+    for(x=0; x<GRID_MAX_POINTS_X; x++){
+      the_value = 0;
+      if(leveling_is_valid())the_value = z_values[x][y] * 100;
+      if(the_value == 0){
+        levelingSetItems[y*GRID_MAX_POINTS_X+x+4] = (uint8_t *)"0";
+      }
+      else{
+        sprintf_P((char*)levelingSetItems[y*GRID_MAX_POINTS_X+x+4], "%d\u002E%d", the_value/100, the_value%100);
+      }
+    }
+  }
   GUI_Clear(BLACK);
   menuDrawCubePage(levelingSetItems);
   menuSetFrontCallBack(menuCallBackSetLevelingValue);

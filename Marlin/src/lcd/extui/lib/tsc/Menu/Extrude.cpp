@@ -1,6 +1,8 @@
 #include "../TSC_Menu.h"
 #include "Extrude.h"
-#include "../../../../../module/stepper/trinamic.h"
+#if 0
+  #include "../../../../../module/stepper/trinamic.h"
+#endif
 
 //1title, ITEM_PER_PAGE items
 MENUITEMS extrudeItems = {
@@ -306,11 +308,6 @@ void menuCallBackExtrude2(void)
   {
     case KEY_ICON_0:
      #if 0
-      if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
-        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
-      else
-        e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
-     #else
       uint32_t sr;
       char str[64];
       write_tmc_reg(0x6C, 0xD4028103);
@@ -332,6 +329,11 @@ void menuCallBackExtrude2(void)
       str[2] = ':';
       itoa(sr, str+3, 16);
       GUI_DispString(180, 30, (uint8_t*)str);
+     #else
+      if(pause_extrude_flag)  // 暂停状态使用这个函数，因为暂停处于阻塞状态，无法使用Gcode
+        ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(item_extruder_i) - item_len[item_len_i], item_extruder_i, item_speed[item_speed_i]);
+      else
+        e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
      #endif
       break;
     // case KEY_ICON_0:

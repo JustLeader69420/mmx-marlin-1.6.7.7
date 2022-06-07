@@ -42,10 +42,10 @@
   #define BOARD_INFO_NAME "BC.DZ.PC000007.03"
  #endif
 
-  #ifdef ST32_SHIP
+  #if ENABLED(ST32_SHIP)
     #define CHIP_NAME "(S)"
-  #else
-    #define CHIP_NAME ""
+  #elif ENABLED(USE_GD32)
+    #define CHIP_NAME "(G)"
   #endif
 
   #if ENABLED(R3_PRO)
@@ -402,10 +402,10 @@
 #ifndef BOARD_INFO_NAME
   #define BOARD_INFO_NAME "BC.DZ.PC000007"
 
-  #ifdef ST32_SHIP
+  #if ENABLED(ST32_SHIP)
     #define CHIP_NAME "(S)"
-  #else
-    #define CHIP_NAME ""
+  #elif ENABLED(USE_GD32)
+    #define CHIP_NAME "(G)"
   #endif
 
   #if ENABLED(R3_PRO)

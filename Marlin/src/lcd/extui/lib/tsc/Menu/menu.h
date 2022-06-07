@@ -29,7 +29,7 @@ typedef enum
 }KEY_VALUES;
 
 #define ITEM_PER_PAGE  8
-#define ITEM_CUBE_NUM 4
+#define ITEM_CUBE_NUM GRID_MAX_POINTS_X*GRID_MAX_POINTS_Y+4
 
 typedef union
 {
