@@ -500,10 +500,9 @@ enum StealthIndex : uint8_t { STEALTH_AXIS_XY, STEALTH_AXIS_Z, STEALTH_AXIS_E };
     chopconf.hend = chopper_timing.hend + 3;
     chopconf.hstrt = chopper_timing.hstrt - 1;
     TERN_(SQUARE_WAVE_STEPPING, chopconf.dedge = true);
-    if(!SHORT_PROTECTION){
-      chopconf.diss2g  = 1;
-      chopconf.diss2vs = 1;
-    }
+    TERN_(SHORT_PROTECTION, chopconf.diss2g  = 1);
+    TERN_(SHORT_PROTECTION, chopconf.diss2vs = 1);
+    
     st.CHOPCONF(chopconf.sr);
     
     // TMC2208_n::CHOPCONF_t chopconf{0};
@@ -889,13 +888,13 @@ void reset_trinamic_drivers() {
 
 uint32_t read_tmc_reg(uint8_t addr)
 {
-  // stepperE0.test_connection();
-  return stepperY.myreadreg(addr);
+  // // stepperE0.test_connection();
+  // return stepperY.myreadreg(addr);
 }
 void write_tmc_reg(uint8_t addr, uint32_t regVal)
 {
-  // stepperE0.test_connection();
-  stepperY.mywritereg(addr, regVal);
+  // // stepperE0.test_connection();
+  // stepperY.mywritereg(addr, regVal);
 }
 
 #endif // HAS_TRINAMIC_CONFIG

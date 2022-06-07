@@ -393,7 +393,7 @@ G29_TYPE GcodeSuite::G29() {
         G29_RETURN(false);
       }
 
-      // 在网格的点上探测
+      // 在网格的点上探测,gridSpacing是网格间距
       gridSpacing.set((probe_position_rb.x - probe_position_lf.x) / (abl_grid_points.x - 1),
                       (probe_position_rb.y - probe_position_lf.y) / (abl_grid_points.y - 1));
 
