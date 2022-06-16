@@ -96,6 +96,7 @@ fil_change_settings_t fc_settings[EXTRUDERS];
   static void impatient_beep(const int8_t max_beep_count, const bool restart=false) {
 
     if (TERN0(HAS_LCD_MENU, pause_mode == PAUSE_MODE_PAUSE_PRINT)) return;
+    if(infoSettings.silent) return;
 
     static millis_t next_buzz = 0;
     static int8_t runout_beep = 0;
