@@ -1,5 +1,6 @@
 #include "../TSC_Menu.h"
 #include "../../../../../module/settings.h"
+#include "../../../../../feature/babystep.h"
 
 #if ENABLED(LEVELING_OFFSET)
 
@@ -211,24 +212,269 @@ void menuSetLevelingOffset()
 }
 
 // LEVELINGITEMS levelingSetItems = 
-uint8_t *levelingSetItems[ITEM_CUBE_NUM] = 
+uint8_t *levelingSetButtonItems[4] = 
 {
   CHAR_INCREASE,
   CHAR_LOWER,
   CHAR_SAVE,
   CHAR_SBACK,
 };
+uint8_t levelingSetCubeItems[ITEM_CUBE_NUM-4][8] = 
+{
+};
+void my_ftoa(uint8_t *res, float num, int size){}
+
+static bed_mesh_t old_z_values;
+#define THE_FLOAT_MAGNIFICATION 1000
+#define SET_LEVELING_VALUE 0.05f
+
 void menuCallBackSetLevelingValue()
 {
-  KEY_VALUES key_num =  menuKeyGetLevelingValue();
+  uint16_t key_num =  menuKeyGetLevelingValue();
+  char str[16];
+  static uint8_t x = 255, y = 255;  //用于确定点击的坐标，255为没选中。
+  uint8_t x2 = 255, y2 = 255;       //临时存放xy坐标
+  uint8_t isClick = 0;
+  int the_value = 0;
+
   switch(key_num)
   {
-    case 0:break;
-    case 1:break;
-    case 2:break;
+    case 0:
+      // babystep.add_mm(Z_AXIS, 0.1f);
+      if(x<GRID_MAX_POINTS_X && y<GRID_MAX_POINTS_Y){
+        old_z_values[x][y] += SET_LEVELING_VALUE;
+        the_value = (old_z_values[x][y]+1.0f/THE_FLOAT_MAGNIFICATION/100)*THE_FLOAT_MAGNIFICATION;
+        // the_value += (SET_LEVELING_VALUE*THE_FLOAT_MAGNIFICATION);
+
+        if(old_z_values[x][y]<=0.00001 && old_z_values[x][y]>=-0.00001){
+          levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][0] = '0';
+          levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][1] = 0;
+        }else if(old_z_values[x][y]<0){
+          sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "-%d.%d%d", (-the_value)/1000, (-the_value/100)%10, (-the_value/10)%10);
+        }else{
+          sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "%d.%d%d", the_value/1000, (the_value/100)%10, (the_value/10)%10);
+        }
+        // sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "%f", old_z_values);
+        menuDrawCubeItem_check(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
+      }
+      break;
+    case 1:
+      // babystep.add_mm(Z_AXIS, -0.1f);
+      if(x<GRID_MAX_POINTS_X && y<GRID_MAX_POINTS_Y){
+        // old_z_values[x][y] -= 0.1f;
+        // the_value = old_z_values[x][y]*100;
+        // if(the_value<0){
+        //   sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "-%d.%d", (-the_value)/100, (-the_value)%100);
+        // }else if(the_value == 0){
+        //   levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][0] = '0';
+        //   levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][1] = 0;
+        // }else{
+        //   sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "%d.%d", the_value/100, the_value%100);
+        // }
+        old_z_values[x][y] -= SET_LEVELING_VALUE;
+        the_value = (old_z_values[x][y]-1.0f/THE_FLOAT_MAGNIFICATION/100)*THE_FLOAT_MAGNIFICATION;
+        // the_value -= (SET_LEVELING_VALUE*THE_FLOAT_MAGNIFICATION);
+
+        if(old_z_values[x][y]<=0.00001 && old_z_values[x][y]>=-0.00001){
+          levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][0] = '0';
+          levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][1] = 0;
+        }else if(the_value<0){
+          sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "-%d.%d%d", (-the_value)/1000, (-the_value/100)%10, (-the_value/10)%10);
+        }else{
+          sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "%d.%d%d", the_value/1000, (the_value/100)%10, (the_value/10)%10);
+        }
+        menuDrawCubeItem_check(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
+      }
+      break;
+    case 2:
+      
+      break;
     case 3:
+      // storeCmd("M420 S0\n");
+      // storeCmd("G28\n");
       infoMenu.cur--;
-    break;
+      break;
+
+   #if 1
+    #if GRID_MAX_POINTS_Y>0
+      #if GRID_MAX_POINTS_X>0
+        case KEY_0_0:
+          if(0==y && 0==x)    { isClick = 2; }
+          else{ y2 = 0; x2 = 0; isClick = 1; }
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        case KEY_0_1:
+          if(0==y && 1==x)    { isClick = 2; }
+          else{ y2 = 0; x2 = 1; isClick = 1; }
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        case KEY_0_2:
+          if(0==y && 2==x)    { isClick = 2; }
+          else{ y2 = 0; x2 = 2; isClick = 1; }
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        case KEY_0_3:
+          if(0==y && 3==x)    { isClick = 2; }
+          else{ y2 = 0; x2 = 3; isClick = 1; }
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        case KEY_0_4:
+          if(0==y && 4==x)    { isClick = 2; }
+          else{ y2 = 0; x2 = 4; isClick = 1; }
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        case KEY_0_5:
+          if(0==y && 5==x)    { isClick = 2; }
+          else{ y2 = 0; x2 = 5; isClick = 1; }
+          break;
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>1
+      #if GRID_MAX_POINTS_X>0
+        case KEY_1_0:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        case KEY_1_1:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        case KEY_1_2:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        case KEY_1_3:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        case KEY_1_4:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        case KEY_1_5:
+          break;
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>2
+      #if GRID_MAX_POINTS_X>0
+        case KEY_2_0:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        case KEY_2_1:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        case KEY_2_2:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        case KEY_2_3:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        case KEY_2_4:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        case KEY_2_5:
+          break;
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>3
+      #if GRID_MAX_POINTS_X>0
+        case KEY_3_0:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        case KEY_3_1:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        case KEY_3_2:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        case KEY_3_3:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        case KEY_3_4:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        case KEY_3_5:
+          break;
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>4
+      #if GRID_MAX_POINTS_X>0
+        case KEY_4_0:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        case KEY_4_1:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        case KEY_4_2:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        case KEY_4_3:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        case KEY_4_4:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        case KEY_4_5:
+          break;
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>5
+      #if GRID_MAX_POINTS_X>0
+        case KEY_5_0:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        case KEY_5_1:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        case KEY_5_2:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        case KEY_5_3:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        case KEY_5_4:
+          break;
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        case KEY_5_5:
+          break;
+      #endif
+    #endif
+   #endif
+  }
+  if(1 == isClick){
+    if(x<GRID_MAX_POINTS_X && y<GRID_MAX_POINTS_Y)
+      menuDrawCubeItem(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
+    x = x2; y = y2;
+    menuDrawCubeItem_check(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
+  }
+  else if(2 == isClick){
+    menuDrawCubeItem(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
+    x = 255; y = 255;
   }
 }
 void menuSetLevelingValue()
@@ -238,17 +484,25 @@ void menuSetLevelingValue()
   for(y=0; y<GRID_MAX_POINTS_Y; y++){
     for(x=0; x<GRID_MAX_POINTS_X; x++){
       the_value = 0;
-      if(leveling_is_valid())the_value = z_values[x][y] * 100;
+      old_z_values[x][y] = 0.0f;
+      if(leveling_is_valid()){
+        the_value = z_values[x][y] * 100;
+        old_z_values[x][y] = z_values[x][y];
+      }
       if(the_value == 0){
-        levelingSetItems[y*GRID_MAX_POINTS_X+x+4] = (uint8_t *)"0";
+        // sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "0");
+        levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][0] = '0';
+        levelingSetCubeItems[y*GRID_MAX_POINTS_X+x][1] = 0;
       }
       else{
-        sprintf_P((char*)levelingSetItems[y*GRID_MAX_POINTS_X+x+4], "%d\u002E%d", the_value/100, the_value%100);
+        sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "%d.%d", the_value/100, the_value%100);
       }
     }
   }
+  // storeCmd("M420 S1\n");
+  // storeCmd("G28\n");
   GUI_Clear(BLACK);
-  menuDrawCubePage(levelingSetItems);
+  menuDrawCubePage(levelingSetButtonItems, levelingSetCubeItems);
   menuSetFrontCallBack(menuCallBackSetLevelingValue);
 }
 

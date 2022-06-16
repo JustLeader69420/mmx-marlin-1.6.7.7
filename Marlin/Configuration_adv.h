@@ -1691,7 +1691,7 @@
  *
  * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  */
-#define LIN_ADVANCE
+// #define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   #define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
   #define LIN_ADVANCE_K 0    // Unit: mm compression per 1mm/s extruder speed
@@ -2304,7 +2304,7 @@
 
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
-  #define SHORT_PROTECTION        // Low side short protection disable
+  // #define SHORT_PROTECTION        // Low side short protection disable
 
   #if AXIS_IS_TMC(X)
    #ifdef QUICK_PRINT

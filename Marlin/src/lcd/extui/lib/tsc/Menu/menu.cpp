@@ -456,6 +456,21 @@ void menuDrawListPage(const LISTITEMS *listItems)
       menuDrawListItem(&listItems->items[i], i);
   }
 }
+void menuDrawCubeItem_check(const uint8_t *icon, uint8_t position)
+{
+  if (icon == NULL) return;
+  
+  const GUI_RECT *rect = levelingButtonView + position;
+
+  GUI_ClearRect(rect->x0, rect->y0+1, rect->x1, rect->y1+1);
+  GUI_SetBkColor(BLUE);
+  if(position<4)
+    GUI_Clear_RCRect(rect->x0,rect->y0,rect->x1,rect->y1,25);
+  else
+    GUI_ClearRect(rect->x0,rect->y0,rect->x1,rect->y1);
+  GUI_DispStringInPrect(rect, icon);
+  GUI_SetBkColor(BK_COLOR);
+}
 void menuDrawCubeItem(const uint8_t *icon, uint8_t position)
 {
   if (icon == NULL) return;
@@ -471,11 +486,11 @@ void menuDrawCubeItem(const uint8_t *icon, uint8_t position)
   GUI_DispStringInPrect(rect, icon);
   GUI_SetBkColor(BK_COLOR);
 }
-void menuDrawCubePage(uint8_t** cubeItems)
+void menuDrawCubePage(uint8_t** buttonItems, uint8_t(* cubeItems)[8])
 {
   menuType = MENU_TYPE_CUBE;
   TSC_ReDrawIcon = itemDrawCubeIconPress;
-  curCubeItems = *cubeItems;
+  curCubeItems = *buttonItems;
 
   GUI_SetBkColor(TITLE_COLOR);
   GUI_ClearRect(0, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
@@ -485,8 +500,13 @@ void menuDrawCubePage(uint8_t** cubeItems)
   for (uint8_t i = 0; i < ITEM_CUBE_NUM; i++)
   {
     //const GUI_RECT *rect = rect_of_keyListView + i;
-    if (cubeItems != NULL)
-      menuDrawCubeItem(cubeItems[i], i);
+    if(i<4){
+      if(buttonItems[i] != NULL){
+        menuDrawCubeItem(buttonItems[i], i);
+      }
+    }else if (cubeItems[i-4] != NULL){
+      menuDrawCubeItem(cubeItems[i-4], i);
+    }
   }
 }
 
@@ -542,6 +562,7 @@ void itemDrawCubeIconPress(uint8_t position, uint8_t is_press)
   //  //draw rec over list item if pressed
   if (menuType != MENU_TYPE_CUBE) return;
   if (curCubeItems == NULL) return;
+  if (position > 4) return;
 
   const GUI_RECT *rect = levelingButtonView2 + position;
 
@@ -573,11 +594,11 @@ KEY_VALUES menuKeyGetValue(void)
   }
   else return KEY_IDLE;
 }
-KEY_VALUES menuKeyGetLevelingValue(void)
+uint16_t menuKeyGetLevelingValue(void)
 {
   if (menuType == MENU_TYPE_CUBE)
-    return (KEY_VALUES)KEY_GetValue(ITEM_CUBE_NUM, levelingButtonView); //for listview
-
+    return KEY_GetValue(ITEM_CUBE_NUM, levelingButtonView); //for listview
+  else return KEY_X_X;
 }
 
 void loopFrontEnd(void)

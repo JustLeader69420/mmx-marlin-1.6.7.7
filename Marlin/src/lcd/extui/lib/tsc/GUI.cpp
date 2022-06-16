@@ -587,7 +587,7 @@ void GUI_DispStringInRect(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const 
   {
     p = GUI_DispLenString(x, y, p, width);
     y += BYTE_HEIGHT;
-  }   
+  }
 }
 void GUI_DispStringInRect_P(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint8_t *inf)
 {

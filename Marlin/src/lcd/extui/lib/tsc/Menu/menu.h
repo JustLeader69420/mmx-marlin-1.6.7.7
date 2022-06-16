@@ -28,6 +28,139 @@ typedef enum
   KEY_IDLE = IDLE_TOUCH,
 }KEY_VALUES;
 
+#ifdef AUTO_BED_LEVELING_BILINEAR
+  enum
+  {
+    KEY_CUBE_INCREASE = 0,
+    KEY_CUBE_LOWER,
+    KEY_CUBE_SAVE,
+    KEY_CUBE_BACK,
+
+    #if GRID_MAX_POINTS_Y>0
+      #if GRID_MAX_POINTS_X>0
+        KEY_0_0,
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        KEY_0_1,
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        KEY_0_2,
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        KEY_0_3,
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        KEY_0_4,
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        KEY_0_5,
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>1
+      #if GRID_MAX_POINTS_X>0
+        KEY_1_0,
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        KEY_1_1,
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        KEY_1_2,
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        KEY_1_3,
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        KEY_1_4,
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        KEY_1_5,
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>2
+      #if GRID_MAX_POINTS_X>0
+        KEY_2_0,
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        KEY_2_1,
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        KEY_2_2,
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        KEY_2_3,
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        KEY_2_4,
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        KEY_2_5,
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>3
+      #if GRID_MAX_POINTS_X>0
+        KEY_3_0,
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        KEY_3_1,
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        KEY_3_2,
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        KEY_3_3,
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        KEY_3_4,
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        KEY_3_5,
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>4
+      #if GRID_MAX_POINTS_X>0
+        KEY_4_0,
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        KEY_4_1,
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        KEY_4_2,
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        KEY_4_3,
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        KEY_4_4,
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        KEY_4_5,
+      #endif
+    #endif
+    #if GRID_MAX_POINTS_Y>5
+      #if GRID_MAX_POINTS_X>0
+        KEY_5_0,
+      #endif
+      #if GRID_MAX_POINTS_X>1
+        KEY_5_1,
+      #endif
+      #if GRID_MAX_POINTS_X>2
+        KEY_5_2,
+      #endif
+      #if GRID_MAX_POINTS_X>3
+        KEY_5_3,
+      #endif
+      #if GRID_MAX_POINTS_X>4
+        KEY_5_4,
+      #endif
+      #if GRID_MAX_POINTS_X>5
+        KEY_5_5,
+      #endif
+    #endif
+    KEY_6_6,
+    KEY_X_X = IDLE_TOUCH,
+  }KEY_CUBE;
+#endif
+
 #define ITEM_PER_PAGE  8
 #define ITEM_CUBE_NUM GRID_MAX_POINTS_X*GRID_MAX_POINTS_Y+4
 
@@ -94,6 +227,10 @@ typedef struct
 #define CHAR_INCREASE              (uint8_t *)"\u089F"
 #define CHAR_SBACK                 (uint8_t *)"\u08A1"    // 小退出图标
 #define CHAR_SAVE                  (uint8_t *)"\u08A7"
+// #define CHAR_LOWER                 0x089E
+// #define CHAR_INCREASE              0x089F
+// #define CHAR_SBACK                 0x08A1    // 小退出图标
+// #define CHAR_SAVE                  0x08A7
 
 
 extern const GUI_RECT exhibitRect;
@@ -108,13 +245,15 @@ void menuDrawListItem(const LISTITEM *item, uint8_t position);
 void menuDrawItem (const ITEM *menuItem, uint8_t positon);
 void menuDrawTitle(const uint8_t *content);
 void menuDrawPage (const MENUITEMS *menuItems);
-void menuDrawCubePage(uint8_t** cubeItems);
+void menuDrawCubeItem_check(const uint8_t *icon, uint8_t position);
+void menuDrawCubeItem(const uint8_t *icon, uint8_t position);
+void menuDrawCubePage(uint8_t** buttonItems, uint8_t(* cubeItems)[8]);
 
 void menuDrawListPage(const LISTITEMS *listItems);
 void itemDrawIconPress(uint8_t positon, uint8_t is_press);
 void itemDrawCubeIconPress(uint8_t position, uint8_t is_press);
 KEY_VALUES menuKeyGetValue(void);
-KEY_VALUES menuKeyGetLevelingValue(void);
+uint16_t   menuKeyGetLevelingValue(void);
 
 
 void loopBackEnd(void);
