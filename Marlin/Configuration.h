@@ -22,20 +22,20 @@
 #pragma once
 
 // 选择机器型号
-#define R3_PRO    // R3_pro:max
+// #define R3_PRO    // R3_pro:max
 // #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
 // #define ST32_SHIP
 #define USE_GD32
 
-// #define HAS_UDISK
+#define HAS_UDISK
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
 
 // #define TEST_FW
-#define OTHER_CUSTOM
+// #define OTHER_CUSTOM
 
 /* D2:230*230*260
  * R3:320*320*400
@@ -846,7 +846,7 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 #if ENABLED(QUICK_PRINT)
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 79, 80, 79, 400 }
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 158, 80, 158, 400 }
 #elif ENABLED(TEST_FW)
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 800, 800, 800, 400 }
 #else
@@ -860,7 +860,7 @@
  */
 // #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 45 }
 #if ENABLED(QUICK_PRINT)
-  #define DEFAULT_MAX_FEEDRATE          { 400, 400, 400, 90 }
+  #define DEFAULT_MAX_FEEDRATE          { 300, 300, 10, 90 }
 #elif ENABLED(TEST_FW)
   #define DEFAULT_MAX_FEEDRATE          { 10, 10, 5, 45 }
 #else
