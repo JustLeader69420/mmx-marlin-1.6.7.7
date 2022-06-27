@@ -7,6 +7,8 @@
 #if ENABLED(USART_LCD)
   #include "../../../../../lcd_show_addr.h"
 #endif
+extern bool wait_quick_stop_step;
+static bool pop_up_lock = true;          // 弹窗锁,防止多次点击造成机器死机,true开启,false关闭
 
 //1title, ITEM_PER_PAGE item(icon + label) 
 MENUITEMS printingItems = {
@@ -436,29 +438,35 @@ void menuPrinting(void)
 void menuCallBackStopPrinting(void)
 {
   uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
-  switch(key_num)
-  {
-    case KEY_POPUP_CONFIRM:
-      can_print_flag = false;   // 不能进行打印
-      
-      /*if(UDiskPrint){
-        // UDiskPrint = false;
-        
-      }
-      else*/ 
-      TERN_( HAS_UDISK, UDiskStopPrint = true; )
-      ExtUI::stopPrint();
-      set_bed_leveling_enabled(false);
-      break;
+  if(!pop_up_lock){
+    switch(key_num)
+    {
+      case KEY_POPUP_CONFIRM:
+        pop_up_lock = true;       // 开启弹窗锁
+        can_print_flag = false;   // 不能进行打印
+        wait_quick_stop_step = true;  // 等待快速停止电机
+        /*if(UDiskPrint){
+          // UDiskPrint = false;
+          
+        }
+        else*/ 
+        TERN_( HAS_UDISK, UDiskStopPrint = true; )
+        ExtUI::stopPrint();
+        set_bed_leveling_enabled(false);
+        break;
 
-    case KEY_POPUP_CANCEL:
-      infoMenu.cur--;
-      break;		
+      case KEY_POPUP_CANCEL:
+        pop_up_lock = true;       // 开启弹窗锁
+        infoMenu.cur--;
+        break;
+      default:break;
+    }
   }
 }
 
 void menuStopPrinting(void)
 {
+  pop_up_lock = false;
   popupDrawPage(bottomDoubleBtn, textSelect(LABEL_WARNING), textSelect(LABEL_STOP_PRINT), textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
   menuSetFrontCallBack(menuCallBackStopPrinting);
 }

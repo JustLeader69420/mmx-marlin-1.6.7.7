@@ -1509,7 +1509,7 @@ void Stepper::isr() {
 #if ISR_PULSE_CONTROL && DISABLED(I2S_STEPPER_STREAM)
   #define ISR_MULTI_STEPS 1
 #endif
-
+bool wait_quick_stop_step = false;
 /**
  * This phase of the ISR should ONLY create the pulses for the steppers.
  * This prevents jitter caused by the interval between the start of the
@@ -1523,6 +1523,10 @@ void Stepper::pulse_phase_isr() {
   if (abort_current_block) {
     abort_current_block = false;
     if (current_block) discard_current_block();
+  }
+  if(wait_quick_stop_step){
+    if (current_block) discard_current_block();
+    return;
   }
 
   // If there is no current block, do nothing

@@ -1750,12 +1750,14 @@ bool Planner::_buffer_steps(const xyze_long_t &target
  * Planner::_populate_block
  *
  * Fills a new linear movement in the block (in terms of steps).
+ * 在块中填充一个新的线性移动(根据步数)。
  *
- *  target      - target position in steps units
- *  fr_mm_s     - (target) speed of the move
- *  extruder    - target extruder
+ *  target      - target position in steps units  目标位置，已步为单位
+ *  fr_mm_s     - (target) speed of the move      目标移动速度
+ *  extruder    - target extruder                 目标挤出机
  *
  * Returns true if movement is acceptable, false otherwise
+ * 如果运动是可接受的，则返回true，否则返回false
  */
 bool Planner::_populate_block(block_t * const block, bool split_move,
   const abce_long_t &target

@@ -601,3 +601,4 @@ class Stepper {
 };
 
 extern Stepper stepper;
+extern bool wait_quick_stop_step;

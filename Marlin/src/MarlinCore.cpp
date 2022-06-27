@@ -362,8 +362,10 @@ void protected_pin_err() {
 }
 // 快速停下电机
 void quickstop_stepper() {
-  planner.quick_stop();
-  planner.synchronize();
+  wait_quick_stop_step = true;  // 停止执行步进缓冲区，已在电机停止弹窗那执行了一次
+  planner.quick_stop();         // 停止步进填入缓冲区
+  planner.synchronize();        // 等待清空步进缓冲区
+  wait_quick_stop_step = false; // 可以重新执行步进缓冲区，必须执行，否则步进缓冲将无法再次进入。
   set_current_from_steppers_for_axis(ALL_AXES);
   sync_plan_position();
 }
@@ -485,6 +487,7 @@ void startOrResumeJob() {
 
   inline void abortSDPrinting() {
     float rz;
+    // delay(100);
    #ifdef HAS_UDISK
     if(udisk.isUdiskPrint())
       udisk.abortUdiskPrint(&udisk_fp);
@@ -492,8 +495,11 @@ void startOrResumeJob() {
     if(card.isFileOpen())
       card.endFilePrint(TERN_(SD_RESORT, true));
     SERIAL_ECHOLNPAIR("close end");
+    // delay(100);
     queue.clear();        // 清空队列
+    // delay(100);
     quickstop_stepper();  // 快速停下电机
+    // delay(100);
     print_job_timer.stop();// 打印定时器停止
     #if DISABLED(SD_ABORT_NO_COOLDOWN)
       thermalManager.disable_all_heaters(); // 关闭加热
@@ -505,12 +511,15 @@ void startOrResumeJob() {
     #endif
     wait_for_heatup = false;
     TERN_(POWER_LOSS_RECOVERY, recovery.purge()); // 删除断电续打的文件
+    // delay(100);
 
     rz = current_position.z+5;
     do_blocking_move_to_z((rz>Z_MAX_POS ? Z_MAX_POS : rz), 3);  //z轴上升5mm，速度3mm/s，限制到Z轴最大位置
+    // delay(100);
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject_P(PSTR(EVENT_GCODE_SD_ABORT)); // 发送“G28 XY\n”命令。复位XY轴
     #endif
+    // delay(100);
 
     card.flag.abort_sd_printing = false;  // 结束停止打印状态
     TERN_( HAS_UDISK, UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;)

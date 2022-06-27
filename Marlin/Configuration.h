@@ -23,16 +23,17 @@
 
 // 选择机器型号
 // #define R3_PRO    // R3_pro:max
-// #define R4_PRO    // R4_pro:pro
+#define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
 // #define ST32_SHIP
-#define USE_GD32
+// #define USE_GD32
 
 #define HAS_UDISK
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
+// #define SHORT_PROTECTION        // Low side short protection disable
 
 // #define TEST_FW
 // #define OTHER_CUSTOM
@@ -728,7 +729,8 @@
   //#define ENDSTOPPULLDOWN_ZMIN_PROBE
 #endif
 
-// Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
+// Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup). ture:narmal open; false:narmal close
+// COM到地和NC到信号的机械端停在这里使用“假”(最常见的设置)。ture:常开;false:常闭
 #if ENABLED(QUICK_PRINT)
   #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
   #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
