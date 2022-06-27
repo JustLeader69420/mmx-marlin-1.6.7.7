@@ -1587,6 +1587,52 @@ void set_axis_never_homed(const AxisEnum axis) {
   }
 #endif
 
+// Report endstop states
+#define IS_TRIGGER(S) READ(S##_PIN) != S##_ENDSTOP_INVERTING  // 判断开关是否为触发状态
+#define ENDSTOP_TEST_NUMBER 3
+bool safe_home(const AxisEnum axis)
+{
+  bool judge = false;
+  uint8_t test_num = ENDSTOP_TEST_NUMBER;
+  xyz_pos_t runaxis;
+  if (axis!=Z_AXIS) return false;
+  while(test_num--)
+  {
+    switch(axis)
+    {
+     #if PIN_EXISTS(X_MIN)
+      case X_AXIS:
+        judge = IS_TRIGGER(X_MIN);
+        runaxis.x = current_position.x+5;
+        runaxis.y = current_position.y;
+        runaxis.z = current_position.z;
+        break;
+     #endif
+     #if PIN_EXISTS(Y_MIN)
+      case Y_AXIS:
+        judge = IS_TRIGGER(Y_MIN);
+        runaxis.x = current_position.x;
+        runaxis.y = current_position.y+5;
+        runaxis.z = current_position.z;
+        break;
+     #endif
+     #if PIN_EXISTS(Z_MIN)
+      case Z_AXIS:
+        judge = IS_TRIGGER(Z_MIN);
+        runaxis.x = current_position.x;
+        runaxis.y = current_position.y;
+        runaxis.z = current_position.z+5;
+        break;
+     #endif
+      default:break;
+    }
+    if(!judge) return true;  // 开关已释放，退出，并返回true
+    do_blocking_move_to(runaxis.x, runaxis.y, runaxis.z);
+  }
+
+  return false;
+}
+
 /**
  * Home an individual "raw axis" to its endstop.
  * This applies to XYZ on Cartesian and Core robots, and
@@ -1597,7 +1643,6 @@ void set_axis_never_homed(const AxisEnum axis) {
  * Kinematic robots should wait till all axes are homed
  * before updating the current position.
  */
-
 void homeaxis(const AxisEnum axis) {
 
   #if IS_SCARA
@@ -1640,6 +1685,9 @@ void homeaxis(const AxisEnum axis) {
     if (axis == Z_AXIS && bltouch.deploy()) return; // The initial DEPLOY
   #endif
 
+  // For a safer reset
+  safe_home(axis);
+  
   #if DISABLED(DELTA) && defined(SENSORLESS_BACKOFF_MM)
     const xy_float_t backoff = SENSORLESS_BACKOFF_MM;
     if (((ENABLED(X_SENSORLESS) && axis == X_AXIS) || (ENABLED(Y_SENSORLESS) && axis == Y_AXIS)) && backoff[axis])
