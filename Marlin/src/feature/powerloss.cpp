@@ -492,67 +492,62 @@ void PrintJobRecovery::resume() {
     gcode.process_subcommands_now_P(PSTR("M420 S0 Z0"));
   #endif
 
+  // 先加热，防止模具脱落
+  #if HAS_HEATED_BED
+    const int16_t bt = info.target_temperature_bed;
+    if (bt) {
+      // Restore the bed temperature
+      sprintf_P(cmd, PSTR("M190 S%i"), bt);
+      gcode.process_subcommands_now(cmd);
+    }
+  #endif
+
+  // Restore all hotend temperatures
+  #if HAS_HOTEND
+    HOTEND_LOOP() {
+      const int16_t et = info.target_temperature[e];
+      if (et) {
+        #if HAS_MULTI_HOTEND
+          sprintf_P(cmd, PSTR("T%i S"), e);
+          gcode.process_subcommands_now(cmd);
+        #endif
+        sprintf_P(cmd, PSTR("M109 S%i"), et);
+        gcode.process_subcommands_now(cmd);
+      }
+    }
+  #endif
+  
+  gcode.process_subcommands_now("G92.9 E0"); // Reset E to 0
+  
+  // Interpret the saved Z according to flags
+  float z_now = info.current_position.z + info.zraise;
+
   // Reset E, raise Z, home XY...
   #if Z_HOME_DIR > 0
 
     // If Z homing goes to max, just reset E and home all
     gcode.process_subcommands_now_P(PSTR(
-      "G92.9 E0\n"
       "G28R0"
     ));
 
   #else // "G92.9 E0 ..."
 
-    // Set Z to 0, raise Z by info.zraise, and Home (XY only for Cartesian)
-    // with no raise. (Only do simulated homing in Marlin Dev Mode.)
-
-    sprintf_P(cmd, PSTR("G92.9 E0 "
-        #if ENABLED(BACKUP_POWER_SUPPLY)
-          "Z%s"                             // Z was already raised at outage
-        #else
-          "Z0\nG1Z%s"                       // Set Z=0 and Raise Z now
-        #endif
-      ),
-      dtostrf(info.zraise, 1, 3, str_1)
-    );
+    // Set Z to the real position
+    sprintf_P(cmd, PSTR("G92.9 Z%s\n"), dtostrf(z_now, 1, 3, str_1));
     gcode.process_subcommands_now(cmd);
 
-    // 先加热，防止模具脱落
-    #if HAS_HEATED_BED
-      const int16_t bt = info.target_temperature_bed;
-      if (bt) {
-        // Restore the bed temperature
-        sprintf_P(cmd, PSTR("M190 S%i"), bt);
-        gcode.process_subcommands_now(cmd);
-      }
-    #endif
+    // raise the z axie
+    gcode.process_subcommands_now("G91\n");
+    gcode.process_subcommands_now("G0 Z5\n");
+    gcode.process_subcommands_now("G90\n");
 
-    // Restore all hotend temperatures
-    #if HAS_HOTEND
-      HOTEND_LOOP() {
-        const int16_t et = info.target_temperature[e];
-        if (et) {
-          #if HAS_MULTI_HOTEND
-            sprintf_P(cmd, PSTR("T%i S"), e);
-            gcode.process_subcommands_now(cmd);
-          #endif
-          sprintf_P(cmd, PSTR("M109 S%i"), et);
-          gcode.process_subcommands_now(cmd);
-        }
-      }
-    #endif
-
-    // Z轴稍微抬起
-    gcode.process_subcommands_now("G0 Z5");
-    // 复位XY轴
+    // 复位XY轴,R0是Z轴不抬升
     gcode.process_subcommands_now_P(PSTR(
-      "G28R0"                               // No raise during G28
+      "G28 R0"                               // No raise during G28
       #if IS_CARTESIAN && DISABLED(POWER_LOSS_RECOVER_ZHOME)
         "XY"                                // Don't home Z on Cartesian unless overridden
       #endif
     ));
-    // Z轴回到原处
-    gcode.process_subcommands_now("G0 Z0");
 
   #endif
 
@@ -639,6 +634,7 @@ void PrintJobRecovery::resume() {
     gcode.process_subcommands_now_P(PSTR("G12"));
   #endif
 
+ #if 0
   // Move back to the saved Z
   dtostrf(info.z_current_position, 1, 3, str_1);
   // dtostrf(info.current_position.z, 1, 3, str_1);
@@ -659,6 +655,30 @@ void PrintJobRecovery::resume() {
     dtostrf(info.current_position.x, 1, 3, str_1),
     dtostrf(info.current_position.y, 1, 3, str_2)
   );
+  gcode.process_subcommands_now(cmd);
+ #endif
+
+  // Restore the XY
+  sprintf_P(cmd, PSTR("G1 X%s Y%s F3000"),
+    dtostrf(info.current_position.x, 1, 3, str_1),
+    dtostrf(info.current_position.y, 1, 3, str_2)
+  );
+  gcode.process_subcommands_now(cmd);
+  
+  #if HAS_LEVELING
+    // Restore leveling state before 'G92 Z' to ensure the Z stepper count corresponds to the native Z.
+    if (info.fade || info.leveling) {
+      sprintf_P(cmd, PSTR("M420 S%i Z%s"), int(info.leveling), dtostrf(info.fade, 1, 1, str_1));
+      gcode.process_subcommands_now(cmd);
+    }
+    z_now += 5.0f;  // 上面抬升了5mm
+    // The physical Z was adjusted at power-off so undo the M420S1 correction to Z with G92.9.
+    sprintf_P(cmd, PSTR("G92.9 Z%s"), dtostrf(z_now, 1, 1, str_1));
+    gcode.process_subcommands_now(cmd);
+  #endif
+
+  // Move back down to the saved Z for printing
+  sprintf_P(cmd, PSTR("G1 Z%s F600"), dtostrf(info.current_position.z, 1, 3, str_1));
   gcode.process_subcommands_now(cmd);
 
   // Restore the feedrate
@@ -681,15 +701,6 @@ void PrintJobRecovery::resume() {
   #if ENABLED(DEBUG_POWER_LOSS_RECOVERY)
     const uint8_t old_flags = marlin_debug_flags;
     marlin_debug_flags |= MARLIN_DEBUG_ECHO;
-  #endif
-
-  #if HAS_LEVELING
-    // Restore leveling state before 'G92 Z' to ensure
-    // the Z stepper count corresponds to the native Z.
-    if (info.fade || info.leveling) {
-      sprintf_P(cmd, PSTR("M420 S%i Z%s"), int(info.leveling), dtostrf(info.fade, 1, 1, str_1));
-      gcode.process_subcommands_now(cmd);
-    }
   #endif
 
   // // Continue to apply PLR when a file is resumed!
