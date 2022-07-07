@@ -1980,6 +1980,7 @@
 
 /**
  * Emergency Command Parser
+ * 紧急命令解析器
  *
  * Add a low-level parser to intercept certain commands as they
  * enter the serial receive buffer, so they cannot be blocked.
@@ -2055,9 +2056,9 @@
  */
 #if HAS_MULTI_EXTRUDER
   // Z raise distance for tool-change, as needed for some extruders
-  #define TOOLCHANGE_ZRAISE                 2 // (mm)
-  //#define TOOLCHANGE_ZRAISE_BEFORE_RETRACT  // Apply raise before swap retraction (if enabled)
-  //#define TOOLCHANGE_NO_RETURN              // Never return to previous position on tool-change
+  #define TOOLCHANGE_ZRAISE                 2 // (mm) 太高2mm以便切换头
+  //#define TOOLCHANGE_ZRAISE_BEFORE_RETRACT  // Apply raise before swap retraction (if enabled) 在swap收回之前应用raise(如果启用)
+  //#define TOOLCHANGE_NO_RETURN              // Never return to previous position on tool-change 更换工具时不要回到原来的位置
   #if ENABLED(TOOLCHANGE_NO_RETURN)
     //#define EVENT_GCODE_AFTER_TOOLCHANGE "G12X"   // Extra G-code to run after tool-change
   #endif

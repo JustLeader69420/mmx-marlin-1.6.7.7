@@ -206,7 +206,7 @@ class Mixer {
       #endif
     }
 
-    // Refresh the gradient after a change
+    // Refresh the gradient after a change // 变化的渐变曲线
     static void refresh_gradient() {
       #if ENABLED(GRADIENT_VTOOL)
         const bool is_grd = (gradient.vtool_index == -1 || selected_vtool == (uint8_t)gradient.vtool_index);

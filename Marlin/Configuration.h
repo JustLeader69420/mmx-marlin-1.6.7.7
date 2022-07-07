@@ -23,7 +23,7 @@
 
 // 选择机器型号
 // #define R3_PRO    // R3_pro:max
-#define R4_PRO    // R4_pro:pro
+// #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
 // #define ST32_SHIP
@@ -36,7 +36,7 @@
 // #define SHORT_PROTECTION        // Low side short protection disable
 
 // #define TEST_FW
-// #define OTHER_CUSTOM
+// #define OTHER_CUSTOM           // 定制的
 
 /* D2:230*230*260
  * R3:320*320*400
@@ -205,7 +205,7 @@
 
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
-#define EXTRUDERS 1
+#define EXTRUDERS 2
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
@@ -356,7 +356,7 @@
 #endif
 
 /**
- * "Mixing Extruder"
+ * "Mixing Extruder"  混合挤出
  *   - Adds G-codes M163 and M164 to set and "commit" the current mix factors.
  *   - Extends the stepping routines to move multiple steppers in proportion to the mix.
  *   - Optional support for Repetier Firmware's 'M164 S<index>' supporting virtual tools.
@@ -365,12 +365,12 @@
  */
 //#define MIXING_EXTRUDER
 #if ENABLED(MIXING_EXTRUDER)
-  #define MIXING_STEPPERS 2        // Number of steppers in your mixing extruder
-  #define MIXING_VIRTUAL_TOOLS 16  // Use the Virtual Tool method with M163 and M164
-  //#define DIRECT_MIXING_IN_G1    // Allow ABCDHI mix factors in G1 movement commands
-  //#define GRADIENT_MIX           // Support for gradient mixing with M166 and LCD
+  #define MIXING_STEPPERS 2        // Number of steppers in your mixing extruder 混合电机数量
+  #define MIXING_VIRTUAL_TOOLS 16  // Use the Virtual Tool method with M163 and M164 最大的混合机数量
+  //#define DIRECT_MIXING_IN_G1    // Allow ABCDHI mix factors in G1 movement commands 在G1移动命令中允许ABCDHI混合因子
+  //#define GRADIENT_MIX           // Support for gradient mixing with M166 and LCD 支持M166和LCD梯度混合
   #if ENABLED(GRADIENT_MIX)
-    //#define GRADIENT_VTOOL       // Add M166 T to use a V-tool index as a Gradient alias
+    //#define GRADIENT_VTOOL       // Add M166 T to use a V-tool index as a Gradient alias 添加m166t使用V-tool索引作为渐变别名
   #endif
 #endif
 
