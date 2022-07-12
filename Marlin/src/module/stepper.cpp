@@ -1354,7 +1354,7 @@ HAL_STEP_TIMER_ISR() {
 
 void Stepper::isr() {
 
-  static uint32_t nextMainISR = 0;  // Interval until the next main Stepper Pulse phase (0 = Now)
+  static uint32_t nextMainISR = 0;  // Interval until the next main Stepper Pulse phase (0 = Now) // 间隔到下一个主步进脉冲阶段(0 =现在)
 
   #ifndef __AVR__
     // Disable interrupts, to avoid ISR preemption while we reprogram the period
@@ -1368,17 +1368,18 @@ void Stepper::isr() {
   HAL_timer_set_compare(STEP_TIMER_NUM, hal_timer_t(HAL_TIMER_TYPE_MAX));
 
   // Count of ticks for the next ISR
-  hal_timer_t next_isr_ticks = 0;
+  hal_timer_t next_isr_ticks = 0; // 下一个ISR的滴答数
 
   // Limit the amount of iterations
-  uint8_t max_loops = 10;
+  uint8_t max_loops = 10; // 限制迭代的数量,循环数量
 
   // We need this variable here to be able to use it in the following loop
-  hal_timer_t min_ticks;
+  hal_timer_t min_ticks; // 我们需要这个变量才能在接下来的循环中使用它
   do {
     // Enable ISRs to reduce USART processing latency
     ENABLE_ISRS();
-
+    
+    // 判断是否要产生脉冲
     if (!nextMainISR) pulse_phase_isr();                            // 0 = Do coordinated axes Stepper pulses
 
     #if ENABLED(LIN_ADVANCE)
@@ -1390,9 +1391,9 @@ void Stepper::isr() {
       if (is_babystep) nextBabystepISR = babystepping_isr();
     #endif
 
-    // ^== Time critical. NOTHING besides pulse generation should be above here!!!
+    // ^== Time critical. NOTHING besides pulse generation should be above here!!!  // ^ = =时间至关重要。除了脉冲产生之外，没有其他东西应该在上面!!
 
-    if (!nextMainISR) nextMainISR = block_phase_isr();  // Manage acc/deceleration, get next block
+    if (!nextMainISR) nextMainISR = block_phase_isr();  // Manage acc/deceleration, get next block // 管理升/降，获得下一个块
 
     #if ENABLED(INTEGRATED_BABYSTEPPING)
       if (is_babystep)                                  // Avoid ANY stepping too soon after baby-stepping
@@ -1402,9 +1403,9 @@ void Stepper::isr() {
         NOLESS(nextBabystepISR, nextMainISR / 2);       // TODO: Only look at axes enabled for baby-stepping
     #endif
 
-    // Get the interval to the next ISR call
+    // Get the interval to the next ISR call // 获取到下一个ISR调用的间隔
     const uint32_t interval = _MIN(
-      nextMainISR                                       // Time until the next Pulse / Block phase
+      nextMainISR                                       // Time until the next Pulse / Block phase // 到下一个脉冲/块阶段的时间
       #if ENABLED(LIN_ADVANCE)
         , nextAdvanceISR                                // Come back early for Linear Advance?
       #endif
@@ -1415,12 +1416,15 @@ void Stepper::isr() {
     );
 
     //
-    // Compute remaining time for each ISR phase
+    // Compute remaining time for each ISR phase 
     //     NEVER : The phase is idle
     //      Zero : The phase will occur on the next ISR call
     //  Non-zero : The phase will occur on a future ISR call
     //
-
+    // 计算每个ISR阶段的剩余时间
+    //     NEVER:阶段空闲
+    //      Zero:该阶段将在下一次ISR调用时发生
+    //  Non_zero:该阶段将发生在未来的ISR调用中
     nextMainISR -= interval;
 
     #if ENABLED(LIN_ADVANCE)
@@ -1454,7 +1458,7 @@ void Stepper::isr() {
      * accounting for double/quad stepping, which makes it even worse).
      */
 
-    // Compute the tick count for the next ISR
+    // Compute the tick count for the next ISR // 计算下一个ISR的滴答计数
     next_isr_ticks += interval;
 
     /**
@@ -1516,6 +1520,9 @@ bool wait_quick_stop_step = false;
  * interrupt and the start of the pulses. DON'T add any logic ahead of the
  * call to this method that might cause variation in the timing. The aim
  * is to keep pulse timing as regular as possible.
+ * 
+ * ISR的这一阶段应该只为步进器产生脉冲。这防止了由中断开始和脉冲开始之间的间隔引起的抖动。
+ * 不要在调用此方法之前添加任何可能导致时间变化的逻辑。这样做的目的是尽可能保持脉冲定时。
  */
 void Stepper::pulse_phase_isr() {
 
@@ -1550,7 +1557,7 @@ void Stepper::pulse_phase_isr() {
     #define _APPLY_STEP(AXIS, INV, ALWAYS) AXIS ##_APPLY_STEP(INV, ALWAYS)
     #define _INVERT_STEP_PIN(AXIS) INVERT_## AXIS ##_STEP_PIN
 
-    // Determine if a pulse is needed using Bresenham
+    // Determine if a pulse is needed using Bresenham 用布瑞森纳姆判断是否需要脉冲
     #define PULSE_PREP(AXIS) do{ \
       delta_error[_AXIS(AXIS)] += advance_dividend[_AXIS(AXIS)]; \
       step_needed[_AXIS(AXIS)] = (delta_error[_AXIS(AXIS)] >= 0); \
@@ -1560,14 +1567,14 @@ void Stepper::pulse_phase_isr() {
       } \
     }while(0)
 
-    // Start an active pulse if needed
+    // Start an active pulse if needed 如果需要，启动主动脉冲
     #define PULSE_START(AXIS) do{ \
       if (step_needed[_AXIS(AXIS)]) { \
         _APPLY_STEP(AXIS, !_INVERT_STEP_PIN(AXIS), 0); \
       } \
     }while(0)
 
-    // Stop an active pulse if needed
+    // Stop an active pulse if needed 如果需要，停止一个活跃的脉冲
     #define PULSE_STOP(AXIS) do { \
       if (step_needed[_AXIS(AXIS)]) { \
         _APPLY_STEP(AXIS, _INVERT_STEP_PIN(AXIS), 0); \
@@ -1784,10 +1791,10 @@ void Stepper::pulse_phase_isr() {
 
 uint32_t Stepper::block_phase_isr() {
 
-  // If no queued movements, just wait 1ms for the next block
+  // If no queued movements, just wait 1ms for the next block // 如果没有排队的移动，只需等待1ms的下一个块
   uint32_t interval = (STEPPER_TIMER_RATE) / 1000UL;
 
-  // If there is a current block
+  // If there is a current block // 如果有当前块
   if (current_block) {
 
     // If current block is finished, reset pointer and finalize state
@@ -1829,7 +1836,7 @@ uint32_t Stepper::block_phase_isr() {
 
         // acc_step_rate is in steps/second
 
-        // step_rate to timer interval and steps per stepper isr
+        // step_rate to timer interval and steps per stepper isr // Step_rate到计时器间隔和每步步数isr
         interval = calc_timer_interval(acc_step_rate, &steps_per_isr);
         acceleration_time += interval;
 
@@ -1987,7 +1994,7 @@ uint32_t Stepper::block_phase_isr() {
   // and prepare its movement
   if (!current_block) {
 
-    // Anything in the buffer?
+    // Anything in the buffer? // 缓冲区里有东西吗?
     if ((current_block = planner.get_current_block())) {
 
       // Sync block? Sync the stepper counts and return

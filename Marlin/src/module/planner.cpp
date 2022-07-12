@@ -722,14 +722,15 @@ void Planner::init() {
  * and mark the block as busy.
  * Return nullptr if the buffer is empty
  * or if there is a first-block delay.
+ * 获取要处理的当前块，并将该块标记为繁忙。如果缓冲区为空或第一个块有延迟，则返回nullptr。
  *
- * WARNING: Called from Stepper ISR context!
+ * WARNING: Called from Stepper ISR context! // 从步进ISR上下文调用!
  */
 block_t* Planner::get_current_block() {
-  // Get the number of moves in the planner queue so far
+  // Get the number of moves in the planner queue so far // 获取到目前为止计划队列中移动的次数
   const uint8_t nr_moves = movesplanned();
 
-  // If there are any moves queued ...
+  // If there are any moves queued ... // 如果有任何移动排队
   if (nr_moves) {
 
     // If there is still delay of delivery of blocks running, decrement it

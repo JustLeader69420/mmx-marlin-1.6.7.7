@@ -822,6 +822,11 @@ void reset_trinamic_drivers() {
 //      If an axis is not in use, populate it with recognizable placeholder data.
 // 2. For each axis in use, static_assert using a constexpr function, which counts the
 //      number of matching/conflicting axis. If the value is not exactly 1, fail.
+//
+// TMC从地址检测冲突
+// 冲突检测有以下几种方式。硬件串行和软件串行采用类似的方法，但实现是独立的。
+// 1. 用所有可能的轴的UART参数和地址填充数据结构。如果一个轴没有被使用，用可识别的占位符数据填充它。
+// 2. 对于正在使用的每个轴，使用constexpr函数执行static_assert，该函数计算匹配/冲突轴的数量。如果该值不是1，则失败。
 
 #if ANY_AXIS_HAS(HW_SERIAL)
   // Hardware serial names are compared as strings, since actually resolving them cannot occur in a constexpr.

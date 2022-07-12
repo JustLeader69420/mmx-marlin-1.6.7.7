@@ -328,7 +328,7 @@
 #define SHOW_TEMP_ADC_VALUES
 
 /**
- * High Temperature Thermistor Support
+ * High Temperature Thermistor Support 支持高温热敏电阻
  *
  * Thermistors able to support high temperature tend to have a hard time getting
  * good readings at room and lower temperatures. This means HEATER_X_RAW_LO_TEMP
@@ -341,6 +341,11 @@
  *
  * If you want to enable this feature for your hotend thermistor(s)
  * uncomment and set values > 0 in the constants below
+ * 
+ * 能够支持高温的热敏电阻往往很难在室温和低温下获得良好的读数。
+ * 这意味着当加热元件在预热过程中第一次打开时，可能会捕获到HEATER_X_RAW_LO_TEMP，这将触发一个min_temp_error作为安全措施，并强制停止所有操作。
+ * 为了绕过这个限制，我们允许预热时间(在此期间，min_temp_error不会被触发)，并添加一个min_temp缓冲区来处理异常读数。
+ * 如果您想为热敏电阻启用此功能，取消注释并将下面的常数项设置为 值>0
  */
 
 // The number of consecutive low temperature errors that can occur
@@ -356,9 +361,9 @@
 
 // @section extruder
 
-// Extruder runout prevention.
-// If the machine is idle and the temperature over MINTEMP
-// then extrude some filament every couple of SECONDS.
+// Extruder runout prevention. 挤出机输出预防。
+// If the machine is idle and the temperature over MINTEMP then extrude some filament every couple of SECONDS.
+// 如果机器闲置且温度超过MINTEMP，则每隔几秒挤出一些灯丝。
 //#define EXTRUDER_RUNOUT_PREVENT
 #if ENABLED(EXTRUDER_RUNOUT_PREVENT)
   #define EXTRUDER_RUNOUT_MINTEMP 190
@@ -368,8 +373,10 @@
 #endif
 
 /**
- * Hotend Idle Timeout
+ * Hotend Idle Timeout 
  * Prevent filament in the nozzle from charring and causing a critical jam.
+ * Hotend闲置超时
+ * 防止喷嘴内灯丝烧焦，造成严重堵塞。
  */
 //#define HOTEND_IDLE_TIMEOUT
 #if ENABLED(HOTEND_IDLE_TIMEOUT)
@@ -522,13 +529,14 @@
 
 // If you want endstops to stay on (by default) even when not homing
 // enable this option. Override at any time with M120, M121.
+// 如果你想限位装置保持开启状态则使能此项。通过M120使能，M121失能
 //#define ENDSTOPS_ALWAYS_ON_DEFAULT
 
 // @section extras
 
-//#define Z_LATE_ENABLE // Enable Z the last moment. Needed if your Z driver overheats.
+//#define Z_LATE_ENABLE // Enable Z the last moment. Needed if your Z driver overheats. 在最后时刻启用Z。如果你的Z驱动器过热就需要。
 
-// Employ an external closed loop controller. Override pins here if needed.
+// Employ an external closed loop controller. Override pins here if needed. 采用外置闭环控制器。如果需要，在这里重写引脚。
 // #define EXTERNAL_CLOSED_LOOP_CONTROLLER
 #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
   #define CLOSED_LOOP_ENABLE_PIN        -1
@@ -536,18 +544,24 @@
 #endif
 
 /**
- * Dual Steppers / Dual Endstops
+ * Dual Steppers / Dual Endstops  双步进/双端停止
  *
  * This section will allow you to use extra E drivers to drive a second motor for X, Y, or Z axes.
+ * 本节将允许您使用额外的E驱动器来驱动X, Y，或Z轴的第二个电机。
  *
  * For example, set X_DUAL_STEPPER_DRIVERS setting to use a second motor. If the motors need to
  * spin in opposite directions set INVERT_X2_VS_X_DIR. If the second motor needs its own endstop
  * set X_DUAL_ENDSTOPS. This can adjust for "racking." Use X2_USE_ENDSTOP to set the endstop plug
  * that should be used for the second endstop. Extra endstops will appear in the output of 'M119'.
+ * 例如，将X_DUAL_STEPPER_DRIVERS设置为使用第二个电机。如果电机需要旋转在相反的方向设置INVERT_X2_VS_X_DIR。
+ * 如果第二电机需要自己的端停设置X_DUAL_ENDSTOPS。这可以调整为“机架”。
+ * 使用X2_USE_ENDSTOP来设置应该用于第二个端停的端停塞。额外的终端将出现在'M119'的输出。
  *
  * Use X_DUAL_ENDSTOP_ADJUSTMENT to adjust for mechanical imperfection. After homing both motors
  * this offset is applied to the X2 motor. To find the offset home the X axis, and measure the error
  * in X2. Dual endstop offsets can be set at runtime with 'M666 X<offset> Y<offset> Z<offset>'.
+ * 使用X_DUAL_ENDSTOP_ADJUSTMENT调整机械缺陷。在引导两个电机后，这个偏移量应用于X2电机。
+ * 求X轴上的偏移量，并在X2上测量误差。可以在运行时使用'M666 Xoffset> Y<offset> Zcoffset>'设置双端停止偏移量。
  */
 
 //#define X_DUAL_STEPPER_DRIVERS
@@ -596,7 +610,7 @@
 #endif
 
 /**
- * Dual X Carriage
+ * Dual X Carriage 双X轴
  *
  * This setup has two X carriages that can move independently, each with its own hotend.
  * The carriages can be used to print an object with two colors or materials, or in
@@ -604,26 +618,33 @@
  * The inactive carriage is parked automatically to prevent oozing.
  * X1 is the left carriage, X2 the right. They park and home at opposite ends of the X axis.
  * By default the X2 stepper is assigned to the first unused E plug on the board.
+ * 这个装置有两个可以独立移动的X车厢，每个车厢都有自己的hotend。
+ * 这种装置可以用来打印带有两种颜色或材料的物体，或者在“复制模式”下，它可以同时打印两个相同或x镜像的物体。
+ * 不活动的车厢会自动停放，防止渗水。X1是左边，X2是右边。他们在X轴的两端停车和回家。默认情况下，X2步进器被分配给单板上第一个未使用的E插头。
  *
- * The following Dual X Carriage modes can be selected with M605 S<mode>:
+ * The following Dual X Carriage modes can be selected with M605 S<mode>: 以下双X轴模式可以选择M605 S<模式>:
  *
  *   0 : (FULL_CONTROL) The slicer has full control over both X-carriages and can achieve optimal travel
  *       results as long as it supports dual X-carriages. (M605 S0)
+ *       (完全控制)切片机可以完全控制两个x轴车，只要支持双x轴车，就可以实现最佳的行程效果。(M605 S0)
  *
  *   1 : (AUTO_PARK) The firmware automatically parks and unparks the X-carriages on tool-change so
  *       that additional slicer support is not required. (M605 S1)
+ *       (自动停车)在更换工具时，固件会自动停放和解除x架，这样就不需要额外的切片机支持。(M605 S1)
  *
  *   2 : (DUPLICATION) The firmware moves the second X-carriage and extruder in synchronization with
  *       the first X-carriage and extruder, to print 2 copies of the same object at the same time.
  *       Set the constant X-offset and temperature differential with M605 S2 X[offs] R[deg] and
  *       follow with M605 S2 to initiate duplicated movement.
+ *       (复制模式)
  *
  *   3 : (MIRRORED) Formbot/Vivedino-inspired mirrored mode in which the second extruder duplicates
  *       the movement of the first except the second extruder is reversed in the X axis.
  *       Set the initial X offset and temperature differential with M605 S2 X[offs] R[deg] and
  *       follow with M605 S3 to initiate mirrored movement.
+ *       (镜像)
  */
-//#define DUAL_X_CARRIAGE
+#define DUAL_X_CARRIAGE
 #if ENABLED(DUAL_X_CARRIAGE)
   #define X1_MIN_POS X_MIN_POS   // Set to X_MIN_POS
   #define X1_MAX_POS X_BED_SIZE  // Set a maximum so the first X-carriage can't hit the parked second X-carriage
