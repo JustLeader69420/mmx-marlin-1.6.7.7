@@ -2,6 +2,9 @@
 #include "../TSC_Menu.h"
 #include "../../../../../module/settings.h"
 #include "../../../../../feature/powerloss.h"
+#ifdef WS2812_LED
+  #include "../../../../../feature/leds/leds.h"
+#endif
 
 SETTINGS infoSettings, // Settings para
          lastSettings; // Last Settings para
@@ -181,10 +184,15 @@ void menuCallBackSettings(void)
     case KEY_ICON_3:
       infoMenu.menu[++infoMenu.cur] = menuInfo;
       break;
-    // case KEY_ICON_4:
-    //   infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
-    //   // recovery.save(true);
-    //   break;
+    case KEY_ICON_4:
+      // infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
+      // recovery.save(true);
+     #ifdef WS2812_LED
+      static int ci = 0;
+      ci = (ci+1)%5;
+      led4.set_color(led_color[ci]);
+      break;
+     #endif
 
     case KEY_ICON_6:
       switch (touch_clicks)

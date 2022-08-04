@@ -644,7 +644,7 @@
  *       follow with M605 S3 to initiate mirrored movement.
  *       (镜像)
  */
-#define DUAL_X_CARRIAGE
+// #define DUAL_X_CARRIAGE
 #if ENABLED(DUAL_X_CARRIAGE)
   #define X1_MIN_POS X_MIN_POS   // Set to X_MIN_POS
   #define X1_MAX_POS X_BED_SIZE  // Set a maximum so the first X-carriage can't hit the parked second X-carriage

@@ -250,7 +250,10 @@ extern LEDLights leds;
 
   extern LEDLights2 leds2;
 
-#elif ENABLED(R_B_LED)
+  
+#endif // NEOPIXEL2_SEPARATE
+
+#if ENABLED(R_B_LED)
   class LEDLights3{
     public:
       static void setup(){
@@ -268,12 +271,41 @@ extern LEDLights leds;
   };
   
   extern LEDLights3 led3;
+  #endif
 
-#elif ENABLED(WS2812_LED)
-  class LEDLights4{
-    public:
-      static void setup();
-      static void set_color(uint32_t color);
-  };
-  extern LEDLights4 led4;
-#endif // NEOPIXEL2_SEPARATE
+  #if ENABLED(WS2812_LED)
+    
+    #define LED_COLOR_NUM 9
+    #define AUTO_MODE 0x1000001
+    // 24bit                            //A G R B
+    #define LED_OFF                     0x00000000
+    #define LED_WHITE                   0x00FFFFFF
+    #define LED_RED                     0x0000FF00
+    #define LED_ORANGE                  0x008CFF00
+    #define LED_YELLOW                  0x00FFFF00
+    #define LED_GREEN                   0x00FF0000
+    #define LED_BLUE                    0x000000FF
+    #define LED_INDIGO                  0x00004B82
+    #define LED_VIOLET                  0x0000FEFE
+    const  uint32_t led_color[LED_COLOR_NUM] = {
+      LED_OFF,
+      LED_WHITE,
+      LED_RED,
+      LED_ORANGE,
+      LED_YELLOW,
+      LED_GREEN,
+      LED_BLUE,
+      LED_INDIGO,
+      LED_VIOLET
+    };
+    class LEDLights4{
+      public:
+        void setup();
+        void set_color(uint32_t color);
+        void set_color(uint32_t *color);
+        uint32_t get_temperature_color(float temp);
+        void set_led_mode(uint32_t mode);
+        int get_led_mode();
+    };
+    extern LEDLights4 led4;
+  #endif
