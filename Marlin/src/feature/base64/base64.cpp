@@ -1,9 +1,12 @@
 #include "base64.h"
+#include "../../inc/MarlinConfigPre.h"
+
+#if ENABLED(SHOW_THUMBNAIL)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lodepng.h"
-#include "../../inc/MarlinConfigPre.h"
 #include "../../sd/cardreader.h"
 
 int equal_sign_num = 0;
@@ -259,3 +262,5 @@ int getGcodePic(char*_path, unsigned char*str){
   card.closefile();
   return 1;
 }
+
+#endif

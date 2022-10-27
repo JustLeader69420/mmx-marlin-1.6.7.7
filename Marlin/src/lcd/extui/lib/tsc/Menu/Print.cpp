@@ -6,12 +6,14 @@ bool enter_by_icon = false; // 是否通过点击图标进入Prinf
 bool can_print_flag = true; // 能够进行打印的标志
 uint8_t auto_close_flag = 0;// 界面是否需要自动关闭 0:无需自动关闭  1:需要自动关闭  2:判断文件打印需要执行自动关闭
 
+#if ENABLED(SHOW_THUMBNAIL)
 
+#else
 LISTITEMS printItems = {
 //  title
 LABEL_BACKGROUND,
   {
-// icon                       label
+  // type        icon            label
    {LIST_LABEL,  NULL,           NULL},
    {LIST_LABEL,  NULL,           NULL},
    {LIST_LABEL,  NULL,           NULL},
@@ -375,3 +377,4 @@ selectEnd:
   powerFailedSetDriverSource(getCurFileSource());
 }
 */
+#endif

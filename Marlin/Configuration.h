@@ -38,6 +38,8 @@
 // #define TEST_FW
 // #define OTHER_CUSTOM           // 定制的
 // #define WS2812_LED
+// #define SHOW_THUMBNAIL
+
 /* D2:230*230*260
  * R3:320*320*400
  * R4:420*420*400 */
