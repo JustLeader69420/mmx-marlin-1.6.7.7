@@ -130,9 +130,11 @@ void menuCallBackBabyStep(void)
     case KEY_ICON_0:
       setBabyStepZAxisIncMM(-elementsUnit.ele[elementsUnit.cur]);
       break;
+      
     case KEY_ICON_3:
       setBabyStepZAxisIncMM(elementsUnit.ele[elementsUnit.cur]);
       break;
+
     case KEY_ICON_4:
        #if 1
         #if ENABLED(LEVELING_OFFSET)
@@ -140,6 +142,13 @@ void menuCallBackBabyStep(void)
           old_baby_step_value = babystep_value;
           if(settings.save())
             popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_SYCHRONZIED_VALUE));  // 保存成功，提示并自动退出
+        #else
+          if(settings.save()){
+            popupReminder_B(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_SUCCESS));  // 保存成功，提示并自动退出
+          }
+          else{
+            popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_FAILED), false);
+          }
         #endif
        #elif ENABLED(AUTO_BED_LEVELING_BILINEAR) && ENABLED(LEVELING_OFFSET)
         TERN_(LEVELING_OFFSET, setLevelingOffset(getBabyStepZAxisTotalMM() - old_baby_step_value);) // 将当前BabyStep的值赋给z_offset
@@ -157,22 +166,26 @@ void menuCallBackBabyStep(void)
         else{
           popupReminder_SF(textSelect(LABEL_SAVE_POPUP),textSelect(LABEL_EEPROM_SAVE_FAILED), false);
         }
+      //  #else
+      //   settings.save();                              // 保存，注意保存的是z_offset的值，而不是BabyStep的值，BabyStep每次复位都会被清零，防止干扰
        #endif
-      // settings.save();                              // 保存，注意保存的是z_offset的值，而不是BabyStep的值，BabyStep每次复位都会被清零，防止干扰
       break;
+
     case KEY_ICON_5:
       elementsUnit.cur = (elementsUnit.cur + 1) % elementsUnit.totaled;
       babyStepItems.items[key_num] = elementsUnit.list[elementsUnit.cur];
       menuDrawItem(&babyStepItems.items[key_num], key_num);
       break;
+
     case KEY_ICON_6:
       setBabyStepZAxisIncMM(-baby_step_value);
       break;
+
     case KEY_ICON_7:
       infoMenu.cur--;
       break;
-    default :
-      break;
+
+    default: break;
   }
   if(baby_step_value != getBabyStepZAxisTotalMM())
   {

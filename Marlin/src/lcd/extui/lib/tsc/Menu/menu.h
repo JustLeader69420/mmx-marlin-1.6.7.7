@@ -17,6 +17,7 @@ typedef enum
   KEY_ICON_5,
   KEY_ICON_6,
   KEY_ICON_7,
+  KEY_ICON_8,
   KEY_LABEL_0,
   KEY_LABEL_1,
   KEY_LABEL_2,
@@ -25,6 +26,7 @@ typedef enum
   KEY_LABEL_5,
   KEY_LABEL_6,
   KEY_LABEL_7,
+  KEY_LABEL_8,
   KEY_IDLE = IDLE_TOUCH,
 }KEY_VALUES;
 
@@ -163,6 +165,8 @@ typedef enum
 
 #define ITEM_PER_PAGE  8
 #define ITEM_CUBE_NUM GRID_MAX_POINTS_X*GRID_MAX_POINTS_Y+4
+#define PAGE_BUTTON    3
+#define PAGE_THUMBNAIL 6
 
 typedef union
 {
@@ -181,6 +185,11 @@ typedef enum
   LIST_LABEL = 0,
   LIST_BUTTON,
 }LISTITEM_TYPE;
+typedef enum{
+  ICON_FOLDER = 0,
+  ICON_FILE,
+  ICON_NO = 0xff,
+}ICON_TYPE;
 
 typedef struct
 {
@@ -188,13 +197,26 @@ typedef struct
   uint8_t* icon;
   uint8_t* label;
 }LISTITEM;
-
 typedef struct
 {
   LABEL title;
   //uint16_t titleIconChar;
   LISTITEM  items[ITEM_PER_PAGE];
 }LISTITEMS;
+
+typedef struct
+{
+  LISTITEM_TYPE type;
+  uint8_t* icon;
+  uint8_t* label;
+  ICON_TYPE  icon_flag;
+}LISTITEM2;
+typedef struct
+{
+  LABEL title;
+  //uint16_t titleIconChar;
+  LISTITEM2  items[PAGE_BUTTON+PAGE_THUMBNAIL];
+}LISTITEMS2;
 
 typedef struct
 {
@@ -234,6 +256,8 @@ typedef struct
 
 
 extern const GUI_RECT exhibitRect;
+extern bool key_lock;
+
 #define CENTER_Y  (int16_t)((exhibitRect.y1 - exhibitRect.y0)/2 + exhibitRect.y0)
 #define CENTER_X  (int16_t)((exhibitRect.x1 - exhibitRect.x0 - BYTE_WIDTH)/2 + exhibitRect.x0)
 

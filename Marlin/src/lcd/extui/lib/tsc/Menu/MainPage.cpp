@@ -121,7 +121,9 @@ void menuCallBackMainPage() {
      #ifdef AUTO_BED_LEVELING_BILINEAR
       case KEY_ICON_6:
         #if ENABLED(LEVELING_OFFSET)
-          infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;
+          // infoMenu.menu[++infoMenu.cur] = menuLevelingOffset;
+          setLO_flag(true);
+          infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
         #else
           infoMenu.menu[++infoMenu.cur] = menuBabyStep;
         #endif

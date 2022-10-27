@@ -32,12 +32,15 @@ typedef enum
 {
   MENU_TYPE_ICON,
   MENU_TYPE_LISTVIEW,
+  MENU_TYPE_LISTVIEW2,
   MENU_TYPE_DIALOG,
   MENU_TYPE_CUBE
 } MENU_TYPE;
 
 MENU_TYPE menuType = MENU_TYPE_ICON;
 static const LISTITEMS *curListItems = NULL;   //current listmenu
+static const LISTITEMS2 *curListItems2 = NULL;   //current listmenu
+bool key_lock = false;
 //Clean up the gaps outside icons
 void menuClearGaps(void)
 {
@@ -277,7 +280,8 @@ void reminderMessage(int16_t inf, SYS_STATUS status)
 }
 
 void volumeReminderMessage(int16_t inf, SYS_STATUS status)
-{ 
+{
+  if (infoMenu.menu[infoMenu.cur] == menuSetLevelingValue) return;
   volumeReminder.inf = inf;
   GUI_SetColor(GBLUE);
   GUI_DispStringInPrect(&volumeReminder.rect, textSelect(volumeReminder.inf));
@@ -396,6 +400,43 @@ const GUI_RECT rect_of_keyListView2[ITEM_PER_PAGE]={
   {2*START_X+LISTITEM_WIDTH-1,  1*LIST_ICON_HEIGHT+1*LISTICON_SPACE_Y+ICON_START_Y-1,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH+1,  2*LIST_ICON_HEIGHT+1*LISTICON_SPACE_Y+ICON_START_Y+1},
   {2*START_X+LISTITEM_WIDTH-1,  2*LIST_ICON_HEIGHT+2*LISTICON_SPACE_Y+ICON_START_Y-1,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH+1,  3*LIST_ICON_HEIGHT+2*LISTICON_SPACE_Y+ICON_START_Y+1},
 };
+
+#if ENABLED(SHOW_THUMBNAIL)
+const GUI_RECT thumbnail_of_print[PAGE_BUTTON+PAGE_THUMBNAIL+PAGE_THUMBNAIL]={
+  //6 thumbnail area
+  {0*ICON_WIDTH+0*SPACE_X+START_X, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y,  1*ICON_WIDTH+0*SPACE_X+START_X, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y},
+  {1*ICON_WIDTH+1*SPACE_X+START_X, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y,  2*ICON_WIDTH+1*SPACE_X+START_X, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y},
+  {2*ICON_WIDTH+2*SPACE_X+START_X, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y,  3*ICON_WIDTH+2*SPACE_X+START_X, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y},
+  {0*ICON_WIDTH+0*SPACE_X+START_X, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y,  1*ICON_WIDTH+0*SPACE_X+START_X, 2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y},
+  {1*ICON_WIDTH+1*SPACE_X+START_X, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y,  2*ICON_WIDTH+1*SPACE_X+START_X, 2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y},
+  {2*ICON_WIDTH+2*SPACE_X+START_X, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y,  3*ICON_WIDTH+2*SPACE_X+START_X, 2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y},
+  //6 labels area
+  {0*SPACE_X_PER_ICON,  1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y,  1*SPACE_X_PER_ICON,  1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y},
+  {1*SPACE_X_PER_ICON,  1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y,  2*SPACE_X_PER_ICON,  1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y},
+  {2*SPACE_X_PER_ICON,  1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y,  3*SPACE_X_PER_ICON,  1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y},
+  {0*SPACE_X_PER_ICON,  2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y,  1*SPACE_X_PER_ICON,  2*ICON_HEIGHT+2*SPACE_Y+TITLE_END_Y},
+  {1*SPACE_X_PER_ICON,  2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y,  2*SPACE_X_PER_ICON,  2*ICON_HEIGHT+2*SPACE_Y+TITLE_END_Y},
+  {2*SPACE_X_PER_ICON,  2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y,  3*SPACE_X_PER_ICON,  2*ICON_HEIGHT+2*SPACE_Y+TITLE_END_Y},
+
+  {2*START_X+LISTITEM_WIDTH,  0*LIST_ICON_HEIGHT+0*LISTICON_SPACE_Y+ICON_START_Y,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH,  1*LIST_ICON_HEIGHT+0*LISTICON_SPACE_Y+ICON_START_Y},
+  {2*START_X+LISTITEM_WIDTH,  1*LIST_ICON_HEIGHT+1*LISTICON_SPACE_Y+ICON_START_Y,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH,  2*LIST_ICON_HEIGHT+1*LISTICON_SPACE_Y+ICON_START_Y},
+  {2*START_X+LISTITEM_WIDTH,  2*LIST_ICON_HEIGHT+2*LISTICON_SPACE_Y+ICON_START_Y,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH,  3*LIST_ICON_HEIGHT+2*LISTICON_SPACE_Y+ICON_START_Y},
+};
+const GUI_RECT thumbnail_of_print2[PAGE_BUTTON+PAGE_THUMBNAIL]={
+  //6 thumbnail area
+  {0*ICON_WIDTH+0*SPACE_X+START_X-1, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y-1,  1*ICON_WIDTH+0*SPACE_X+START_X+1, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y+1},
+  {1*ICON_WIDTH+1*SPACE_X+START_X-1, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y-1,  2*ICON_WIDTH+1*SPACE_X+START_X+1, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y+1},
+  {2*ICON_WIDTH+2*SPACE_X+START_X-1, 0*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y-1,  3*ICON_WIDTH+2*SPACE_X+START_X+1, 1*ICON_HEIGHT+0*SPACE_Y+TITLE_END_Y+1},
+  {0*ICON_WIDTH+0*SPACE_X+START_X-1, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y-1,  1*ICON_WIDTH+0*SPACE_X+START_X+1, 2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y+1},
+  {1*ICON_WIDTH+1*SPACE_X+START_X-1, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y-1,  2*ICON_WIDTH+1*SPACE_X+START_X+1, 2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y+1},
+  {2*ICON_WIDTH+2*SPACE_X+START_X-1, 1*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y-1,  3*ICON_WIDTH+2*SPACE_X+START_X+1, 2*ICON_HEIGHT+1*SPACE_Y+TITLE_END_Y+1},
+
+  {2*START_X+LISTITEM_WIDTH-1, 0*LIST_ICON_HEIGHT+0*LISTICON_SPACE_Y+ICON_START_Y-1,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH+1, 1*LIST_ICON_HEIGHT+0*LISTICON_SPACE_Y+ICON_START_Y+1},
+  {2*START_X+LISTITEM_WIDTH-1, 1*LIST_ICON_HEIGHT+1*LISTICON_SPACE_Y+ICON_START_Y-1,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH+1, 2*LIST_ICON_HEIGHT+1*LISTICON_SPACE_Y+ICON_START_Y+1},
+  {2*START_X+LISTITEM_WIDTH-1, 2*LIST_ICON_HEIGHT+2*LISTICON_SPACE_Y+ICON_START_Y-1,  2*START_X+LISTITEM_WIDTH+1*LIST_ICON_WIDTH+1, 3*LIST_ICON_HEIGHT+2*LISTICON_SPACE_Y+ICON_START_Y+1},
+};
+#endif
+
 #define LISTBTN_BKCOLOR 0x2187
 #define MAT_RED         0xE124
 #define MAT_YELLOW      0xED80
@@ -456,6 +497,95 @@ void menuDrawListPage(const LISTITEMS *listItems)
       menuDrawListItem(&listItems->items[i], i);
   }
 }
+
+#if ENABLED(SHOW_THUMBNAIL)
+// 绘制按下时的样式
+void itemDrawThumbnailPress(uint8_t position, uint8_t is_press)
+{
+  if (position > KEY_ICON_8) return;
+
+  if (menuType == MENU_TYPE_LISTVIEW2)
+  { //draw rec over list item if pressed
+    if (curListItems2 == NULL) return;
+
+    const GUI_RECT *rect = thumbnail_of_print2 + position;
+
+    if (curListItems2->items[position].icon == NULL)
+    {
+      GUI_ClearPrect(rect);
+      return;
+    }
+    if (is_press){
+      GUI_DrawPrect(rect);
+    }
+    else{
+      GUI_SetColor(BK_COLOR);
+      GUI_DrawPrect(rect);
+      GUI_SetColor(FK_COLOR);
+    }
+  }
+}
+// 绘制单个图标
+void menuDrawThumbnailItem(const LISTITEM2 *item, uint8_t position)
+{
+  // if (position > PAGE_THUMBNAIL) return;
+  const GUI_RECT *rect = thumbnail_of_print + position;
+  // int16_t sy = (rect->y1 - rect->y0 - BYTE_HEIGHT) / 2 + rect->y0;
+
+  GUI_ClearRect(rect->x0, rect->y0+1, rect->x1, rect->y1+1);
+  // if (item->icon == NULL) return;
+
+  if(item->type == LIST_BUTTON) {
+    GUI_SetBkColor(MD_GRAY);
+    GUI_Clear_RCRect(rect->x0,rect->y0,rect->x1,rect->y1,25);
+    GUI_DispStringInPrect(rect, item->icon);
+    GUI_SetBkColor(BK_COLOR);
+  } else if (item->type == LIST_LABEL) {
+    GUI_SetRange(rect->x0, rect->y0, rect->x1, rect->y1);
+    if (item->icon_flag == ICON_FOLDER){}
+    else if (item->icon_flag == ICON_FILE){}
+    else if (item->icon_flag == ICON_NO){}
+    GUI_CancelRange();
+
+    // if (item->icon_flag == 1)
+      // GUI_DispString(rect->x0 + BYTE_WIDTH / 2, sy, item->icon);
+    // else
+
+    rect = thumbnail_of_print + position + PAGE_THUMBNAIL;
+    GUI_ClearRect(rect->x0, rect->y0+1, rect->x1, rect->y1+1);
+    if (item->label != NULL){
+      GUI_SetRange(rect->x0, rect->y0, rect->x1, rect->y1);
+      GUI_SetColor(FK_COLOR);
+      GUI_DispString(rect->x0 + BYTE_WIDTH * 3, rect->y0, item->label);
+      GUI_CancelRange();
+    }
+  }
+}
+//Draw the entire interface // 绘制整个界面
+void menuDrawThumbnailPage(const LISTITEMS2 *listItems)
+{
+  menuType = MENU_TYPE_LISTVIEW2;
+  TSC_ReDrawIcon = itemDrawThumbnailPress;
+  curListItems2 = listItems;
+
+  GUI_SetBkColor(TITLE_COLOR);
+  GUI_ClearRect(0, 0, LCD_WIDTH_PIXEL, TITLE_END_Y-10);
+  GUI_SetBkColor(BK_COLOR);
+  GUI_ClearRect(0, TITLE_END_Y-10, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL);
+
+  //menuClearGaps(); //Use this function instead of GUI_Clear to eliminate the splash screen when clearing the screen.
+  menuDrawTitle(labelGetAddress(&listItems->title));
+
+  for (uint8_t i = 0; i < ITEM_PER_PAGE; i++)
+  {
+    //const GUI_RECT *rect = rect_of_keyListView + i;
+    if (listItems->items[i].icon != NULL)
+      menuDrawThumbnailItem(&listItems->items[i], i);
+  }
+}
+#endif
+
+// ABL adjust interface
 void menuDrawCubeItem_check(const uint8_t *icon, uint8_t position)
 {
   if (icon == NULL) return;
@@ -510,7 +640,7 @@ void menuDrawCubePage(uint8_t** buttonItems, uint8_t(* cubeItems)[8])
   }
 }
 
-//When there is a button value, the icon changes color and redraws
+//When there is a button value, the icon changes color and redraws 当有按钮值时，图标会改变颜色并重新绘制
 void itemDrawIconPress(uint8_t position, uint8_t is_press)
 {
   if (position > KEY_ICON_7) return;
@@ -545,7 +675,6 @@ void itemDrawIconPress(uint8_t position, uint8_t is_press)
       GUI_DrawPrect(rect);
       GUI_SetColor(FK_COLOR);
     }
-
   }
 }
 // this is draw small boxes
@@ -584,6 +713,7 @@ void itemDrawCubeIconPress(uint8_t position, uint8_t is_press)
 // Get button value
 KEY_VALUES menuKeyGetValue(void)
 {
+  if(key_lock) return KEY_IDLE;
   if (menuType == MENU_TYPE_ICON)
   {
     return (KEY_VALUES)KEY_GetValue(COUNT(rect_of_key), rect_of_key); // for normal menu
@@ -596,6 +726,7 @@ KEY_VALUES menuKeyGetValue(void)
 }
 uint16_t menuKeyGetLevelingValue(void)
 {
+  if(key_lock) return KEY_IDLE;
   if (menuType == MENU_TYPE_CUBE)
     return KEY_GetValue(ITEM_CUBE_NUM, levelingButtonView); //for listview
   else return KEY_X_X;

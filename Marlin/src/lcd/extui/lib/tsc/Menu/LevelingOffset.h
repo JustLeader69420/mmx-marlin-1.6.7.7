@@ -15,5 +15,6 @@ void resetLevelingOffset(void);
 bool saveOffset();
 void menuSetLevelingOffset();
 void menuSetLevelingValue();
+void setLO_flag(bool _flag);
 
 #endif
