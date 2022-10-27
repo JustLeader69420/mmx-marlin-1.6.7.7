@@ -193,7 +193,7 @@ void PrintJobRecovery::check() {
 #ifdef HAS_UDISK
   void PrintJobRecovery::check_u() {
     // 检测到有插U盘且SD卡没有检测到断电文件
-    if(udiskMounted && plr_num<150){
+    if(udiskMounted && plr_num<500){
       sd_or_udisk = USBDISK;
       // if() return;
       plr_num++;

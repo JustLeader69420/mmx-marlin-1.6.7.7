@@ -26,7 +26,7 @@ public:
     static uint8_t getPrintProgress(void);
     static void abortUdiskPrint(FIL *fp);
   #ifdef USB_CONNECT_PIN
-    static void InitUdiskPin(){OUT_WRITE(USB_CONNECT_PIN,HIGH);}
+    static void InitUdiskPin(){OUT_WRITE(USB_CONNECT_PIN,LOW); delay(10); WRITE(USB_CONNECT_PIN,HIGH);}
     static void ResetUdisk(){WRITE(USB_CONNECT_PIN, LOW); delay(10); WRITE(USB_CONNECT_PIN, HIGH);}
   #endif
 private:

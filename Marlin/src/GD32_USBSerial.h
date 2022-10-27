@@ -19,7 +19,7 @@
 #ifndef _GD32_USBSERIAL_H_
 #define _GD32_USBSERIAL_H_
 
-#if defined (USE_GD32)
+#if 0//defined(USE_GD32)
 #include "Stream.h"
 #include "gd32_usb.h"
 

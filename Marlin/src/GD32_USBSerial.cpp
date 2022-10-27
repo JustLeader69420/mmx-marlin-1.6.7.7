@@ -16,7 +16,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#if 0// defined (USE_GD32)
+#if 0// defined(USE_GD32)
 
 #include "gd32_cdc_queue.h"
 #include "GD32_USBSerial.h"

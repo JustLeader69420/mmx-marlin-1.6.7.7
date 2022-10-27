@@ -188,7 +188,7 @@ void stm32_usbh_msc_init()
     MX_FATFS_Init();
 }
 
-#ifndef USE_GD32
+#if 1//defined(USE_GD32)
 // irq 
 void OTG_FS_IRQHandler()
 {

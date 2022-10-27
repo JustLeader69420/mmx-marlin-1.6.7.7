@@ -320,8 +320,8 @@ void usbh_core_task (usbh_host *uhost)
             
             // udisk du
             udiskMounted = 1;
-            delay(1000);
-            delay(1000);
+            // delay(1000);
+            // delay(1000);
         } else {
             usbh_error_handler (uhost, status);
         }
@@ -353,7 +353,7 @@ void usbh_core_task (usbh_host *uhost)
         uhost->cur_state = HOST_DEFAULT;
 
         // udisk du
-        udiskMounted = 0;
+        udiskMounted = 2;
         plr_num = 0;
         plr_flag = false;
         break;

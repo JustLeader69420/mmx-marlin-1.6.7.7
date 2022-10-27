@@ -228,7 +228,7 @@
   #include "ff.h"
   #include "udisk/udiskPrint.h"
 
-  #ifdef USE_GD32
+  #if 0//defined(USE_GD32)
     #include "gd32_usb.h"
   #else
     #include "stm32_usb.h"
@@ -742,6 +742,16 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
   #endif
 }
 
+// show usb install or remove in screen top
+#ifdef HAS_UDISK
+uint8_t Need_Show_Ready(void){
+  return (udiskMounted == 1);
+}
+uint8_t Need_Show_Remove(void){
+  return (udiskMounted == 2);
+}
+#endif
+
 /**
  * Standard idle routine keeps the machine alive:
  *  - Core Marlin activities
@@ -804,12 +814,14 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
 
   // UDISK
   #ifdef HAS_UDISK
-    #if ENABLED(USE_GD32)
+    #if 0//ENABLED(USE_GD32)
       gd32_usb_loop();
     #else
       MX_USB_HOST_Process();
       // MSC_MenuProcess();
     #endif
+    if(Need_Show_Ready()){TERN_(EXTENSIBLE_UI, ExtUI::onUsbInserted());udiskMounted=3;}
+    else if(Need_Show_Remove()){TERN_(EXTENSIBLE_UI, ExtUI::onUsbRemoved());udiskMounted=0;}
   #endif
 
   // 检测断电文件，sd卡使能内也有，因此这是U盘专用
@@ -1036,6 +1048,7 @@ void Init_Reset_Pin(void){
   #endif
 }
 #endif
+
 /**
  * Marlin entry-point: Set up before the program loop
  *  - Set up the kill pin, filament runout, power hold
@@ -1108,7 +1121,7 @@ void setup() {
   LCD_Setup();
 
  #ifdef HAS_UDISK
-  #if ENABLED(USE_GD32)
+  #if 0//ENABLED(USE_GD32)
     udisk.InitUdiskPin();
     // gd32_usb_device_cdc_init();
     gd32_usb_host_msc_init();

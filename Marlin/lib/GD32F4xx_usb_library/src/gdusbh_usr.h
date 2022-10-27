@@ -40,7 +40,7 @@ OF SUCH DAMAGE.
 #include "gdusbh_core.h"
 #include <stdio.h>
 
-#if 1 //def USE_GD32
+#if 0 //defined(USE_GD32)
 
 extern usbh_user_cb usr_cb;
 extern uint8_t USBH_USR_ApplicationState;

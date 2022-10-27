@@ -38,7 +38,7 @@ OF SUCH DAMAGE.
 #include "gdusb_conf.h"
 #include "gdusbh_core.h"
 
-#if 1 //def USE_GD32
+#if 0 //defined(USE_GD32)
 /* function declarations */
 /* configure USB control status parameters */
 void usbh_ctlstate_config (usbh_host *uhost, uint8_t *buf, uint16_t len);
