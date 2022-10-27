@@ -33,7 +33,7 @@
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
-// #define SHORT_PROTECTION        // Low side short protection disable
+#define SHORT_PROTECTION        // Low side short protection disable
 
 // #define TEST_FW
 // #define OTHER_CUSTOM           // 定制的
@@ -59,6 +59,7 @@
 #define D301_AUTO_LEVELING
 #ifdef D301_AUTO_LEVELING
 
+  //#define USE_PROBE_FOR_Z_HOMING              // du, this is use the probe for z_homing, 2022.09.12
   //#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN  //davi 2021.1.21
   //#define BLTOUCH                             //davi 2021.1.21
   //#define Z_SAFE_HOMING                       //davi 2021.1.21
