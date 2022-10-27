@@ -73,7 +73,8 @@
    * take longer, pulses will be longer. For example the SKR Pro
    * (stm32f407zgt6) requires ~60 cyles.
    */
-  #define TIMER_READ_ADD_AND_STORE_CYCLES 34UL
+  // #define TIMER_READ_ADD_AND_STORE_CYCLES 34UL
+  #define TIMER_READ_ADD_AND_STORE_CYCLES 60UL
 
   // The base ISR takes 792 cycles
   #define ISR_BASE_CYCLES  792UL

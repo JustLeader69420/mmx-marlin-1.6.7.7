@@ -2685,6 +2685,7 @@ public:
  *  - 循序渐进
  *  - 结束轮询
  *  - 规划器清洁缓冲区
+ *  - babystep
  */
 void Temperature::tick() {
 

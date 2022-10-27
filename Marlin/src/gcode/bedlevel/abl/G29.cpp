@@ -676,7 +676,7 @@ G29_TYPE GcodeSuite::G29() {
             //     + babystep.axis_total[BS_TOTAL_IND(Z_AXIS)] * planner.steps_to_mm[Z_AXIS];
             // #endif
             TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(meshCount, z_values[meshCount.x][meshCount.y]));
-
+            // SERIAL_ECHOLNPAIR("x:", meshCount.x, "y:", meshCount.y, "z:", z_values[meshCount.x][meshCount.y]);
           #endif
 
           abl_should_enable = false;
