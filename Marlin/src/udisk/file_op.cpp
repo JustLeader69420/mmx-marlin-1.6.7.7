@@ -46,7 +46,7 @@
 // #include "main.h"
 // #include "usb_printf.h"
 #include "ff.h"
-#include "log.h"
+// #include "log.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 // extern FATFS USBHFatFS;
@@ -70,7 +70,7 @@ void MSC_File_Operations(void)
 {
   uint16_t bytesread;
 
-  LOGI("INFO : FatFs Initialized \n");
+  // LOGI("INFO : FatFs Initialized \n");
   uint32_t fs_cluster;
   // FATFS* pfatfs = &USBH_fatfs;
   // if (FR_OK == f_getfree("0:", &fs_cluster, &pfatfs) ) {

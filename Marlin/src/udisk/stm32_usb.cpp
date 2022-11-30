@@ -1,11 +1,14 @@
-#include "usbh_core.h"
 #include "usb_common_init.h"
 #include "stm32_usbh_conf.h"
 #include "usbh_msc.h"
 #include "stm32_def.h"
 #include "log.h"
 #include "fatfs.h"
-#include "explorer.h"
+// #include "../inc/MarlinConfig.h"
+#include "../lcd/extui/ui_api.h"
+#include "../lcd/extui/lib/tsc/TSC_Menu.h"
+#include "../feature/powerloss.h"
+#include "udiskPrint.h"
 
 // PCD_HandleTypeDef hpcd_USB_OTG_FS;
 // HCD_HandleTypeDef hhcd_USB_OTG_HS;
@@ -33,7 +36,7 @@ USBH_HandleTypeDef hUsbHostFS;
 // FATFS USBH_fatfs;
 
 ApplicationTypeDef Appli_state = APPLICATION_IDLE;
-
+#if 0
 void MSC_MenuProcess(void)
 {
   switch(msc_demo)
@@ -50,7 +53,7 @@ void MSC_MenuProcess(void)
       if(Appli_state == APPLICATION_READY)
       {
           msc_demo = MSC_DEMO_EXPLORER;
-          MSC_File_Operations();
+          // MSC_File_Operations();
       //   USBH_MSC_GetLUNInfo(&hUsbHostFS, 0, &msc_info);
       //   LOGI("usb disk vid %s", msc_info.inquiry.vendor_id);
       //   LOGI("usb disk pid %s", msc_info.inquiry.product_id);
@@ -94,6 +97,7 @@ void MSC_MenuProcess(void)
     msc_demo = MSC_DEMO_STOP;
   }
 }
+#endif
 
 static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
 
@@ -123,72 +127,100 @@ void MX_USB_HOST_Process(void)
   /* USB Host Background task */
   USBH_Process(&hUsbHostFS);
 }
+HOST_StateTypeDef MX_USB_GET_State(void){
+  return hUsbHostFS.gState;
+}
+
 /*
  * user callback definition
+ * USBH_HandleTypeDef->pUser callback function
+ * you can set some hint here
  */
-static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
+static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 {
   /* USER CODE BEGIN CALL_BACK_1 */
   switch(id)
   {
-  case HOST_USER_SELECT_CONFIGURATION:
-  // usb_printf("usb device select config. \r\n");
-  break;
+    case HOST_USER_SELECT_CONFIGURATION:
+      // usb_printf("usb device select config. \r\n");
+      break;
 
-  case HOST_USER_DISCONNECTION:
-  Appli_state = APPLICATION_DISCONNECT;
-  if (f_mount(NULL, "", 0) != FR_OK) {
-    // usb_printf("ERROR: deinit fatfs fail.");
-    LOGI("mount deinit fail.");
-  }
-  FATFS_UnLinkDriver(USBHPath);
-  LOGI("usbh disconnect");
-  // usb_printf("usb device disconnected. \r\n");
-  break;
+    // disconnection
+    case HOST_USER_DISCONNECTION:
+      Appli_state = APPLICATION_DISCONNECT;
+      if (f_mount(NULL, "", 0) != FR_OK) 
+      {
+        // usb_printf("ERROR: deinit fatfs fail.");
+        // LOGI("mount deinit fail.");
+      }
+      FATFS_UnLinkDriver(USBHPath);
+      TERN_(EXTENSIBLE_UI, ExtUI::onUsbRemoved());
+      if(infoMenu.menu[infoMenu.cur] == menuPrintUdisk) infoMenu.cur--;
+      udisk.ResetPin();
+      // LOGI("usbh disconnect");
+      // usb_printf("usb device disconnected. \r\n");
+      break;
+    
+    case HOST_USER_RESET_ENUM:
+      f_mount(NULL, "", 0);
+      FATFS_UnLinkDriver(USBHPath);
+      break;
 
-  case HOST_USER_CLASS_ACTIVE:
-  Appli_state = APPLICATION_READY;
-  LOGI("usb class active. ");
-  break;
+    // active usb
+    case HOST_USER_CLASS_ACTIVE:
+      Appli_state = APPLICATION_READY;
+      FATFS_LinkDriver(&USBH_Driver, USBHPath);
+      if (f_mount(&USBHFatFS, "", 0) != FR_OK) {}
+      TERN_(EXTENSIBLE_UI, ExtUI::onUsbInserted());
+      TERN_(POWER_LOSS_RECOVERY, recovery.check_u());
 
-  case HOST_USER_CONNECTION:
-  Appli_state = APPLICATION_START;
-  LOGI("usbh connect");
-  // extern const Diskio_drvTypeDef  USBH_Driver;
-  FATFS_LinkDriver(&USBH_Driver, USBHPath);
-  LOGI("usbh udisk path:%s", USBHPath);
-  // FRESULT res = f_mkfs(usbh_disk_path, FM_FAT32, 4096, 
-  //                     working_buffer, 
-  //                     sizeof(working_buffer));
+      // LOGI("usb class active. ");
+      break;
 
-  // LOGI("format fs result:%d", res);
+    // connection usb
+    case HOST_USER_CONNECTION:
+      Appli_state = APPLICATION_START;
+      // LOGI("usbh connect");
+      // extern const Diskio_drvTypeDef  USBH_Driver;
+      // FATFS_LinkDriver(&USBH_Driver, USBHPath);
+      // LOGI("usbh udisk path:%s", USBHPath);
+      // FRESULT res = f_mkfs(usbh_disk_path, FM_FAT32, 4096, 
+      //                     working_buffer, 
+      //                     sizeof(working_buffer));
 
-  if (f_mount(&USBHFatFS, "", 0) != FR_OK) {
-    // usb_printf("ERROR: mount usb fatfs fail");
-    LOGE("usbh connect mount fail");
-  }
+      // LOGI("format fs result:%d", res);
 
-  //DONT just operate fs here!! usbh fsm should run to switch 
-  //correct state!!!
-  // extern FRESULT Explore_Disk(char *path, uint8_t recu_level);
-  // Explore_Disk(USBHPath, 1);
-  break;
+      // if (f_mount(&USBHFatFS, "", 0) != FR_OK) {
+      //   // usb_printf("ERROR: mount usb fatfs fail");
+      //   // LOGE("usbh connect mount fail");
+      // }
 
-  default:
-  break;
+      // TERN_(EXTENSIBLE_UI, ExtUI::onUsbInserted());
+      //DONT just operate fs here!! usbh fsm should run to switch 
+      //correct state!!!
+      // extern FRESULT Explore_Disk(char *path, uint8_t recu_level);
+      // Explore_Disk(USBHPath, 1);
+      break;
+
+    default:
+      break;
   }
   /* USER CODE END CALL_BACK_1 */
 }
 
-void stm32_usbh_msc_init()
-{
-    // common_usb_fs_rcc_gpio_ll_init();
-    // common_usb_fs_hs_nvic_init();
-    MX_USB_HOST_Init();
-    MX_FATFS_Init();
-}
+// void stm32_usbh_msc_init()
+// {
+//     // common_usb_fs_rcc_gpio_ll_init();
+//     // common_usb_fs_hs_nvic_init();
+//     MX_USB_HOST_Init();
+//     MX_FATFS_Init();
+// }
 
 #if 1//defined(USE_GD32)
+
+#ifdef __cplusplus
+extern "C"{
+#endif
 // irq 
 void OTG_FS_IRQHandler()
 {
@@ -199,5 +231,8 @@ void OTG_FS_IRQHandler()
 // {
 //     HAL_PCD_IRQHandler(&hhcd_USB_OTG_HS);
 // }
+#ifdef __cplusplus
+}
+#endif
 #endif
 

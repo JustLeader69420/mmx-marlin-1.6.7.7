@@ -53,8 +53,8 @@ static usbh_status usbh_enum_task (usbh_host *uhost);
 static void usb_hwp_suspend(usb_core_driver *udev);
 #endif
 
-extern uint8_t udiskMounted;
-extern uint16_t plr_num;
+// extern uint8_t udiskMounted;
+// extern uint16_t plr_num;
 extern bool plr_flag;
 
 usbh_int_cb usbh_int_op = 
@@ -319,7 +319,7 @@ void usbh_core_task (usbh_host *uhost)
             uhost->cur_state = HOST_CLASS_HANDLER;
             
             // udisk du
-            udiskMounted = 1;
+            // udiskMounted = 1;
             // delay(1000);
             // delay(1000);
         } else {
@@ -353,8 +353,8 @@ void usbh_core_task (usbh_host *uhost)
         uhost->cur_state = HOST_DEFAULT;
 
         // udisk du
-        udiskMounted = 2;
-        plr_num = 0;
+        // udiskMounted = 2;
+        // plr_num = 0;
         plr_flag = false;
         break;
 

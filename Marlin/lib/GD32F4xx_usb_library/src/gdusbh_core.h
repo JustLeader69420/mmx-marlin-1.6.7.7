@@ -279,6 +279,6 @@ void usbh_error_handler (usbh_host *uhost, usbh_status err_type);
 void usb_hwp_resume(usb_core_driver *udev);
 #endif /* USB_LOW_PWR_ENABLE */
 
-extern uint8_t udiskMounted;
+// extern uint8_t udiskMounted;
 
 #endif /* __USBH_CORE_H */

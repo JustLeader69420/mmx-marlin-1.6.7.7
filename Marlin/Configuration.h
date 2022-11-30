@@ -23,7 +23,7 @@
 
 // 选择机器型号
 // #define R3_PRO    // R3_pro:max
-// #define R4_PRO    // R4_pro:pro
+#define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
 // #define ST32_SHIP
@@ -33,7 +33,7 @@
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
-#define SHORT_PROTECTION        // Low side short protection disable
+// #define SHORT_PROTECTION        // Low side short protection disable
 
 // #define TEST_FW
 // #define OTHER_CUSTOM           // 定制的

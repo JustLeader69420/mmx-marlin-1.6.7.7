@@ -963,7 +963,7 @@ namespace ExtUI {
   }
 
   bool isPrintingFromMediaPaused() {
-    return IFSD(isPrintingFromMedia() && !IS_SD_PRINTING(), false);
+    return IFSD(isPrintingFromMedia() && !IS_SD_PRINTING() && UDiskPausePrint, false);
   }
 
   bool isPrintingFromMedia() {

@@ -14,8 +14,10 @@ void menuCallBackPowerFailed(void)
     
     case KEY_POPUP_CANCEL:
      #ifdef HAS_UDISK
-      if(sd_or_udisk)
-        f_unlink(recovery.filename1);
+      if(sd_or_udisk){
+        if(udisk.usbIsReady())
+          f_unlink(recovery.filename1);
+      }
       else
      #endif
         card.removeJobRecoveryFile();

@@ -231,7 +231,7 @@
   #if 0//defined(USE_GD32)
     #include "gd32_usb.h"
   #else
-    #include "stm32_usb.h"
+    #include "udisk/stm32_usb.h"
   #endif
 
 #endif
@@ -546,6 +546,8 @@ void startOrResumeJob() {
 
 #endif // SDSUPPORT
 
+static uint8_t usb_need_wait = true;
+static uint32_t usb_wait_time = 0;
 /**
  * Minimal management of Marlin's core activities:
  *  - Keep the command buffer full
@@ -742,16 +744,6 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
   #endif
 }
 
-// show usb install or remove in screen top
-#ifdef HAS_UDISK
-uint8_t Need_Show_Ready(void){
-  return (udiskMounted == 1);
-}
-uint8_t Need_Show_Remove(void){
-  return (udiskMounted == 2);
-}
-#endif
-
 /**
  * Standard idle routine keeps the machine alive:
  *  - Core Marlin activities
@@ -814,22 +806,27 @@ void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep/*=false*/)) {
 
   // UDISK
   #ifdef HAS_UDISK
-    #if 0//ENABLED(USE_GD32)
-      gd32_usb_loop();
-    #else
-      MX_USB_HOST_Process();
-      // MSC_MenuProcess();
-    #endif
-    if(Need_Show_Ready()){TERN_(EXTENSIBLE_UI, ExtUI::onUsbInserted());udiskMounted=3;}
-    else if(Need_Show_Remove()){TERN_(EXTENSIBLE_UI, ExtUI::onUsbRemoved());udiskMounted=0;}
+    // if(usb_need_wait)
+    // {
+    //   usb_need_wait = false;
+    //   usb_wait_time = millis()+2000;
+    // }
+    // if(usb_wait_time<millis())
+    {
+      #if 0//ENABLED(USE_GD32)
+        gd32_usb_loop();
+      #else
+        MX_USB_HOST_Process();
+      #endif
+    }
   #endif
 
   // 检测断电文件，sd卡使能内也有，因此这是U盘专用
- #ifdef HAS_UDISK
-  if(udiskMounted && !UDiskPrint){
-    TERN_(POWER_LOSS_RECOVERY, recovery.check_u());
-  }
- #endif
+//  #ifdef HAS_UDISK
+//   if(udisk.usbIsReady() && !UDiskPrint){
+//     TERN_(POWER_LOSS_RECOVERY, recovery.check_u());
+//   }
+//  #endif
 
   // Handle USB Flash Drive insert / remove
   TERN_(USB_FLASH_DRIVE_SUPPORT, Sd2Card::idle());
@@ -1128,6 +1125,7 @@ void setup() {
   #else
     udisk.InitUdiskPin();
     MX_USB_HOST_Init();
+    usb_need_wait = true;
   #endif
  #endif
   

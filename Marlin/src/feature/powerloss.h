@@ -206,7 +206,7 @@ class PrintJobRecovery {
 extern PrintJobRecovery recovery;
 #ifdef HAS_UDISK
   extern uint8_t sd_or_udisk;
-  extern uint16_t plr_num;
+  // extern uint16_t plr_num;
   extern FIL udiskfile;
   extern bool plr_flag;
 #endif

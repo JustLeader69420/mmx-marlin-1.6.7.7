@@ -64,10 +64,6 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(hcdHandle->Instance==USB_OTG_FS)
   {
-  /* USER CODE BEGIN USB_OTG_FS_MspInit 0 */
-
-  /* USER CODE END USB_OTG_FS_MspInit 0 */
-  
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**USB_OTG_FS GPIO Configuration    
     PA11     ------> USB_OTG_FS_DM
@@ -76,7 +72,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
     GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -84,11 +80,8 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
 
     /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(OTG_FS_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(OTG_FS_IRQn, 0, 3);
     HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
-  /* USER CODE BEGIN USB_OTG_FS_MspInit 1 */
-
-  /* USER CODE END USB_OTG_FS_MspInit 1 */
   }
 }
 
@@ -124,7 +117,7 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
   */
 void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
 {
-  USBH_LL_IncTimer(hhcd->pData);
+  USBH_LL_IncTimer((USBH_HandleTypeDef *)hhcd->pData);
 }
 
 /**
@@ -134,7 +127,7 @@ void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
 {
-  USBH_LL_Connect(hhcd->pData);
+  USBH_LL_Connect((USBH_HandleTypeDef *)hhcd->pData);
 }
 
 /**
@@ -144,7 +137,7 @@ void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
 {
-  USBH_LL_Disconnect(hhcd->pData);
+  USBH_LL_Disconnect((USBH_HandleTypeDef *)hhcd->pData);
 }
 
 /**
@@ -158,7 +151,7 @@ void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum,
 {
   /* To be used with OS to sync URB state with the global state machine */
 #if (USBH_USE_OS == 1)
-  USBH_LL_NotifyURBChange(hhcd->pData);
+  USBH_LL_NotifyURBChange((USBH_HandleTypeDef *)hhcd->pData);
 #endif
 }
 /**
@@ -168,7 +161,7 @@ void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum,
   */
 void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
 {
-  USBH_LL_PortEnabled(hhcd->pData);
+  USBH_LL_PortEnabled((USBH_HandleTypeDef *)hhcd->pData);
 } 
 
 /**
@@ -178,7 +171,7 @@ void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_PortDisabled_Callback(HCD_HandleTypeDef *hhcd)
 {
-  USBH_LL_PortDisabled(hhcd->pData);
+  USBH_LL_PortDisabled((USBH_HandleTypeDef *)hhcd->pData);
 } 
 
 /*******************************************************************************
@@ -194,22 +187,22 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
 {
   /* Init USB_IP */
   if (phost->id == HOST_FS) {
-  /* Link the driver to the stack. */
-  hhcd_USB_OTG_FS.pData = phost;
-  phost->pData = &hhcd_USB_OTG_FS;
+    /* Link the driver to the stack. */
+    hhcd_USB_OTG_FS.pData = phost;
+    phost->pData = &hhcd_USB_OTG_FS;
 
-  hhcd_USB_OTG_FS.Instance = USB_OTG_FS;
-  hhcd_USB_OTG_FS.Init.Host_channels = 8;
-  hhcd_USB_OTG_FS.Init.speed = HCD_SPEED_FULL;
-  hhcd_USB_OTG_FS.Init.dma_enable = DISABLE;
-  hhcd_USB_OTG_FS.Init.phy_itface = HCD_PHY_EMBEDDED;
-  hhcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
-  if (HAL_HCD_Init(&hhcd_USB_OTG_FS) != HAL_OK)
-  {
-    Error_Handler( );
-  }
+    hhcd_USB_OTG_FS.Instance = USB_OTG_FS;
+    hhcd_USB_OTG_FS.Init.Host_channels = 8;
+    hhcd_USB_OTG_FS.Init.speed = HCD_SPEED_FULL;
+    hhcd_USB_OTG_FS.Init.dma_enable = DISABLE;
+    hhcd_USB_OTG_FS.Init.phy_itface = HCD_PHY_EMBEDDED;
+    hhcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
+    if (HAL_HCD_Init(&hhcd_USB_OTG_FS) != HAL_OK)
+    {
+      Error_Handler( );
+    }
 
-  USBH_LL_SetTimer(phost, HAL_HCD_GetCurrentFrame(&hhcd_USB_OTG_FS));
+    USBH_LL_SetTimer(phost, HAL_HCD_GetCurrentFrame(&hhcd_USB_OTG_FS));
   }
   return USBH_OK;
 }
@@ -224,7 +217,7 @@ USBH_StatusTypeDef USBH_LL_DeInit(USBH_HandleTypeDef *phost)
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_DeInit(phost->pData);
+  hal_status = HAL_HCD_DeInit((HCD_HandleTypeDef *)phost->pData);
   
   usb_status = USBH_Get_USB_Status(hal_status);
   
@@ -241,7 +234,7 @@ USBH_StatusTypeDef USBH_LL_Start(USBH_HandleTypeDef *phost)
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_Start(phost->pData);
+  hal_status = HAL_HCD_Start((HCD_HandleTypeDef *)phost->pData);
 
   usb_status = USBH_Get_USB_Status(hal_status);
   
@@ -258,7 +251,7 @@ USBH_StatusTypeDef USBH_LL_Stop(USBH_HandleTypeDef *phost)
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_Stop(phost->pData);
+  hal_status = HAL_HCD_Stop((HCD_HandleTypeDef *)phost->pData);
 
   usb_status = USBH_Get_USB_Status(hal_status);
  
@@ -274,7 +267,7 @@ USBH_SpeedTypeDef USBH_LL_GetSpeed(USBH_HandleTypeDef *phost)
 {
   USBH_SpeedTypeDef speed = USBH_SPEED_FULL;
 
-  switch (HAL_HCD_GetCurrentSpeed(phost->pData))
+  switch (HAL_HCD_GetCurrentSpeed((HCD_HandleTypeDef *)phost->pData))
   {
   case 0 :
     speed = USBH_SPEED_HIGH;
@@ -305,7 +298,7 @@ USBH_StatusTypeDef USBH_LL_ResetPort(USBH_HandleTypeDef *phost)
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_ResetPort(phost->pData);
+  hal_status = HAL_HCD_ResetPort((HCD_HandleTypeDef *)phost->pData);
   
   usb_status = USBH_Get_USB_Status(hal_status);
   
@@ -320,7 +313,7 @@ USBH_StatusTypeDef USBH_LL_ResetPort(USBH_HandleTypeDef *phost)
   */
 uint32_t USBH_LL_GetLastXferSize(USBH_HandleTypeDef *phost, uint8_t pipe)
 {
-  return HAL_HCD_HC_GetXferCount(phost->pData, pipe);
+  return HAL_HCD_HC_GetXferCount((HCD_HandleTypeDef *)phost->pData, pipe);
 }
 
 /**
@@ -340,7 +333,7 @@ USBH_StatusTypeDef USBH_LL_OpenPipe(USBH_HandleTypeDef *phost, uint8_t pipe_num,
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_HC_Init(phost->pData, pipe_num, epnum,
+  hal_status = HAL_HCD_HC_Init((HCD_HandleTypeDef *)phost->pData, pipe_num, epnum,
                                dev_address, speed, ep_type, mps);
 
   usb_status = USBH_Get_USB_Status(hal_status);
@@ -359,7 +352,7 @@ USBH_StatusTypeDef USBH_LL_ClosePipe(USBH_HandleTypeDef *phost, uint8_t pipe)
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_HC_Halt(phost->pData, pipe);
+  hal_status = HAL_HCD_HC_Halt((HCD_HandleTypeDef *)phost->pData, pipe);
 
   usb_status = USBH_Get_USB_Status(hal_status);
   
@@ -400,7 +393,7 @@ USBH_StatusTypeDef USBH_LL_SubmitURB(USBH_HandleTypeDef *phost, uint8_t pipe, ui
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_HC_SubmitRequest(phost->pData, pipe, direction ,
+  hal_status = HAL_HCD_HC_SubmitRequest((HCD_HandleTypeDef *)phost->pData, pipe, direction ,
                                         ep_type, token, pbuff, length,
                                         do_ping);
   usb_status =  USBH_Get_USB_Status(hal_status);
@@ -424,7 +417,7 @@ USBH_StatusTypeDef USBH_LL_SubmitURB(USBH_HandleTypeDef *phost, uint8_t pipe, ui
   */
 USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost, uint8_t pipe)
 {
-  return (USBH_URBStateTypeDef)HAL_HCD_HC_GetURBState (phost->pData, pipe);
+  return (USBH_URBStateTypeDef)HAL_HCD_HC_GetURBState ((HCD_HandleTypeDef *)phost->pData, pipe);
 }
 
 /**
@@ -476,7 +469,7 @@ USBH_StatusTypeDef USBH_LL_DriverVBUS(USBH_HandleTypeDef *phost, uint8_t state)
 USBH_StatusTypeDef USBH_LL_SetToggle(USBH_HandleTypeDef *phost, uint8_t pipe, uint8_t toggle)
 {
   HCD_HandleTypeDef *pHandle;
-  pHandle = phost->pData;
+  pHandle = (HCD_HandleTypeDef *)phost->pData;
 
   if(pHandle->hc[pipe].ep_is_in)
   {
@@ -500,7 +493,7 @@ uint8_t USBH_LL_GetToggle(USBH_HandleTypeDef *phost, uint8_t pipe)
 {
   uint8_t toggle = 0;
   HCD_HandleTypeDef *pHandle;
-  pHandle = phost->pData;
+  pHandle = (HCD_HandleTypeDef *)phost->pData;
 
   if(pHandle->hc[pipe].ep_is_in)
   {

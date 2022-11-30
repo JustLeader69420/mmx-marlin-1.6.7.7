@@ -344,7 +344,7 @@ void menuPrintUdisk(void)
 {
   GUI_Clear(BK_COLOR);
   GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_LOADING));
-  // if (ExtUI::isMediaInserted())
+  if (udisk.usbIsReady())
   {
     filelistUdisk.refresh();
     for(uint8_t i = 0; i < NUM_PER_PAGE; i++) printItemsUdisk.items[i].icon = NULL;
@@ -352,12 +352,12 @@ void menuPrintUdisk(void)
     gocdeListDrawUdisk();
     menuSetFrontCallBack(menuCallBackPrintUdisk);
   }
-  // else
-  // {
-  //   GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_READ_U_DISK_ERROR));
-  //   ExtUI::delay_ms(1000);
-  //   infoMenu.cur--;
-  // }
+  else
+  {
+    GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_READ_U_DISK_ERROR));
+    ExtUI::delay_ms(1000);
+    infoMenu.cur--;
+  }
 }
 
 void menuCallBackWhetherToPtintUdisk()
@@ -408,7 +408,7 @@ void menuCallBackDeleteUdiskFile()
       memset(filePath, 0, sizeof(filePath));
       sprintf_P(filePath, "%s/%s", gUdiskPath, workFileinfo.altname);
       f_unlink(filePath);
-      udisk.ResetUdisk();
+      udisk.ResetPin();
       infoMenu.cur--;
       break;
     case KEY_POPUP_CANCEL:

@@ -58,8 +58,9 @@ extern "C" {
 #define HOST_USER_CONNECTION                    0x04U
 #define HOST_USER_DISCONNECTION                 0x05U
 #define HOST_USER_UNRECOVERED_ERROR             0x06U
+#define HOST_USER_RESET_ENUM                    0x07U
 
-extern uint8_t udiskMounted;
+// extern uint8_t udiskMounted;
 
 /**
   * @}

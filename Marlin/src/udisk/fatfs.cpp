@@ -18,10 +18,16 @@
 
 #include "fatfs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 uint8_t retUSBH;    /* Return value for USBH */
 char USBHPath[4];   /* USBH logical drive path */
 FATFS USBHFatFS;    /* File system object for USBH logical drive */
 FIL USBHFile;       /* File object for USBH */
+#ifdef __cplusplus
+}
+#endif
 
 /* USER CODE BEGIN Variables */
 

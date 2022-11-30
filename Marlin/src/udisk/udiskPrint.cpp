@@ -4,7 +4,7 @@
 
 #include "../module/planner.h"
 #include "../module/printcounter.h"
-
+#include "stm32_usb.h"
 
 UdiskPrint udisk;
 uint64_t UdiskPrint::fsize;  // 文件大小
@@ -35,6 +35,9 @@ void UdiskPrint::resumeUdiskPrint(uint64_t _size, uint32_t _psize, millis_t resu
 }
 uint8_t UdiskPrint::getPrintProgress(void){
     return psize*100/fsize;
+}
+bool UdiskPrint::usbIsReady(void){
+    return (MX_USB_GET_State() == HOST_CLASS);
 }
 
 #endif

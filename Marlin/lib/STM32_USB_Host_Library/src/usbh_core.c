@@ -87,8 +87,8 @@ static void USBH_Process_OS(void *argument);
 
 typedef char bool;
 
-uint8_t udiskMounted = 0;
-extern uint16_t plr_num;
+// uint8_t udiskMounted = 0;
+// extern uint16_t plr_num;
 extern bool plr_flag;
 
 /**
@@ -421,7 +421,10 @@ USBH_StatusTypeDef  USBH_Stop(USBH_HandleTypeDef *phost)
   return USBH_OK;
 }
 
-
+#ifdef USE_GD32
+  #define RESET_ENUM_TIME 2
+  static uint8_t need_reset_enum = RESET_ENUM_TIME;
+#endif
 /**
   * @brief  HCD_ReEnumerate
   *         Perform a new Enumeration phase.
@@ -482,7 +485,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 
         /* Wait for 200 ms after connection */
         phost->gState = HOST_DEV_WAIT_FOR_ATTACHMENT;
-        USBH_Delay(200U);
+        USBH_Delay(100U);
         USBH_LL_ResetPort(phost);
 
         /* Make sure to start with Default address */
@@ -540,7 +543,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       #endif
     }break;
 
-    case HOST_DEV_ATTACHED :
+    case HOST_DEV_ATTACHED:
     {
       if (phost->pUser != NULL)
       {
@@ -733,7 +736,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
         if (status == USBH_OK)
         {
           phost->gState = HOST_CLASS;
-          udiskMounted = 1;
+          // udiskMounted = 1;
           // pty++;
           // delay(1000);
           // delay(1000);
@@ -765,6 +768,13 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 
     case HOST_CLASS:
     {
+      #ifdef USE_GD32
+        if(need_reset_enum)
+        {
+          USBH_ReEnumerate(phost);
+          return USBH_OK;
+        }
+      #endif
       /* process class state machine */
       if (phost->pActiveClass != NULL)
       {
@@ -787,7 +797,17 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 
       if (phost->pUser != NULL)
       {
+       #ifdef USE_GD32
+        if(need_reset_enum){
+          need_reset_enum--;
+          phost->pUser(phost, HOST_USER_RESET_ENUM);
+        }else{
+          need_reset_enum = RESET_ENUM_TIME;
+          phost->pUser(phost, HOST_USER_DISCONNECTION);
+        }
+       #else
         phost->pUser(phost, HOST_USER_DISCONNECTION);
+       #endif
       }
       USBH_UsrLog("USB Device disconnected");
 
@@ -802,8 +822,8 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       {
         /* Device Disconnection Completed, start USB Driver */
         USBH_LL_Start(phost);
-        udiskMounted = 2;
-        plr_num = 0;
+        // udiskMounted = 2;
+        // plr_num = 0;
         plr_flag = 0;
         // pty=0;
       }
@@ -819,6 +839,11 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
     }break;
 
     case HOST_ABORT_STATE:
+    {
+      USBH_LL_Disconnect(phost);
+      phost->pActiveClass->DeInit(phost);
+      DeInitStateMachine(phost);
+    }break;
     default:break;
   }
   return USBH_OK;

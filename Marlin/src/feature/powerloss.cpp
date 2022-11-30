@@ -75,7 +75,7 @@ PrintJobRecovery recovery;
     SDCARD = 0,
     USBDISK
   };
-  uint16_t plr_num = 0;
+  // uint16_t plr_num = 0;
   uint8_t sd_or_udisk = 0;
   bool plr_flag = false;
   FIL udiskfile;
@@ -85,7 +85,7 @@ PrintJobRecovery recovery;
 #ifdef __cplusplus
   extern "C"{
 #endif
-    extern uint8_t udiskMounted;
+    // extern uint8_t udiskMounted;
 #ifdef __cplusplus
   }
 #endif
@@ -193,17 +193,19 @@ void PrintJobRecovery::check() {
 #ifdef HAS_UDISK
   void PrintJobRecovery::check_u() {
     // 检测到有插U盘且SD卡没有检测到断电文件
-    if(udiskMounted && plr_num<500){
+    // if(udiskMounted && plr_num<500)
+    if(udisk.usbIsReady()/* && plr_num<500*/)
+    {
       sd_or_udisk = USBDISK;
       // if() return;
-      plr_num++;
+      // plr_num++;
       if(!(load(sd_or_udisk))){
         plr_flag = false;
         // return;
       }
       else{
         plr_flag = true;
-        plr_num = 1000;
+        // plr_num = 1000;
         queue.inject_P(PSTR("M1000S"));
       }
     }
@@ -461,7 +463,7 @@ void PrintJobRecovery::write() {
 }
 #ifdef HAS_UDISK
   void PrintJobRecovery::usb_write() {
-    if(!udiskMounted) return;
+    if(!udisk.usbIsReady()) return;
     debug(PSTR("usb Write"));
     FRESULT fp = f_open(&udiskfile, filename1, FA_WRITE | FA_OPEN_ALWAYS);
     fp = f_lseek(&udiskfile,0);
