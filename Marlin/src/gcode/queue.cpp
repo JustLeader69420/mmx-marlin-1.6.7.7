@@ -639,11 +639,12 @@ void GCodeQueue::get_serial_commands() {
     // static uint8_t sd_input_state = PS_NORMAL;
     static TCHAR rbuf[UDISKBUFSIZE] = {0};
     static TCHAR *rbuf_p = NULL;
-    static int rres = 0;
+    static uint8_t usb_command_lock = false;
     static int error_num = 0;
     
-    if (!udisk.isUdiskPrint()) return;
+    if (!udisk.isUdiskPrint() || usb_command_lock) return;
 
+    usb_command_lock = true;
     int sd_count = 0;uint8_t i=0;
     bool udisk_eof = udisk.eof();
     while (length < BUFSIZE-2 && !udisk_eof) {
@@ -658,22 +659,26 @@ void GCodeQueue::get_serial_commands() {
         continue;
       }else error_num = 0;
 
+      rbuf[n] = '\n';
       rbuf_p = rbuf;
       // 跳过句首空格
       for(i=0; i<UDISKBUFSIZE; i++){
         if(*(rbuf_p) == ' ') rbuf_p++;
         else break;
       }
-      if(*rbuf_p == 'G' || *rbuf_p == 'M'){  //只挑G和M命令入队
+      //跳过注释
+      // if(*rbuf_p == 'G' || *rbuf_p == 'M')  //只挑G和M命令入队
+      if(*rbuf_p != ';')
+      {  
         enqueue_one_P(rbuf_p);
         // SERIAL_ECHOLNPAIR("file:", rbuf_p);
         // SERIAL_ECHOLNPAIR("fsize:", (int)udisk.getFileSize());
         // SERIAL_ECHOLNPAIR("psize:", (int)udisk.getPrintSize());
         // break;
       }
-      if(udisk_eof) {udisk.fileHasFinish(&udisk_fp);SERIAL_ECHOLNPAIR("finish:", (int)udisk.getPrintSize());}// 文件读完
-      
     }
+    if(udisk_eof) {udisk.fileHasFinish(&udisk_fp);SERIAL_ECHOLNPAIR("finish:", (int)udisk.getPrintSize());}// 文件读完
+    usb_command_lock = false;
   }
 
 #endif // HAS_UDISK

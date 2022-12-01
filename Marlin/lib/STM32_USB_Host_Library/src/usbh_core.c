@@ -841,7 +841,10 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
     case HOST_ABORT_STATE:
     {
       USBH_LL_Disconnect(phost);
-      phost->pActiveClass->DeInit(phost);
+      if(phost->pActiveClass != NULL)
+      {
+        phost->pActiveClass->DeInit(phost);
+      }
       DeInitStateMachine(phost);
     }break;
     default:break;

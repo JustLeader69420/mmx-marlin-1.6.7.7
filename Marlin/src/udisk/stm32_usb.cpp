@@ -10,6 +10,7 @@
 #include "../feature/powerloss.h"
 #include "udiskPrint.h"
 
+#ifdef HAS_UDISK
 // PCD_HandleTypeDef hpcd_USB_OTG_FS;
 // HCD_HandleTypeDef hhcd_USB_OTG_HS;
 // extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
@@ -236,3 +237,4 @@ void OTG_FS_IRQHandler()
 #endif
 #endif
 
+#endif // HAS_UDISK

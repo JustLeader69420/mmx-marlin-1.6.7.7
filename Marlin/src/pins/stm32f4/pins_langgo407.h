@@ -267,8 +267,9 @@
 //
 // Temperature Sensors
 //
-#define TEMP_0_PIN                          PF6   // T0
-#define TEMP_BED_PIN                        PF5   // TB
+#define TEMP_0_PIN                          PF5   // T0
+#define TEMP_1_PIN                          PB1   // T0
+#define TEMP_BED_PIN                        PF6   // TB
 
 #ifndef TEMP_CHAMBER_PIN
   // #define TEMP_CHAMBER_PIN                  PC3   // TC
