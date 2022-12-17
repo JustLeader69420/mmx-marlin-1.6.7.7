@@ -432,7 +432,11 @@
 //
 // #define SERVO0_PIN                          PC6
 // #define SERVO1_PIN                          PC7
+#ifdef HALL_PLATE
 #define CALIB_PIN          PB1
+#else
+#define SERVO0_PIN         PB1
+#endif
 
 //
 // Z Probe must be this pins

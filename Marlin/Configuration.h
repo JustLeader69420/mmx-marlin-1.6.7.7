@@ -23,7 +23,7 @@
 
 // 选择机器型号
 // #define R3_PRO    // R3_pro:max
-#define R4_PRO    // R4_pro:pro
+// #define R4_PRO    // R4_pro:pro
 
 // 使用了st芯片
 // #define ST32_SHIP
@@ -61,9 +61,12 @@
 #define D301_AUTO_LEVELING
 #ifdef D301_AUTO_LEVELING
 
+  #define HALL_PLATE
   //#define USE_PROBE_FOR_Z_HOMING              // du, this is use the probe for z_homing, 2022.09.12
   //#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN  //davi 2021.1.21
-  //#define BLTOUCH                             //davi 2021.1.21
+  #ifndef HALL_PLATE
+    #define BLTOUCH                             //davi 2021.1.21
+  #endif
   //#define Z_SAFE_HOMING                       //davi 2021.1.21
   #define AUTO_BED_LEVELING_BILINEAR
   #define MARLIN_DEV_MODE
@@ -72,7 +75,9 @@
   #define LEVELING_OFFSET
 
 #endif
-
+#ifdef HALL_PLATE
+  #define FIX_MOUNTED_PROBE
+#endif
 
 /**
  * Configuration.h
@@ -730,27 +735,23 @@
   //#define ENDSTOPPULLDOWN_XMIN
   //#define ENDSTOPPULLDOWN_YMIN
   //#define ENDSTOPPULLDOWN_ZMIN
-  //#define ENDSTOPPULLDOWN_ZMIN_PROBE
+ #ifdef HALL_PLATE
+  #define ENDSTOPPULLDOWN_ZMIN_PROBE
+ #endif
 #endif
 
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup). ture:narmal open; false:narmal close
 // COM到地和NC到信号的机械端停在这里使用“假”(最常见的设置)。ture:常开;false:常闭
-#if ENABLED(QUICK_PRINT)
-  #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
+#define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+#define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+#define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#ifdef HALL_PLATE
+#define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
 #else
-  #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-  #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
+#define Z_MIN_PROBE_ENDSTOP_INVERTING false // Set to true to invert the logic of the probe.
 #endif
 
 /**
@@ -870,7 +871,7 @@
 #elif ENABLED(TEST_FW)
   #define DEFAULT_MAX_FEEDRATE          { 10, 10, 5, 45 }
 #else
-  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 4, 45 }
+  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 20, 45 }
 #endif
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
@@ -1015,7 +1016,7 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
-#define FIX_MOUNTED_PROBE
+// #define FIX_MOUNTED_PROBE
 
 /**
  * Use the nozzle as the probe, as with a conductive
@@ -1140,13 +1141,14 @@
 #endif
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_SPEED_FAST (4*60) //HOMING_FEEDRATE_Z
+#define Z_PROBE_SPEED_FAST (10*60) //HOMING_FEEDRATE_Z
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 2)
+#define Z_PROBE_SPEED_SLOW (8*60)  //(Z_PROBE_SPEED_FAST / 2)
 
 /**
  * Multiple Probing
+ * 多次探测
  *
  * You may get improved results by probing 2 or more times.
  * With EXTRA_PROBING the more atypical reading(s) will be disregarded.
@@ -1154,8 +1156,8 @@
  * A total of 2 does fast/slow probes with a weighted average.
  * A total of 3 or more adds more slow probes, taking the average.
  */
-//#define MULTIPLE_PROBING 2
-//#define EXTRA_PROBING    1
+#define MULTIPLE_PROBING 2
+#define EXTRA_PROBING    1
 
 /**
  * Z probes require clearance when deploying, stowing, and moving between
@@ -1173,10 +1175,10 @@
  */
 #define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow
 #define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
-#define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
+#define Z_CLEARANCE_MULTI_PROBE     2 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_PROBE_LOW_POINT          -50 // Farthest distance below the trigger-point to go before stopping
+#define Z_PROBE_LOW_POINT          -12 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -1589,7 +1591,7 @@
 #ifdef QUICK_PRINT
   #define HOMING_FEEDRATE_Z  (20*60)
 #else
-  #define HOMING_FEEDRATE_Z  (4*60)
+  #define HOMING_FEEDRATE_Z  (10*60)
 #endif
 
 // Validate that endstops are triggered on homing moves

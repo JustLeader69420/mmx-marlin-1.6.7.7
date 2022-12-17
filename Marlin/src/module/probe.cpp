@@ -452,6 +452,18 @@ bool Probe::probe_down_to_z(const float z, const feedRate_t fr_mm_s) {
 
   #if ENABLED(BLTOUCH) && DISABLED(BLTOUCH_HS_MODE)
     if (bltouch.deploy()) return true; // DEPLOY in LOW SPEED MODE on every probe action
+  #elif ENABLED(HALL_PLATE)
+    uint8_t num=5;
+    // 等待平静,尝试5+1次未果就退出
+    do
+    {
+      if(!num) return true;
+      num--;
+      WRITE(CALIB_PIN, LOW);
+      safe_delay(50);
+      WRITE(CALIB_PIN, HIGH);
+      safe_delay(50);
+    }while(READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING);
   #endif
 
   // Disable stealthChop if used. Enable diag1 pin on driver.
@@ -493,6 +505,8 @@ bool Probe::probe_down_to_z(const float z, const feedRate_t fr_mm_s) {
 
   #if ENABLED(BLTOUCH) && DISABLED(BLTOUCH_HS_MODE)
     if (probe_triggered && bltouch.stow()) return true; // STOW in LOW SPEED MODE on trigger on every probe action
+  #elif ENABLED(HALL_PLATE)
+    WRITE(CALIB_PIN, LOW);  //reset hall calib
   #endif
 
   // Clear endstop flags
@@ -711,12 +725,6 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
   #if DISABLED(QUICK_PRINT)
     DISABLE_STEPPER_X();
   #endif
-  WRITE(CALIB_PIN, LOW);
-  SERIAL_PRINTF("***********wait 500ms probe***************\n");
-  safe_delay(500);
-  WRITE(CALIB_PIN, HIGH);
-  SERIAL_PRINTF("***********wait 100ms probe***************\n");
-  safe_delay(100);
 
   float measured_z = NAN;
   if (!deploy()) measured_z = run_z_probe(sanity_check) + offset.z;
@@ -740,8 +748,6 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
       SERIAL_ERROR_MSG(STR_ERR_PROBING_FAILED);
     #endif
   }
-
-  WRITE(CALIB_PIN, LOW);  //reset hall calib
   
   return measured_z;
 }
