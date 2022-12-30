@@ -416,8 +416,8 @@ bool pause_print(const float &retract, const xyz_pos_t &park_point, const float 
     }
   #endif
   #if ENABLED(HAS_UDISK)
-    if(UDiskPrint){
-      UDiskPausePrint = true; // 暂停U盘打印
+    if(udisk.isUdiskPrint()){
+      udisk.pauseUdiskPrint(); // 暂停U盘打印
       ++did_pause_print;
     }
   #endif
@@ -754,8 +754,8 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
   #if ENABLED(SDSUPPORT)
     if (did_pause_print) {
      #ifdef HAS_UDISK
-      if(UDiskPrint) 
-        UDiskPausePrint = false;
+      if(udisk.isUdiskPrint()) 
+        udisk.resumeUdiskPrint();
       else 
      #endif
         card.startFileprint(); 

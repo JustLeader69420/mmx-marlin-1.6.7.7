@@ -70,6 +70,9 @@ void HAL_init() {
   #if PIN_EXISTS(LED)
     OUT_WRITE(LED_PIN, LOW); //test pass
   #endif
+  #if PIN_EXISTS(CAP_TOUCH)
+    SET_INPUT(CAP_TOUCH_PIN);
+  #endif
 
   #if ENABLED(SRAM_EEPROM_EMULATION)
     __HAL_RCC_PWR_CLK_ENABLE();

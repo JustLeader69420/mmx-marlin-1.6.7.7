@@ -339,6 +339,6 @@ void menuStatus()
   drawStatus();
   drawStatusScreenMsg();
   msgNeedUpdate = false;
-  TERN_( HAS_UDISK, UDiskPrint = false; )
+  TERN_( HAS_UDISK, udisk.init(); )
   menuSetFrontCallBack(menuCallStatus);
 }

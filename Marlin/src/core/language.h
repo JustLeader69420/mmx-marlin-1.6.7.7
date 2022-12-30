@@ -199,6 +199,9 @@
 #define STR_SD_ERR_READ                     "SD read error"
 #define STR_SD_CANT_ENTER_SUBDIR            "Cannot enter subdir: "
 
+#define STR_UDISK_OK                        "USB disk ok"
+#define STR_UDISK_ERR_READ                  "USB disk read error"
+
 #define STR_ENDSTOPS_HIT                    "endstops hit: "
 #define STR_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define STR_ERR_LONG_EXTRUDE_STOP           " too long extrusion prevented"

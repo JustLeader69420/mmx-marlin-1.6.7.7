@@ -107,9 +107,9 @@ void GcodeSuite::M1110(){
     // pause
     case 1: 
      #ifdef HAS_UDISK
-      if(UDiskPrint){
-        if(printPaused2 == UDiskPausePrint){
-          printPaused2 = !UDiskPausePrint;
+      if(udisk.isUdiskPrint()){
+        if(printPaused2 == udisk.isUdiskPause()){
+          printPaused2 = !udisk.isUdiskPause();
           resumeAndPauseIcon(printPaused2);
           setUDiskPrintPause();
         }

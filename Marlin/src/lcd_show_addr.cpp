@@ -274,7 +274,7 @@ void Updata_usart_lcd(void){
 }
 
 void usart_lcd_stop_printf(){
-    TERN_( HAS_UDISK, UDiskStopPrint = true; )
+    TERN_( HAS_UDISK, udisk.abortUdiskPrint(); )
     ExtUI::stopPrint();
     // set_bed_leveling_enabled(false);
 }

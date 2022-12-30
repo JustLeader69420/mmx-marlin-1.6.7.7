@@ -4,9 +4,9 @@
 #ifdef HAS_UDISK
 #include "ff.h"
 
-extern bool UDiskPrint;
-extern bool UDiskPausePrint;
-extern bool UDiskStopPrint;
+// extern bool UDiskPrint;
+// extern bool UDiskPausePrint;
+// extern bool UDiskStopPrint;
 extern bool UDiskPrintFinish;
 extern FIL udisk_fp;
 extern uint64_t UDiskPrintSize;

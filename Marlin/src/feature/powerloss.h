@@ -141,6 +141,7 @@ class PrintJobRecovery {
 
     static void init();
     static void prepare();
+    static void prepare_u(const char *name);
 
     static /*inline*/ void setup();
 

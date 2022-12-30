@@ -489,8 +489,8 @@ void startOrResumeJob() {
     float rz;
     // delay(100);
    #ifdef HAS_UDISK
-    if(udisk.isUdiskPrint())
-      udisk.abortUdiskPrint(&udisk_fp);
+    if(udisk.isUdiskStop())
+      udisk.closeFile();
    #endif
     if(card.isFileOpen())
       card.endFilePrint(TERN_(SD_RESORT, true));
@@ -522,7 +522,7 @@ void startOrResumeJob() {
     // delay(100);
 
     card.flag.abort_sd_printing = false;  // 结束停止打印状态
-    TERN_( HAS_UDISK, UDiskPrint = UDiskStopPrint = UDiskPausePrint = false;)
+    TERN_( HAS_UDISK, udisk.init();)
 
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
 
@@ -1523,33 +1523,8 @@ void loop() {
 
     #if ENABLED(SDSUPPORT)
       card.checkautostart();
-      if (card.flag.abort_sd_printing) abortSDPrinting();     // 如果停止SD卡打印标志为真，就停止SD卡打印
+      if (card.flag.abort_sd_printing || udisk.isUdiskStop()) abortSDPrinting();     // 如果停止SD卡打印标志为真，就停止SD卡打印
       if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
-    #endif
-
-    #if 0
-      if(UDiskPrint && !UDiskPausePrint && queue.length <= 3){
-        static TCHAR rbuf[128] = {0};
-        static int rres = 0;
-
-        rres = f_gets_p(rbuf, sizeof(rbuf), &udisk_fp);
-        if(rres == 0){
-          UDiskPrint = false;
-          UDiskPrintFinish = true;
-          f_close(&udisk_fp);
-          finishSDPrinting();
-          SERIAL_ECHOLNPAIR("Finsish!!!");
-        }
-        else if(rbuf[0]=='G' || rbuf[0]=='M'){
-          SERIAL_ECHOLNPAIR("the gcode:", rbuf);
-          queue.enqueue_now_P((const char *)rbuf);
-        }
-        UDiskPrintSize += rres;
-      }
-      // if(UDiskStopPrint){
-      //   UDiskStopPrint = false;
-      //   abortSDPrinting();
-      // }
     #endif
 
     queue.advance();

@@ -131,6 +131,9 @@ void MX_USB_HOST_Process(void)
 HOST_StateTypeDef MX_USB_GET_State(void){
   return hUsbHostFS.gState;
 }
+uint8_t usb_is_ready(void){
+  return (USBH_MSC_IsReady(&hUsbHostFS));
+}
 
 /*
  * user callback definition

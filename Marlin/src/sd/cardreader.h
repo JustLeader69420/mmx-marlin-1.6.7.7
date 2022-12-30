@@ -311,6 +311,8 @@ private:
 #define IS_SD_PAUSED()    card.isPaused()
 #define IS_SD_FILE_OPEN() card.isFileOpen()
 
+void announceOpen(const uint8_t doing, const char * const path);
+
 extern CardReader card;
 
 #else // !SDSUPPORT

@@ -172,7 +172,7 @@ void PrintJobRecovery::enable(const bool onoff) {
 void PrintJobRecovery::changed() {
   if (!enabled)
     purge();
-  else if (IS_SD_PRINTING() TERN_( HAS_UDISK, || UDiskPrint ))
+  else if (IS_SD_PRINTING() TERN_( HAS_UDISK, || udisk.isUdiskPrint() ))
     save(true);
 }
 
@@ -257,15 +257,14 @@ void PrintJobRecovery::load() {
  * Set info fields that won't change
  */
 void PrintJobRecovery::prepare() {
+  card.getAbsFilename(info.sd_filename);  // SD filename
+  cmd_sdpos = 0;
+}
+void PrintJobRecovery::prepare_u(const char *name) {
  #ifdef HAS_UDISK
-  if(UDiskPrint)
-  {
-    memset(info.sd_filename, 0, sizeof(info.sd_filename));
-    strcpy(info.sd_filename, filePath);
-  }
-  else
+  memset(info.sd_filename, 0, sizeof(info.sd_filename));
+  strcpy(info.sd_filename, name);
  #endif
-    card.getAbsFilename(info.sd_filename);  // SD filename
   cmd_sdpos = 0;
 }
 
@@ -324,11 +323,11 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
       #endif
     #endif
 
-    #if EXTRUDERS
-      HOTEND_LOOP() info.target_temperature[e] = thermalManager.temp_hotend[e].target;
-    #endif
+    // #if EXTRUDERS
+    //   HOTEND_LOOP() info.target_temperature[e] = thermalManager.temp_hotend[e].target;
+    // #endif
 
-    TERN_(HAS_HEATED_BED, info.target_temperature_bed = thermalManager.temp_bed.target);
+    // TERN_(HAS_HEATED_BED, info.target_temperature_bed = thermalManager.temp_bed.target);
 
     #if HAS_FAN
       COPY(info.fan_speed, thermalManager.fan_speed);
@@ -360,8 +359,8 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
     if(IS_SD_PRINTING())
       write();
    #ifdef HAS_UDISK
-    else if(UDiskPrint){
-      info.sdpos = udisk.getPrintSize();
+    else if(udisk.isUdiskPrint()){
+      // info.sdpos = udisk.getPrintSize();
       usb_write();
     }
    #endif
@@ -421,9 +420,17 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
     #else
       constexpr float zraise = 0;
     #endif
+    // 缓存温度数据
+    #if EXTRUDERS
+      HOTEND_LOOP() info.target_temperature[e] = thermalManager.degTargetHotend(e);
+    #endif
+    TERN_(HAS_HEATED_BED, info.target_temperature_bed = thermalManager.degTargetBed());
+    
+    thermalManager.disable_all_heaters();
+    disable_all_steppers();
 
     // Save, including the limited Z raise
-    if (IS_SD_PRINTING()) save(true, zraise);
+    if (IS_SD_PRINTING() TERN_(HAS_UDISK, ||udisk.isUdiskPrint())) save(true, zraise);
 
     // Disable all heaters to reduce power loss
     thermalManager.disable_all_heaters();
@@ -439,7 +446,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
   }
 
 #endif
-static uint8_t test_file[] = "1234567890abcdefghijklmnopqrstuvwxyz";
+// static uint8_t test_file[] = "1234567890abcdefghijklmnopqrstuvwxyz";
 /**
  * Save the recovery info the recovery file
  */
@@ -725,10 +732,7 @@ void PrintJobRecovery::resume() {
     f_stat(info.sd_filename, &workFileinfo);
     memset(filePath, 0, sizeof(filePath));
     strcpy(filePath, info.sd_filename);
-    f_open(&udisk_fp, filePath,  FA_READ | FA_OPEN_ALWAYS);
-    f_lseek(&udisk_fp, resume_sdpos);
-    UDiskPrint = true;UDiskPrintFinish = false;UDiskStopPrint=false;
-    udisk.resumeUdiskPrint(workFileinfo.fsize, resume_sdpos, info.print_job_elapsed);
+    udisk.resumeUdiskPrint(filePath, resume_sdpos, info.print_job_elapsed);
     gcode.process_subcommands_now("M24\n");
   }
  #endif

@@ -6,9 +6,9 @@
 
 static ExtUI::FileList filelistUdisk;
 static const GUI_RECT RecProgress = {60,150,316,175};
-bool UDiskPrint = false;
-bool UDiskPausePrint = false;
-bool UDiskStopPrint = false;
+// bool UDiskPrint = false;
+// bool UDiskPausePrint = false;
+// bool UDiskStopPrint = false;
 bool UDiskPrintFinish = false;
 uint64_t UDiskFileSize = 0;
 uint64_t UDiskPrintSize = 0;
@@ -125,6 +125,7 @@ bool udisk_seek(const uint16_t pos) {
       }
     }
 }
+  #if 0
 #define copysize 1024*2
 void copy_file_to_sdcard(char* path)
 {
@@ -147,7 +148,6 @@ void copy_file_to_sdcard(char* path)
 
   popupDrawPage(NULL , (const uint8_t *)info.fname, NULL, NULL, NULL);
 
-  #if 1
     f_open(&fp, path,  FA_READ | FA_OPEN_ALWAYS);
     card.openFileWrite(path);
     GUI_SetColor(GANTRYLBL_COLOR);
@@ -172,8 +172,8 @@ void copy_file_to_sdcard(char* path)
     delete [] buffer;
     f_close(&fp);
     card.closefile();
-  #endif
 }
+  #endif
 
 void gocdeListDrawUdisk(void)
 {
@@ -375,9 +375,7 @@ void menuCallBackWhetherToPtintUdisk()
 
       memset(filePath, 0, sizeof(filePath));
       sprintf_P(filePath, "%s/%s", gUdiskPath, workFileinfo.altname);
-      f_open(&udisk_fp, filePath,  FA_READ | FA_OPEN_ALWAYS);
-      UDiskPrint = true;UDiskPrintFinish = false;UDiskStopPrint=false;
-      udisk.startUdiskPrint(workFileinfo.fsize);
+      udisk.openFileRead(filePath);
       queue.enqueue_now_P("M24\n");
       auto_close_flag = 2;
       break;

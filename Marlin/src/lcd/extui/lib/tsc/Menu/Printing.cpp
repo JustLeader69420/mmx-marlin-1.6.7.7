@@ -38,7 +38,7 @@ bool isPrintInfoMenu(){
 //
 bool isPrinting(void)
 {
-  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) TERN_( HAS_UDISK, || (udisk.isUdiskPrint() && !UDiskStopPrint));
+  return (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) TERN_( HAS_UDISK, || (udisk.isUdiskPrint() && !udisk.isUdiskStop()));
 }
 
 //
@@ -50,7 +50,7 @@ bool isPaused(void)
 uint8_t getPrintProgress(void)
 {
  #ifdef HAS_UDISK
-  if(UDiskPrint)  return udisk.getPrintProgress();
+  if(udisk.isUdiskPrint())  return udisk.getPrintProgress();
   else
  #endif
     return card.percentDone();
@@ -120,7 +120,7 @@ bool setUDiskPrintPause(){
   static bool UDiskPauseLock = false;
   if(UDiskPauseLock)  return false;
   UDiskPauseLock = true;
-  if(!UDiskPausePrint){ // 处于非暂停状态就暂停
+  if(!udisk.isUdiskPause()){ // 处于非暂停状态就暂停
     ExtUI::pausePrint();
   } else {              // 处于暂停状态就恢复
 
@@ -337,19 +337,6 @@ void menuCallBackPrinting(void)
     statusMsg.tagBed = tempMsg.tagBed;
     redrawBedTag();
   }
-
-  // Printing status du
-  /*
-  if (printPaused2 != UDiskPausePrint) {
-    printPaused2 = UDiskPausePrint;
-    resumeToPause(printPaused2);
-  }
-
-  if (printPaused != isPaused()) {
-    printPaused = isPaused();
-    resumeToPause(printPaused);
-  }
-  */
   
   if (lastProgress != getPrintProgress())
   {
@@ -370,9 +357,9 @@ void menuCallBackPrinting(void)
   {
     case KEY_ICON_0:
      #ifdef HAS_UDISK
-      if(UDiskPrint){
-        if(printPaused2 == UDiskPausePrint){
-          printPaused2 = !UDiskPausePrint;
+      if(udisk.isUdiskPrint()){
+        if(printPaused2 == udisk.isUdiskPause()){
+          printPaused2 = !udisk.isUdiskPause();
           resumeToPause(printPaused2);
           setUDiskPrintPause();
         }
@@ -415,7 +402,7 @@ void menuCallBackPrinting(void)
 
 void menuPrinting(void)
 {
-  TERN_( HAS_UDISK, printPaused2 = UDiskPausePrint; )
+  TERN_( HAS_UDISK, printPaused2 = udisk.isUdiskPause(); )
   printPaused = isPaused();
  #ifdef HAS_UDISK
   if(udisk.isUdiskPrint())
@@ -445,12 +432,7 @@ void menuCallBackStopPrinting(void)
         pop_up_lock = true;       // 开启弹窗锁
         can_print_flag = false;   // 不能进行打印
         wait_quick_stop_step = true;  // 等待快速停止电机
-        /*if(UDiskPrint){
-          // UDiskPrint = false;
-          
-        }
-        else*/ 
-        TERN_( HAS_UDISK, UDiskStopPrint = true; )
+        TERN_( HAS_UDISK, udisk.abortUdiskPrint(); )
         ExtUI::stopPrint();
         set_bed_leveling_enabled(false);
         break;

@@ -62,6 +62,9 @@ GcodeSuite gcode;
 #endif
 
 #include "../MarlinCore.h" // for idle()
+#if ENABLED(HAS_UDISK)
+  #include "../udisk/udiskPrint.h"
+#endif
 
 // Inactivity shutdown
 millis_t GcodeSuite::previous_move_ms = 0,
@@ -128,7 +131,6 @@ int8_t GcodeSuite::get_target_e_stepper_from_command() {
   return -1;
 }
 
-extern bool UDiskPrint;
 /**
  * Set XYZE destination and feedrate from the current GCode command
  *
@@ -168,7 +170,7 @@ void GcodeSuite::get_destination_from_command() {
 
   #if ENABLED(POWER_LOSS_RECOVERY) && !PIN_EXISTS(POWER_LOSS)
     // Only update power loss recovery on moves with E
-    if (recovery.enabled && (IS_SD_PRINTING() TERN_(HAS_UDISK, || UDiskPrint)) && seen.e && (seen.x || seen.y))
+    if (recovery.enabled && (IS_SD_PRINTING() TERN_(HAS_UDISK, || udisk.isUdiskPrint())) && seen.e && (seen.x || seen.y))
       recovery.save();
   #endif
 

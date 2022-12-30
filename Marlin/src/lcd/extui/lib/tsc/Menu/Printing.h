@@ -9,9 +9,9 @@
 #define AUTO_SHUT_DOWN_MAXTEMP 50
 
 #if ENABLED(HAS_UDISK)
-  extern bool UDiskPrint;
-  extern bool UDiskPausePrint;
-  extern bool UDiskStopPrint;
+  // extern bool UDiskPrint;
+  // extern bool UDiskPausePrint;
+  // extern bool UDiskStopPrint;
   extern bool UDiskPrintFinish;
 #endif
 #if ENABLED(USART_LCD)

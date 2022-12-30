@@ -636,49 +636,94 @@ void GCodeQueue::get_serial_commands() {
    */
   #define UDISKBUFSIZE 128
   inline void GCodeQueue::get_udisk_commands() {
-    // static uint8_t sd_input_state = PS_NORMAL;
-    static TCHAR rbuf[UDISKBUFSIZE] = {0};
-    static TCHAR *rbuf_p = NULL;
-    static uint8_t usb_command_lock = false;
-    static int error_num = 0;
-    
-    if (!udisk.isUdiskPrint() || usb_command_lock) return;
+    #if 0
+      // static uint8_t sd_input_state = PS_NORMAL;
+      static TCHAR rbuf[UDISKBUFSIZE] = {0};
+      static TCHAR *rbuf_p = NULL;
+      static uint8_t usb_command_lock = false;
+      static int error_num = 0;
+      
+      if (!udisk.isUdiskPrint() || usb_command_lock) return;
 
-    usb_command_lock = true;
-    int sd_count = 0;uint8_t i=0;
-    bool udisk_eof = udisk.eof();
-    while (length < BUFSIZE-2 && !udisk_eof) {
-      const int n = udisk.get(rbuf, sizeof(rbuf), &udisk_fp);
-      udisk_eof = udisk.eof();                              // 文件是否已经读取完毕
-      if(error_num >= 100){
-        // 读取失败
-        break;
-      }
-      if(n<=0 && !udisk_eof){
-        error_num++;
-        continue;
-      }else error_num = 0;
+      usb_command_lock = true;
+      int sd_count = 0;uint8_t i=0;
+      bool udisk_eof = udisk.eof();
+      while (length < BUFSIZE-2 && !udisk_eof) {
+        const int n = udisk.get(rbuf, sizeof(rbuf), &udisk_fp);
+        udisk_eof = udisk.eof();                              // 文件是否已经读取完毕
+        if(error_num >= 100){
+          // 读取失败
+          break;
+        }
+        if(n<=0 && !udisk_eof){
+          error_num++;
+          continue;
+        }else error_num = 0;
 
-      rbuf[n] = '\n';
-      rbuf_p = rbuf;
-      // 跳过句首空格
-      for(i=0; i<UDISKBUFSIZE; i++){
-        if(*(rbuf_p) == ' ') rbuf_p++;
-        else break;
+        rbuf[n] = '\n';
+        rbuf_p = rbuf;
+        // 跳过句首空格
+        for(i=0; i<UDISKBUFSIZE; i++){
+          if(*(rbuf_p) == ' ') rbuf_p++;
+          else break;
+        }
+        //跳过注释
+        // if(*rbuf_p == 'G' || *rbuf_p == 'M')  //只挑G和M命令入队
+        if(*rbuf_p != ';')
+        {  
+          enqueue_one_P(rbuf_p);
+          // SERIAL_ECHOLNPAIR("file:", rbuf_p);
+          // SERIAL_ECHOLNPAIR("fsize:", (int)udisk.getFileSize());
+          // SERIAL_ECHOLNPAIR("psize:", (int)udisk.getPrintSize());
+          // break;
+        }
       }
-      //跳过注释
-      // if(*rbuf_p == 'G' || *rbuf_p == 'M')  //只挑G和M命令入队
-      if(*rbuf_p != ';')
-      {  
-        enqueue_one_P(rbuf_p);
-        // SERIAL_ECHOLNPAIR("file:", rbuf_p);
-        // SERIAL_ECHOLNPAIR("fsize:", (int)udisk.getFileSize());
-        // SERIAL_ECHOLNPAIR("psize:", (int)udisk.getPrintSize());
-        // break;
+      if(udisk_eof) {udisk.fileHasFinish(&udisk_fp);SERIAL_ECHOLNPAIR("finish:", (int)udisk.getPrintSize());}// 文件读完
+      usb_command_lock = false;
+    #else
+      static uint8_t ud_input_state = PS_NORMAL;
+
+    // Get commands if there are more in the file
+    if (!udisk.isUdiskPrint() || udisk.isUdiskPause()) return;
+
+    int ud_count = 0;
+    while ((length < BUFSIZE-2) && !udisk.eof()) {
+      const int16_t n = udisk.get();
+      const bool ud_eof = udisk.eof();
+      if (n < 0 && !ud_eof) { SERIAL_ERROR_MSG(STR_UDISK_ERR_READ); continue; }
+
+      const char ud_char = (char)n;
+      const bool is_eol = ISEOL(ud_char);
+      if (is_eol || ud_eof) {
+        // Reset stream state, terminate the buffer, and commit a non-empty command
+        if (!is_eol && ud_count) process_stream_char(ud_char, ud_input_state, command_buffer[index_w], ud_count);// End of file with no newline// Don't forget the last character
+        if (!process_line_done(ud_input_state, command_buffer[index_w], ud_count)) {
+
+          // M808 L saves the sdpos of the next line. M808 loops to a new sdpos.
+          TERN_(GCODE_REPEAT_MARKERS, repeat.early_parse_M808(command.buffer));
+
+          #if 1
+          // Put the new command into the buffer (no "ok" sent)
+          _commit_command(false);
+          #else // debug
+            SERIAL_ECHOPGM(command.buffer);
+            SERIAL_EOL();
+            if (udisk.eof()) udisk.fileHasFinish();        // Handle end of file reached
+            // SERIAL_ECHOLNPAIR("file:", rbuf_p);
+            // delay(100);
+            break;
+          #endif
+
+          // Prime Power-Loss Recovery for the NEXT commit_command
+          TERN_(POWER_LOSS_RECOVERY, recovery.cmd_sdpos = udisk.getPrintSize());
+        }
+
+        if (udisk.eof()) udisk.fileHasFinish();        // Handle end of file reached
       }
+      else
+        process_stream_char(ud_char, ud_input_state, command_buffer[index_w], ud_count);
     }
-    if(udisk_eof) {udisk.fileHasFinish(&udisk_fp);SERIAL_ECHOLNPAIR("finish:", (int)udisk.getPrintSize());}// 文件读完
-    usb_command_lock = false;
+    #endif
   }
 
 #endif // HAS_UDISK
