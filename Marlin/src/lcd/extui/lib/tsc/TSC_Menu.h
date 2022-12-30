@@ -65,6 +65,7 @@
 #include "Menu/PreheatSet.h"
 #if ENABLED(NEW_BOARD)
   #include "Menu/Test_current.h"
+  #include "Menu/Test_endstop.h"
   #include "Menu/Test_music.h"
 #endif
 #if 1//ENABLED(LEVELING_OFFSET)
