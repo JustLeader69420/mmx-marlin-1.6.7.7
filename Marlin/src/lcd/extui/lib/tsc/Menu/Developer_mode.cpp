@@ -1,4 +1,5 @@
 #include "../TSC_Menu.h"
+#include "../../../../../gcode/gcode.h"
 //1title, ITEM_PER_PAGE items
 MENUITEMS developerItems = {
 // title
@@ -149,13 +150,28 @@ void menuCallBackDeveloper2()
         WRITE(HEATER_0_PIN, HIGH);
       break;
     case KEY_ICON_1:
-      char cmd[16];
-      sprintf_P(cmd, "G1 X%dY%dZ5\n", X_MAX_BED/2, Y_BED_SIZE/2);
-      mustStoreCmd("M420 S1\n");
-      mustStoreCmd("G28\n");
-      mustStoreCmd(cmd);
-      mustStoreCmd("G1 Z0\n");
-      infoMenu.menu[++infoMenu.cur] = menuSetLevelingOffset;
+      #if defined(LEVELING_OFFSET)
+        char cmd[16];
+        sprintf_P(cmd, "G1 X%dY%dZ5\n", X_MAX_BED/2, Y_BED_SIZE/2);
+        mustStoreCmd("M420 S1\n");
+        mustStoreCmd("G28\n");
+        mustStoreCmd(cmd);
+        mustStoreCmd("G1 Z0\n");
+        infoMenu.menu[++infoMenu.cur] = menuSetLevelingOffset;
+      #else
+        char text[64];
+        GUI_Clear(BLACK);
+        GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_HOME));
+        key_lock = true;
+        sprintf_P(text, "G0 X%d Y%d Z0 F%d", X_BED_SIZE/2, Y_BED_SIZE/2, HOMING_FEEDRATE_XY);
+        gcode.process_subcommands_now("G28");
+        gcode.process_subcommands_now("M420 S1");
+        gcode.process_subcommands_now(text);
+        ExtUI::delay_ms(100);
+        planner.synchronize();
+        key_lock = false;
+        infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+      #endif
       break;
     case KEY_ICON_6: mustStoreCmd("M240\n"); break;
     case KEY_ICON_7:

@@ -67,7 +67,7 @@
   #include "Menu/Test_current.h"
   #include "Menu/Test_music.h"
 #endif
-#if ENABLED(LEVELING_OFFSET)
+#if 1//ENABLED(LEVELING_OFFSET)
   #include "Menu/LevelingOffset.h"
 #endif
 #include "Menu/Developer_mode.h"

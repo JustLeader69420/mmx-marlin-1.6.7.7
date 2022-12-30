@@ -157,6 +157,7 @@ const char str_t_thermal_runaway[] PROGMEM = STR_T_THERMAL_RUNAWAY,
 
 #if HAS_HOTEND
   hotend_info_t Temperature::temp_hotend[HOTEND_TEMPS]; // = { 0 }
+  const uint16_t Temperature::heater_mintemp[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_MINTEMP, HEATER_1_MINTEMP, HEATER_2_MINTEMP, HEATER_3_MINTEMP, HEATER_4_MINTEMP, HEATER_5_MINTEMP, HEATER_6_MINTEMP, HEATER_7_MINTEMP);
   const uint16_t Temperature::heater_maxtemp[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_MAXTEMP, HEATER_1_MAXTEMP, HEATER_2_MAXTEMP, HEATER_3_MAXTEMP, HEATER_4_MAXTEMP, HEATER_5_MAXTEMP, HEATER_6_MAXTEMP, HEATER_7_MAXTEMP);
 #endif
 
@@ -990,11 +991,11 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
       const float max_power_over_i_gain = float(MAX_BED_POWER) / temp_bed.pid.Ki - float(MIN_BED_POWER),
                   pid_error = temp_bed.target - temp_bed.celsius;
 
-      if (!temp_bed.target || pid_error < -(PID_FUNCTIONAL_RANGE)) {
+      if (!temp_bed.target || pid_error < -(PID_FUNCTIONAL_RANGE_BED)) {
         pid_output = 0;
         pid_reset = true;
       }
-      else if (pid_error > PID_FUNCTIONAL_RANGE) {
+      else if (pid_error > PID_FUNCTIONAL_RANGE_BED) {
         pid_output = MAX_BED_POWER;
         pid_reset = true;
       }
@@ -1051,7 +1052,16 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
  *  - Update the heated bed PID output value
  */
 void Temperature::manage_heater() {
-
+  #if ENABLED(WS2812_LED) && 1
+    static float old_hotend_celsius[HOTEND_TEMPS] = {0};
+    uint32_t temp_color[HOTEND_TEMPS] = {0};
+    uint8_t need_change = 0;
+  #endif
+  #if HAS_CURRENT_SAMPLE
+    static uint8_t overcurrent_num=0;
+    static uint8_t heat_no24v_num = 0;
+  #endif
+  
   #if EARLY_WATCHDOG
     // If thermal manager is still not running, make sure to at least reset the watchdog!
     if (!inited) return watchdog_refresh();
@@ -1111,6 +1121,26 @@ void Temperature::manage_heater() {
           _temp_error(H_E0, PSTR(STR_REDUNDANCY), GET_TEXT(MSG_ERR_REDUNDANT_TEMP));
       #endif
 
+      // 根据温度修改led灯颜色
+      #if ENABLED(WS2812_LED) && 1
+        if(old_hotend_celsius[e] != temp_hotend[e].celsius){
+          old_hotend_celsius[e] = temp_hotend[e].celsius;
+          need_change++;
+        }
+      #endif
+      #if PIN_EXISTS(SHUTDOWN_HOTEND)
+      if((temp_hotend[e].soft_pwm_amount==0x7F) && (!READ(SHUTDOWN_HOTEND_PIN))){
+        heat_no24v_num++;
+        if((heat_no24v_num&0xF) > 10){
+          heat_no24v_num &= 0xF0;
+          hint_hotend_no24v();
+          setTargetHotend(0, e);
+        }
+      }
+      else{
+        heat_no24v_num &= 0xF0;
+      }
+      #endif
     } // HOTEND_LOOP
 
   #endif // HAS_HOTEND
@@ -1204,6 +1234,20 @@ void Temperature::manage_heater() {
       }
 
     } while (false);
+
+    #if PIN_EXISTS(SHUTDOWN_BED)
+    if((temp_bed.soft_pwm_amount==0x7F) && (!READ(SHUTDOWN_BED_PIN))){
+      heat_no24v_num+=0x10;
+      if(((heat_no24v_num>>4)&0xF) > 10){
+        heat_no24v_num &= 0xF;
+        hint_bed_no24v();
+        setTargetBed(0);
+      }
+    }
+    else{
+      heat_no24v_num &= 0xF;
+    }
+    #endif
 
   #endif // HAS_HEATED_BED
 
@@ -1320,6 +1364,86 @@ void Temperature::manage_heater() {
     //temp_bed.soft_pwm_amount = WITHIN(temp_chamber.celsius, CHAMBER_MINTEMP, CHAMBER_MAXTEMP) ? (int)get_pid_output_chamber() >> 1 : 0;
 
   #endif // HAS_HEATED_CHAMBER
+
+  #if HAS_CURRENT_SAMPLE
+    #if HAS_MOTORS_OCP
+      if(motors_current_info.celsius > 4500)
+      {
+        #if HAS_TRINAMIC_CONFIG
+          #define SET_CURR(Q) stepper##Q.rms_current(stepper##Q.getMilliamps() ? stepper##Q.getMilliamps() : Q##_CURRENT)
+          // if(!validating)
+          {
+            #if AXIS_IS_TMC(X)
+              SET_CURR(X);
+            #endif
+            #if AXIS_IS_TMC(Y)
+              SET_CURR(Y);
+            #endif
+            #if AXIS_IS_TMC(Z)
+              SET_CURR(Z);
+            #endif
+            #if AXIS_IS_TMC(X2)
+              SET_CURR(X2);
+            #endif
+            #if AXIS_IS_TMC(Y2)
+              SET_CURR(Y2);
+            #endif
+            #if AXIS_IS_TMC(Z2)
+              SET_CURR(Z2);
+            #endif
+            #if AXIS_IS_TMC(Z3)
+              SET_CURR(Z3);
+            #endif
+            #if AXIS_IS_TMC(Z4)
+              SET_CURR(Z4);
+            #endif
+            #if AXIS_IS_TMC(E0)
+              SET_CURR(E0);
+            #endif
+            #if AXIS_IS_TMC(E1)
+              SET_CURR(E1);
+            #endif
+            #if AXIS_IS_TMC(E2)
+              SET_CURR(E2);
+            #endif
+            #if AXIS_IS_TMC(E3)
+              SET_CURR(E3);
+            #endif
+            #if AXIS_IS_TMC(E4)
+              SET_CURR(E4);
+            #endif
+            #if AXIS_IS_TMC(E5)
+              SET_CURR(E5);
+            #endif
+            #if AXIS_IS_TMC(E6)
+              SET_CURR(E6);
+            #endif
+            #if AXIS_IS_TMC(E7)
+              SET_CURR(E7);
+            #endif
+          }
+        #endif
+        overcurrent_num++;
+        if(overcurrent_num>3)
+        {
+          overcurrent_num = 0;
+          motors_shutdown_callback();
+        }
+      }
+    #endif
+    #if HAS_HOTEND_OCP
+      if((hotend_current_info.celsius>5000))
+      {
+        hotend_shutdown_callback();
+      }
+    #endif
+    #if HAS_BED_OCP
+      if(bed_current_info.celsius > 25000)
+      {
+        bed_shutdown_callback();
+      }
+    #endif
+  #endif
 
   UNUSED(ms);
 }
@@ -1468,6 +1592,9 @@ void Temperature::manage_heater() {
 #endif
 
 #if HAS_HOTEND
+  bool hint_hotend_no24v(void){
+    return TERN0(HAS_CURRENT_SAMPLE, machine_current.hint_no24v(HOTEND_OCP));
+  }
   // Derived from RepRap FiveD extruder::getTemperature()
   // For hot end temperature measurement.
   float Temperature::analog_to_celsius_hotend(const int raw, const uint8_t e) {
@@ -1584,6 +1711,9 @@ void Temperature::manage_heater() {
 #endif // HAS_HOTEND
 
 #if HAS_HEATED_BED
+  bool hint_bed_no24v(void){
+    return TERN0(HAS_CURRENT_SAMPLE, machine_current.hint_no24v(BED_OCP));
+  }
   // Derived from RepRap FiveD extruder::getTemperature()
   // For bed temperature measurement.
   float Temperature::analog_to_celsius_bed(const int raw) {

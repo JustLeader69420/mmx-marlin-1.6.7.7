@@ -1,5 +1,6 @@
 #include "../TSC_Menu.h"
 #include "Popup.h"
+#include "../../../../../gcode/gcode.h"
 
 //1 title, ITEM_PER_PAGE items(icon+label) 
 const MENUITEMS mainPageItems = {
@@ -48,6 +49,7 @@ LABEL_MAINMENU,
 
 void menuCallBackMainPage() {
   KEY_VALUES key_num = menuKeyGetValue();
+  char text[32];
   switch(key_num)
   {
     #ifdef UNIFIED_MENU //if Unified menu is selected
@@ -125,6 +127,16 @@ void menuCallBackMainPage() {
           setLO_flag(true);
           infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
         #else
+          GUI_Clear(BLACK);
+          GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_HOME));
+          key_lock = true;
+          sprintf_P(text, "G0 X%d Y%d Z0 F%d", X_BED_SIZE/2, Y_BED_SIZE/2, HOMING_FEEDRATE_XY);
+          gcode.process_subcommands_now("G28");
+          gcode.process_subcommands_now("M420 S1");
+          gcode.process_subcommands_now(text);
+          ExtUI::delay_ms(100);
+          planner.synchronize();
+          key_lock = false;
           infoMenu.menu[++infoMenu.cur] = menuBabyStep;
         #endif
         break;

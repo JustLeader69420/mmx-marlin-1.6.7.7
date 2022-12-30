@@ -212,7 +212,7 @@ struct PIDHeaterInfo : public HeaterInfo {
 #endif
 
 // Heater watch handling
-template <int INCREASE, int HYSTERESIS, millis_t PERIOD>
+template <int INCREASE, int HYSTERESIS, millis_t PERIOD, heater_id_t HEAT_NUM>
 struct HeaterWatch {
   uint16_t target;
   millis_t next_ms;
@@ -222,9 +222,22 @@ struct HeaterWatch {
   inline void restart(const int16_t curr, const int16_t tgt) {
     if (tgt) {
       const int16_t newtarget = curr + INCREASE;
+      millis_t time_interval = SEC_TO_MS(PERIOD);
       if (newtarget < tgt - HYSTERESIS - 1) {
         target = newtarget;
-        next_ms = millis() + SEC_TO_MS(PERIOD);
+        #ifdef EX_TIME_HEAT_BED
+          if(HEAT_NUM == H_BED){
+            time_interval = SEC_TO_MS(31.36*exp(curr*0.0289));
+            // SERIAL_ECHOLNPAIR("bed time_interval:", time_interval);
+          }
+        #endif
+        #ifdef EX_TIME_HEAT_HOTEND
+          if(HEAT_NUM == H_E0){
+            time_interval = SEC_TO_MS(30.19*exp(curr*0.0057));
+            // SERIAL_ECHOLNPAIR("hotend time_interval:", time_interval);
+          }
+        #endif
+        next_ms = millis() + time_interval;
         return;
       }
     }
@@ -233,10 +246,10 @@ struct HeaterWatch {
 };
 
 #if WATCH_HOTENDS
-  typedef struct HeaterWatch<WATCH_TEMP_INCREASE, TEMP_HYSTERESIS, WATCH_TEMP_PERIOD> hotend_watch_t;
+  typedef struct HeaterWatch<WATCH_TEMP_INCREASE, TEMP_HYSTERESIS, WATCH_TEMP_PERIOD, H_E0> hotend_watch_t;
 #endif
 #if WATCH_BED
-  typedef struct HeaterWatch<WATCH_BED_TEMP_INCREASE, TEMP_BED_HYSTERESIS, WATCH_BED_TEMP_PERIOD> bed_watch_t;
+  typedef struct HeaterWatch<WATCH_BED_TEMP_INCREASE, TEMP_BED_HYSTERESIS, WATCH_BED_TEMP_PERIOD, H_BED> bed_watch_t;
 #endif
 #if WATCH_CHAMBER
   typedef struct HeaterWatch<WATCH_CHAMBER_TEMP_INCREASE, TEMP_CHAMBER_HYSTERESIS, WATCH_CHAMBER_TEMP_PERIOD> chamber_watch_t;
@@ -296,6 +309,9 @@ typedef struct { int16_t raw_min, raw_max, mintemp, maxtemp; } temp_range_t;
 
 #endif
 
+bool hint_hotend_no24v(void);
+bool hint_bed_no24v(void);
+
 class Temperature {
 
   public:
@@ -303,6 +319,7 @@ class Temperature {
     #if HAS_HOTEND
       #define HOTEND_TEMPS (HOTENDS + ENABLED(TEMP_SENSOR_1_AS_REDUNDANT))
       static hotend_info_t temp_hotend[HOTEND_TEMPS];
+      static const uint16_t heater_mintemp[HOTENDS];
       static const uint16_t heater_maxtemp[HOTENDS];
     #endif
     TERN_(HAS_HEATED_BED, static bed_info_t temp_bed);
@@ -595,6 +612,7 @@ class Temperature {
           else if (temp_hotend[ee].target == 0)
             start_preheat_time(ee);
         #endif
+
         TERN_(AUTO_POWER_CONTROL, if (celsius) powerManager.power_on());
         temp_hotend[ee].target = _MIN(celsius, temp_range[ee].maxtemp - HOTEND_OVERSHOOT);
         start_watching_hotend(ee);

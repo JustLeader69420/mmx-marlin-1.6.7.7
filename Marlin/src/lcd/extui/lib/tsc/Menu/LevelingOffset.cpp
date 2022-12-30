@@ -650,7 +650,7 @@ void menuSetLevelingValue()
     GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_HOME));
     key_lock = true;
     gcode.process_subcommands_now("G28");
-    gcode.process_subcommands_now("M420 S1\n");
+    gcode.process_subcommands_now("M420 S1");
     // t=0;
     // while(queue.length>0){
       ExtUI::delay_ms(100);

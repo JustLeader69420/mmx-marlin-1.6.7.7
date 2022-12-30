@@ -61,22 +61,22 @@ namespace ExtUI {
   }
   void onMediaInserted() {
     volumeReminderMessage(LABEL_TFTSD_INSERTED, STATUS_NORMAL);
-  };
+  }
   void onMediaError() {
     volumeReminderMessage(LABEL_READ_TFTSD_ERROR, STATUS_NORMAL);
-  };
+  }
   void onMediaRemoved() {
     volumeReminderMessage(LABEL_TFTSD_REMOVED, STATUS_NORMAL);
-  };
+  }
   void onUsbInserted() {
     volumeReminderMessage(LABEL_U_DISK_INSERTED, STATUS_NORMAL);
-  };
+  }
   void onUsbError() {
     volumeReminderMessage(LABEL_READ_U_DISK_ERROR, STATUS_NORMAL);
-  };
+  }
   void onUsbRemoved() {
     volumeReminderMessage(LABEL_U_DISK_REMOVED, STATUS_NORMAL);
-  };
+  }
 
   void onPlayTone(const uint16_t frequency, const uint16_t duration) {
     CRITICAL_SECTION_START();

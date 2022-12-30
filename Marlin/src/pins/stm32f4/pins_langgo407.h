@@ -84,29 +84,31 @@
 #if ENABLED(QUICK_PRINT)
   #define X_MAX_PIN                           PF14
 #else
-  #define X_MIN_PIN                           PF14
-  // #define X_MAX_PIN                           PA15
+  #define X_MIN_PIN           PF14
+  // #define X_MAX_PIN           PA15
 #endif
 
-#define Y_MIN_PIN                           PF13
-// #define Y_MAX_PIN                           PD12
+#define Y_MIN_PIN             PF13
+// #define Y_MAX_PIN             PD12
 
 #ifdef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
-  #define Z_MIN_PIN          PD3
+  #define Z_MIN_PIN           PD3
 #else
-  #define Z_MIN_PIN          PF11
-  // #define Z_MAZ_PIN 
+  #define Z_MIN_PIN           PF11
+ #if ENABLED(Z_MULTI_ENDSTOPS)
+  #define Z2_MIN_PIN          PD3     // after ver3.0
+ #endif
 #endif
-// #define Z_MIN_PIN                           PG0
-// #define Z_MAX_PIN                           PD15
+// #define Z_MIN_PIN             PG0
+// #define Z_MAX_PIN             PD15
 
-// #define LED_RED_PIN               PG9
+// #define LED_RED_PIN           PG9
 #if ENABLED(R_B_LED)
-  #define RB_LED_PIN                         PD7
+  #define RB_LED_PIN          PD7
 #endif
 
 #if ENABLED(WS2812_LED)
-  #define WS2812_LED_PIN    PD7
+  #define WS2812_LED_PIN      PD7
 #endif
 
 /**
@@ -248,7 +250,6 @@
   // Reduce baud rate to improve software serial reliability
   #define TMC_BAUD_RATE 19200
 #endif
-
 
 //
 // Filament Sensor

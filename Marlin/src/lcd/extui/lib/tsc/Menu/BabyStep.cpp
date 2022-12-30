@@ -38,7 +38,7 @@ const float item_babystep_unit[ITEM_BABYSTEP_UNIT_NUM] = {0.01f, 0.1f, 1};
 static ELEMENTS elementsUnit;
 // static float tempData = 0.0f;
 float old_baby_step_value = 0.0f;
-float babystep_value = 0.0f;      // 存放babystep的值，只有合并入调平数据才会清零
+TERN_(LEVELING_OFFSET, float babystep_value = 0.0f);      // 存放babystep的值，只有合并入调平数据才会清零
 bool autoCloseBabysetp = false;   // 是否自动关闭babystep界面
 // float old_z_offset = 0.0f;
 
@@ -85,39 +85,52 @@ static int WhatIsBabyStepMM(float mm){
 
 void setBabyStepZAxisIncMM(float mm){
   float oldbabystep = getBabyStepZAxisTotalMM();
-  float oldoffset = getLevelingOffset();
+  float changed_num = 0.0f;
+  #if defined(LEVELING_OFFSET)
+    float oldoffset = getLevelingOffset();
+  #else
+    float oldoffset = getCurrentOffset();
+  #endif
+
   switch (WhatIsBabyStepMM(mm))
   {
     case 1:
-      babystep.add_mm(WHO_AXIS, BABYSTEP_MAX_HIGH - oldbabystep);    // 值快到顶了
+      changed_num = BABYSTEP_MAX_HIGH - oldbabystep;    // 值快到顶了
       break;
 
     case 2:
-      babystep.add_mm(WHO_AXIS, -BABYSTEP_MAX_HIGH - oldbabystep);   // 值快到底了
+      changed_num = (-BABYSTEP_MAX_HIGH) - oldbabystep;   // 值快到底了
       break;
 
     case 3:
-      babystep.add_mm(WHO_AXIS, mm);              // 值正常
+      changed_num = mm;              // 值正常
       break;
     
     default:                                    // 其它
       break;
   }
- #if 0
+  babystep.add_mm(WHO_AXIS, changed_num);
+ #if 0//defined(LEVELING_OFFSET)
   setLevelingOffset(oldoffset + (getBabyStepZAxisTotalMM()-oldbabystep));
+ #else
+  setCurrentOffset(oldoffset+changed_num);
  #endif
 }
 
-void showBabyStep(void)
-{
- #if 1
-  GUI_DispFloat(CENTER_X - 5*BYTE_WIDTH/2, CENTER_Y, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
- #else
+void showBabyStepText(void){
   GUI_ClearPrect(&exhibitRect);
   GUI_DispString(CENTER_X - 10*BYTE_WIDTH, CENTER_Y-BYTE_HEIGHT, (const uint8_t *)"BabyStep:");
+  GUI_DispString(CENTER_X - 10*BYTE_WIDTH, CENTER_Y+BYTE_HEIGHT, (const uint8_t *)"Z Offset:");
+}
+void showBabyStep(void)
+{
+ #if 0
+  GUI_DispFloat(CENTER_X - 5*BYTE_WIDTH/2, CENTER_Y, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
+ #else
+  GUI_ClearRect(CENTER_X, CENTER_Y-BYTE_HEIGHT, 3*ICON_WIDTH+2*SPACE_X+START_X, CENTER_Y+1*BYTE_HEIGHT-1);
+  GUI_ClearRect(CENTER_X, CENTER_Y+BYTE_HEIGHT, 3*ICON_WIDTH+2*SPACE_X+START_X, CENTER_Y+2*BYTE_HEIGHT-1);
   GUI_DispFloat(CENTER_X, CENTER_Y-BYTE_HEIGHT, getBabyStepZAxisTotalMM(), 3, 2, RIGHT);
-  GUI_DispString(CENTER_X - 10*BYTE_WIDTH, CENTER_Y+BYTE_HEIGHT, (const uint8_t *)"z offset:");
-  GUI_DispFloat(CENTER_X, CENTER_Y+BYTE_HEIGHT, getLevelingOffset(), 3, 2, RIGHT);
+  GUI_DispFloat(CENTER_X, CENTER_Y+BYTE_HEIGHT, TERN(LEVELING_OFFSET, getLevelingOffset(), getCurrentOffset()), 3, 2, RIGHT);
  #endif
 }
 
@@ -202,6 +215,7 @@ void menuBabyStep()
 {
   initElements(KEY_ICON_5);
   menuDrawPage(&babyStepItems);
+  showBabyStepText();
   showBabyStep();
   menuSetFrontCallBack(menuCallBackBabyStep);
 }

@@ -2655,3 +2655,21 @@
 #elif NUM_SERIAL > 1
   #define HAS_MULTI_SERIAL 1
 #endif
+
+// current sample
+#if defined(NEW_BOARD)&&PIN_EXISTS(MOTORS_OCP)
+  #define HAS_MOTORS_OCP 1
+#endif
+#if defined(NEW_BOARD)&&PIN_EXISTS(BED_OCP)
+  #define HAS_BED_OCP 1
+#endif
+#if defined(NEW_BOARD)&&PIN_EXISTS(HOTEND_OCP)
+  #define HAS_HOTEND_OCP 1
+#endif
+#if HAS_MOTORS_OCP||HAS_HOTEND_OCP||HAS_BED_OCP
+  #define HAS_CURRENT_SAMPLE 1
+#endif
+
+#ifndef PID_FUNCTIONAL_RANGE_BED
+  #define PID_FUNCTIONAL_RANGE_BED PID_FUNCTIONAL_RANGE
+#endif

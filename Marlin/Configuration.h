@@ -60,7 +60,6 @@
 
 #define D301_AUTO_LEVELING
 #ifdef D301_AUTO_LEVELING
-
   #define HALL_PLATE
   //#define USE_PROBE_FOR_Z_HOMING              // du, this is use the probe for z_homing, 2022.09.12
   //#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN  //davi 2021.1.21
@@ -72,7 +71,7 @@
   #define MARLIN_DEV_MODE
   #define HAS_FSMC_TFT  1
   #define MD_FSMC_LCD
-  #define LEVELING_OFFSET
+  // #define LEVELING_OFFSET
 
 #endif
 #ifdef HALL_PLATE
@@ -626,6 +625,7 @@
   //#define SLOW_PWM_HEATERS      // PWM with very low frequency (roughly 0.125Hz=8s) and minimum state time of approximately 1s useful for heaters driven by a relay
   #define PID_FUNCTIONAL_RANGE 40 // If the temperature difference between the target temperature and the actual temperature
                                   // is more than PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
+  #define PID_FUNCTIONAL_RANGE_BED 10
 #endif
 
 // @section extruder
@@ -748,6 +748,7 @@
 #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Z_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#define Z2_MIN_ENDSTOP_INVERTING true
 #ifdef HALL_PLATE
 #define Z_MIN_PROBE_ENDSTOP_INVERTING true // Set to true to invert the logic of the probe.
 #else

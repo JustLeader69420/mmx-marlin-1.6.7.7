@@ -259,6 +259,13 @@ void menuSettings(void)
   }
  #endif
 
+ #if ENABLED(WS2812_LED) && 0
+  if(AUTO_MODE == leds4.get_led_mode()){
+    item_silent_j = 0;
+  }else{ item_silent_j = 1; }
+  settingsItems.items[KEY_ICON_4] = itemSilent[item_silent_j];
+ #endif
+
   menuDrawPage(&settingsItems);
   menuSetFrontCallBack(menuCallBackSettings);
 }
