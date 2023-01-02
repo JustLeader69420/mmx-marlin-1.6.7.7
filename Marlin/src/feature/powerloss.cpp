@@ -323,11 +323,12 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=0*/
       #endif
     #endif
 
-    // #if EXTRUDERS
-    //   HOTEND_LOOP() info.target_temperature[e] = thermalManager.temp_hotend[e].target;
-    // #endif
-
-    // TERN_(HAS_HEATED_BED, info.target_temperature_bed = thermalManager.temp_bed.target);
+    #if !PIN_EXISTS(POWER_LOSS)    
+      #if EXTRUDERS
+        HOTEND_LOOP() info.target_temperature[e] = thermalManager.temp_hotend[e].target;
+      #endif
+      TERN_(HAS_HEATED_BED, info.target_temperature_bed = thermalManager.temp_bed.target);
+    #endif
 
     #if HAS_FAN
       COPY(info.fan_speed, thermalManager.fan_speed);

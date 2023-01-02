@@ -546,8 +546,8 @@ void startOrResumeJob() {
 
 #endif // SDSUPPORT
 
-static uint8_t usb_need_wait = true;
-static uint32_t usb_wait_time = 0;
+// static uint8_t usb_need_wait = true;
+// static uint32_t usb_wait_time = 0;
 /**
  * Minimal management of Marlin's core activities:
  *  - Keep the command buffer full
@@ -1125,7 +1125,7 @@ void setup() {
   #else
     udisk.InitUdiskPin();
     MX_USB_HOST_Init();
-    usb_need_wait = true;
+    // usb_need_wait = true;
   #endif
  #endif
   
