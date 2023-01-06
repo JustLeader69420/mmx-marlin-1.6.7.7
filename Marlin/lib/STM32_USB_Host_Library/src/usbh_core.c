@@ -421,7 +421,7 @@ USBH_StatusTypeDef  USBH_Stop(USBH_HandleTypeDef *phost)
   return USBH_OK;
 }
 
-#ifdef USE_GD32
+#if 1//def USE_GD32
   #define RESET_ENUM_TIME 2
   static uint8_t need_reset_enum = RESET_ENUM_TIME;
 #endif
@@ -768,7 +768,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 
     case HOST_CLASS:
     {
-      #ifdef USE_GD32
+      #if 1//def USE_GD32
         if(need_reset_enum)
         {
           USBH_ReEnumerate(phost);
@@ -797,7 +797,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 
       if (phost->pUser != NULL)
       {
-       #ifdef USE_GD32
+       #if 1//def USE_GD32
         if(need_reset_enum){
           need_reset_enum--;
           phost->pUser(phost, HOST_USER_RESET_ENUM);

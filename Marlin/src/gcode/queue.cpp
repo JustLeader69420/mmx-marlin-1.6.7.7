@@ -700,13 +700,13 @@ void GCodeQueue::get_serial_commands() {
         if (!process_line_done(ud_input_state, command_buffer[index_w], ud_count)) {
 
           // M808 L saves the sdpos of the next line. M808 loops to a new sdpos.
-          TERN_(GCODE_REPEAT_MARKERS, repeat.early_parse_M808(command.buffer));
+          TERN_(GCODE_REPEAT_MARKERS, repeat.early_parse_M808(command_buffer[index_w]));
 
           #if 1
           // Put the new command into the buffer (no "ok" sent)
           _commit_command(false);
           #else // debug
-            SERIAL_ECHOPGM(command.buffer);
+            SERIAL_ECHOPGM(command_buffer[index_w]);
             SERIAL_EOL();
             if (udisk.eof()) udisk.fileHasFinish();        // Handle end of file reached
             // SERIAL_ECHOLNPAIR("file:", rbuf_p);
