@@ -6,9 +6,13 @@ void menuCallBackIsPause(void)
   switch(key_num)
   {
     case KEY_POPUP_CONFIRM:
-      if(setPrintPause(true))
-        pause_extrude_flag = true;  // 暂停状态启动挤出界面
-        infoMenu.menu[infoMenu.cur] = menuExtrude;
+      // if(setPrintPause(true))
+      // {
+      //   pause_extrude_flag = true;  // 暂停状态启动挤出界面
+      //   infoMenu.menu[infoMenu.cur] = menuExtrude;
+      // }
+      setPrintPause(true);
+      infoMenu.cur--;
       break;
 
     case KEY_POPUP_CANCEL:	
@@ -54,10 +58,14 @@ void menuCallBackMore(void)
     
     case KEY_ICON_1:
       if (!isPaused()) // need paused before extrude
+      {
         infoMenu.menu[++infoMenu.cur] = menuIsPause;
+      }
       else
+      {
         pause_extrude_flag = true;  // 暂停状态启动挤出界面
-        infoMenu.menu[++infoMenu.cur] = menuExtrude; 
+        infoMenu.menu[++infoMenu.cur] = menuExtrude;
+      }
       break;
     
     // case KEY_ICON_3:

@@ -282,7 +282,8 @@
 #define HEATER_0_PIN       PD11
 #define HEATER_BED_PIN     PD13
 
-#define FAN_PIN            PC7
+#define FAN_PIN            PB9
+// #define FAN1_PIN           PB8
 
 #define STEP_TIMER_NUM        5  // Timer Index for Stepper
 #define TEMP_TIMER_NUM        14  // Timer Index for Temperature

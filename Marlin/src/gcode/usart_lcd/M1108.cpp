@@ -106,7 +106,7 @@ void GcodeSuite::M1110(){
   switch(n){
     // pause
     case 1: 
-     #ifdef HAS_UDISK
+     #if 0//def HAS_UDISK
       if(udisk.isUdiskPrint()){
         if(printPaused2 == udisk.isUdiskPause()){
           printPaused2 = !udisk.isUdiskPause();

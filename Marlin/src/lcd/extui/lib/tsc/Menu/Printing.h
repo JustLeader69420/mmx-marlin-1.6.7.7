@@ -23,7 +23,7 @@ bool isPrinting(void);
 bool isPrintInfoMenu(void);
 bool isPaused(void);
 bool setPrintPause(bool is_pause);
-#if ENABLED(HAS_UDISK)
+#if 0//ENABLED(HAS_UDISK)
   bool setUDiskPrintPause();
 #endif
 

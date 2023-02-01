@@ -10,13 +10,13 @@
 
 UdiskPrint udisk;
 static FIL udisk_fp;
-uint64_t UdiskPrint::fsize;  // 文件大小
-uint64_t UdiskPrint::psize;  // 已经读取到的文件大小
-    int  UdiskPrint::r_size;    // 存放读取到的文件大小
-uint16_t UdiskPrint::fileNum;// 遍历到的文件数量
-    bool UdiskPrint::udiskFlag;
-    bool UdiskPrint::udiskPause;
-    bool UdiskPrint::udiskStop;
+uint64_t UdiskPrint::fsize=0;  // 文件大小
+uint64_t UdiskPrint::psize=0;  // 已经读取到的文件大小
+    int  UdiskPrint::r_size=0;    // 存放读取到的文件大小
+uint16_t UdiskPrint::fileNum=0;// 遍历到的文件数量
+    bool UdiskPrint::udiskFlag=false;
+    bool UdiskPrint::udiskPause=false;
+    bool UdiskPrint::udiskStop=false;
 
 char UdiskPrint::get(void){
 	char a = 0;

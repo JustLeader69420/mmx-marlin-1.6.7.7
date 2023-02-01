@@ -97,7 +97,8 @@ bool setPrintPause(bool is_pause)
   } else {
 
     #if ENABLED(FILAMENT_RUNOUT_SENSOR)
-      if(READ(FIL_RUNOUT_PIN) != FIL_RUNOUT_STATE){   // 检测是否有耗材
+      if((!ExtUI::getFilamentRunoutEnabled()) || (READ(FIL_RUNOUT_PIN) != FIL_RUNOUT_STATE))   // 检测是否有耗材
+      {
         ExtUI::setFilamentRunoutState(false);
     #endif
     
@@ -107,7 +108,9 @@ bool setPrintPause(bool is_pause)
     #if ENABLED(FILAMENT_RUNOUT_SENSOR)
       }
       else
+      {
         TERN_(EXTENSIBLE_UI, ExtUI::onFilamentRunout(ExtUI::getActiveTool()));  // 跳出filament runout弹窗
+      }
     #endif
 
   }
@@ -115,7 +118,7 @@ bool setPrintPause(bool is_pause)
   return true;
 }
 
-#ifdef HAS_UDISK
+#if 0//def HAS_UDISK
 bool setUDiskPrintPause(){
   static bool UDiskPauseLock = false;
   if(UDiskPauseLock)  return false;
@@ -356,7 +359,7 @@ void menuCallBackPrinting(void)
   switch(key_num)
   {
     case KEY_ICON_0:
-     #ifdef HAS_UDISK
+     #if 0//def HAS_UDISK
       if(udisk.isUdiskPrint()){
         if(printPaused2 == udisk.isUdiskPause()){
           printPaused2 = !udisk.isUdiskPause();
@@ -402,9 +405,9 @@ void menuCallBackPrinting(void)
 
 void menuPrinting(void)
 {
-  TERN_( HAS_UDISK, printPaused2 = udisk.isUdiskPause(); )
   printPaused = isPaused();
- #ifdef HAS_UDISK
+ #if 0//def HAS_UDISK
+  printPaused2 = udisk.isUdiskPause();
   if(udisk.isUdiskPrint())
     printingItems.items[KEY_ICON_0] = itemIsPause[printPaused2];
   else
