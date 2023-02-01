@@ -115,7 +115,8 @@ LABEL_SETTINGS,
     {ICON_FEATURE_SETTINGS,     LABEL_SETTINGS},
     {ICON_FEATURE_SETTINGS,     LABEL_SETTINGS},
   #else
-    {ICON_BACKGROUND,           LABEL_BACKGROUND},
+    {ICON_PROBE_OFFSET,         LABEL_PROBE_OFFSET},
+    // {ICON_BACKGROUND,           LABEL_BACKGROUND},
     {ICON_BACKGROUND,           LABEL_BACKGROUND},
   #endif
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
@@ -185,14 +186,9 @@ void menuCallBackSettings(void)
       infoMenu.menu[++infoMenu.cur] = menuInfo;
       break;
     case KEY_ICON_4:
-      // infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
-      // recovery.save(true);
-     #ifdef WS2812_LED
-      static int ci = 0;
-      ci = (ci+1)%5;
-      led4.set_color(led_color[ci]);
+      setLO_flag(true);
+      infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
       break;
-     #endif
 
     case KEY_ICON_6:
       switch (touch_clicks)
