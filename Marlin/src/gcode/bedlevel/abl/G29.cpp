@@ -605,6 +605,8 @@ G29_TYPE GcodeSuite::G29() {
     #if ABL_GRID
 
       bool zig = PR_OUTER_END & 1;  // Always end at RIGHT and BACK_PROBE_BED_POSITION
+      uint8_t redress_i=0;
+      float last_value = -999;
 
       measured_z = 0;
 
@@ -649,9 +651,33 @@ G29_TYPE GcodeSuite::G29() {
           measured_z = faux ? 0.001f * random(-100, 101) : probe.probe_at_point(probePos, raise_after, verbose_level);
 
           if (isnan(measured_z)) {
+           #if defined(REDRESS_PROBING)&&(PROBING_REDRESS_NUM>0)
+            for(redress_i=PROBING_REDRESS_NUM; (redress_i--)&&(isnan(measured_z));){
+              measured_z = faux ? 0.001f * random(-100, 101) : probe.probe_at_point(probePos, raise_after, verbose_level);
+            }
+            if (isnan(measured_z)) {
+              set_bed_leveling_enabled(abl_should_enable);
+              break; // Breaks out of both loops
+            }
+           #else
             set_bed_leveling_enabled(abl_should_enable);
             break; // Breaks out of both loops
+           #endif
           }
+         #if defined(REDRESS_PROBING) && defined(PROBING_TOLERABLE_ERROR)
+          else{
+            if(last_value>-100){
+              // 如果这次调屏值比上一次大超过PROBING_TOLERABLE_ERROR mm,这一次调平失败
+              if(ABS(last_value-measured_z)>PROBING_TOLERABLE_ERROR)
+              {
+                measured_z = NAN;
+                set_bed_leveling_enabled(abl_should_enable);
+                break; // Breaks out of both loops
+              }
+            }
+            last_value = measured_z;
+          }
+         #endif
 
           #if ENABLED(PROBE_TEMP_COMPENSATION)
             temp_comp.compensate_measurement(TSI_BED, thermalManager.degBed(), measured_z);
@@ -878,7 +904,12 @@ G29_TYPE GcodeSuite::G29() {
 
     // Auto Bed Leveling is complete! Enable if possible.完成自动调平！如果可以的话
     planner.leveling_active = dryrun ? abl_should_enable : true;
+    
+    ABL_STATUS = ABL_DONE;
   } // !isnan(measured_z)
+  else{ // 调平失败
+    ABL_STATUS = ABL_ERROR;
+  }
 
   // Restore state after probing.//探测完成后重置状态(速度和缩放比例)
   if (!faux) restore_feedrate_and_scaling();
@@ -902,7 +933,6 @@ G29_TYPE GcodeSuite::G29() {
 
   report_current_position();
 
-  ABL_STATUS = ABL_DONE;
   TERN_(LEVELING_OFFSET, oldLevelingOffset = 0;)
   G29_RETURN(isnan(measured_z));
 }

@@ -31,6 +31,19 @@
   #define POPUP_BOTTOM_HEIGHT 70
 #endif
 
+#if 1
+enum ABL_MODE{
+  ABL_BLANK=0,
+  ABL_STANDBY,
+  ABL_INIT,
+  ABL_HEATING,
+  ABL_START,
+  ABL_LEVELING,
+  ABL_DONE,
+  ABL_ERROR,
+  ABL_CLOSE_WINDOW,
+};
+#else
 #define ABL_STANDBY         1
 #define ABL_INIT            2
 #define ABL_HEATING         3
@@ -38,6 +51,7 @@
 #define ABL_LEVELING        5
 #define ABL_DONE            6
 #define ABL_CLOSE_WINDOW    7
+#endif
 
 enum
 {
@@ -54,7 +68,7 @@ extern GUI_RECT doubleBtnRect[];
 extern GUI_RECT singleBtnRect;
 extern WINDOW window;
 
-extern uint8_t ABL_STATUS;
+extern ABL_MODE ABL_STATUS;
 
 void changeSOF(bool _SOF);
 void windowSetButton(const BUTTON *btn);

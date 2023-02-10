@@ -33,7 +33,11 @@
 // #define QUICK_PRINT
 // #define USART_LCD
 // #define NEW_BOARD
-// #define SHORT_PROTECTION        // Low side short protection disable
+// #define SHORT_PROTECTION   // Low side short protection disable
+// #define MAGICIAN_X2        // magician X2, has two Z_ENDSTOP, The screen is inverted.
+// #define STANDBY_MODE        // the system go to standby mode
+#define EX_TIME_HEAT_BED    // 指数型检测热床加热时间
+#define EX_TIME_HEAT_HOTEND // 指数型检测热端加热时间
 
 // #define TEST_FW
 // #define OTHER_CUSTOM           // 定制的
@@ -571,9 +575,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp  8
-    #define DEFAULT_Ki  0.2
-    #define DEFAULT_Kd  100
+    #define DEFAULT_Kp  17.35
+    #define DEFAULT_Ki  0.6
+    #define DEFAULT_Kd  97.13
   #endif
 #endif // PIDTEMP
 
@@ -1156,9 +1160,24 @@
  *
  * A total of 2 does fast/slow probes with a weighted average.
  * A total of 3 or more adds more slow probes, taking the average.
+ * 
+ * MULTIPLE_PROBING 探测有效次数
+ * EXTRA_PROBING    要抛弃的探测点(该值必须小于MULTIPLE_PROBING)
+ * 总探测次数 = MULTIPLE_PROBING + EXTRA_PROBING
+ * *************************************
+ * USE_MIDDLE_VALUE_PROBING  只取中间值
  */
-#define MULTIPLE_PROBING 2
-#define EXTRA_PROBING    1
+#define MULTIPLE_PROBING 3
+// #define EXTRA_PROBING    2
+
+#define USE_MIDDLE_VALUE_PROBING 1
+#if MULTIPLE_PROBING>1
+  #define REDRESS_PROBING   // 开启探针误差补偿
+  #ifdef REDRESS_PROBING
+    #define PROBING_REDRESS_NUM 3 // 第一次失败后可以重新调整次数
+    #define PROBING_TOLERABLE_ERROR 1.0f
+  #endif
+#endif
 
 /**
  * Z probes require clearance when deploying, stowing, and moving between

@@ -9,7 +9,7 @@
 
 #define BUTTON_NUM 1
 
-uint8_t ABL_STATUS = ABL_STANDBY;
+ABL_MODE ABL_STATUS = ABL_STANDBY;
 
 BUTTON bottomSingleBtn = {
   //button location                       color before pressed   color after pressed
@@ -211,7 +211,6 @@ void menuCallBackPopup_B(void)
 void menuCallBackPopup_ABL(void)
 {
   static uint16_t delay_ms_count = 0;
-  static uint8_t temp_silent = infoSettings.silent;
   char context[100];
   
   uint8_t E0_temp = (uint8_t)getActualTemp_celsius(ExtUI::E0);
@@ -260,25 +259,35 @@ void menuCallBackPopup_ABL(void)
                             break;
 
         case ABL_START :    if(queue.length>0){break;}
-                            storeCmd("G28");     //home 
-                            storeCmd("G29");     //start ABL
-                            storeCmd("M500");    //save ABL info
-                            storeCmd("G28");     //home
+                            key_lock = true;    // 触摸锁打开
+                            storeCmd("G28");    // home 
+                            storeCmd("G29");    // start ABL
+                            storeCmd("M500");   // save ABL info
+                            storeCmd("G28");    // home
 
                             sprintf_P(context, "%s %s\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
                             popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)context, NULL, NULL);
 
-                            temp_silent = infoSettings.silent;
-                            infoSettings.silent = 1;
                             ABL_STATUS = ABL_LEVELING;
                             break;
 
         case ABL_DONE :     sprintf_P(context, "%s %s!\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_BUTTON_DONE), GET_TEXT(MSG_USERWAIT));
+                            key_lock = false;
                             popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
                             setTargetTemp_celsius(0,ExtUI::E0);
                             setTargetTemp_celsius(0,ExtUI::BED);
-                            infoSettings.silent = temp_silent;
+                            // infoSettings.silent = temp_silent;
                             ABL_STATUS = ABL_CLOSE_WINDOW;
+                            break;
+
+        case ABL_ERROR:     sprintf_P(context, "%s!\n%s", GET_TEXT(MSG_LCD_PROBING_FAILED), GET_TEXT(MSG_USERWAIT));
+                            key_lock = false;
+                            changeSOF(false);
+                            popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
+                            // setTargetTemp_celsius(0,ExtUI::E0);
+                            // setTargetTemp_celsius(0,ExtUI::BED);
+                            // infoSettings.silent = temp_silent;
+                            ABL_STATUS = ABL_BLANK;
                             break;
 
         case ABL_CLOSE_WINDOW : ExtUI::delay_ms(1);
@@ -290,7 +299,7 @@ void menuCallBackPopup_ABL(void)
                                   infoMenu.cur--;  
                                 }
                                 break;
-        default:;
+        default:break;
       }
       break;
   }

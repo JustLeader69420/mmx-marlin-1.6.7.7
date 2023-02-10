@@ -532,6 +532,7 @@ bool Probe::probe_down_to_z(const float z, const feedRate_t fr_mm_s) {
 float Probe::run_z_probe(const bool sanity_check/*=true*/) {
   DEBUG_SECTION(log_probe, "Probe::run_z_probe", DEBUGGING(LEVELING));
 
+  // 函数指针,用于执行探测
   auto try_to_probe = [&](PGM_P const plbl, const float &z_probe_low_point, const feedRate_t fr_mm_s, const bool scheck, const float clearance) {
     // Do a first probe at the fast speed
     const bool probe_fail = probe_down_to_z(z_probe_low_point, fr_mm_s),            // No probe trigger?
@@ -554,7 +555,7 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
   // If Z isn't known then probe to -10mm.
   const float z_probe_low_point = TEST(axis_known_position, Z_AXIS) ? -offset.z + Z_PROBE_LOW_POINT : -10.0;
 
-  // Double-probing does a fast probe followed by a slow probe
+  // Double-probing does a fast probe followed by a slow probe  // 此为探测行为的抬升,速度较快
   #if TOTAL_PROBING == 2
 
     // Do a first probe at the fast speed
@@ -580,14 +581,15 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
     }
   #endif
 
-  #if EXTRA_PROBING > 0
+  #if EXTRA_PROBING > 0 || USE_MIDDLE_VALUE_PROBING > 0
     float probes[TOTAL_PROBING];
   #endif
 
+  // 此为探测行为的下降,速度较慢
   #if TOTAL_PROBING > 2
     float probes_z_sum = 0;
     for (
-      #if EXTRA_PROBING > 0
+      #if EXTRA_PROBING > 0 || USE_MIDDLE_VALUE_PROBING > 0
         uint8_t p = 0; p < TOTAL_PROBING; p++
       #else
         uint8_t p = TOTAL_PROBING; p--;
@@ -595,7 +597,7 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
     )
   #endif
     {
-      // Probe downward slowly to find the bed
+      // Probe downward slowly to find the bed  // 探测距离超过设置的最大探测距离参数,返回NAN,否者获取下降的距离current_position.z;
       if (try_to_probe(PSTR("SLOW"), z_probe_low_point, MMM_TO_MMS(Z_PROBE_SPEED_SLOW),
                        sanity_check, Z_CLEARANCE_MULTI_PROBE) ) return NAN;
 
@@ -603,7 +605,7 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
 
       const float z = current_position.z;
 
-      #if EXTRA_PROBING > 0
+      #if EXTRA_PROBING > 0 || USE_MIDDLE_VALUE_PROBING > 0
         // Insert Z measurement into probes[]. Keep it sorted ascending.
         LOOP_LE_N(i, p) {                            // Iterate the saved Zs to insert the new Z
           if (i == p || probes[i] > z) {                              // Last index or new Z is smaller than this Z
@@ -619,9 +621,9 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
       #endif
 
       #if TOTAL_PROBING > 2
-        // Small Z raise after all but the last probe
+        // Small Z raise after all but the last probe // 如果需要再次进行探测,抬升
         if (p
-          #if EXTRA_PROBING > 0
+          #if EXTRA_PROBING > 0 || USE_MIDDLE_VALUE_PROBING > 0
             < TOTAL_PROBING - 1
           #endif
         ) do_blocking_move_to_z(z + Z_CLEARANCE_MULTI_PROBE, MMM_TO_MMS(Z_PROBE_SPEED_FAST));
@@ -631,7 +633,7 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
   #if TOTAL_PROBING > 2
 
     #if EXTRA_PROBING > 0
-      // Take the center value (or average the two middle values) as the median
+      // Take the center value (or average the two middle values) as the median // 取中间值,或者取中间值的平均值
       static constexpr int PHALF = (TOTAL_PROBING - 1) / 2;
       const float middle = probes[PHALF],
                   median = ((TOTAL_PROBING) & 1) ? middle : (middle + probes[PHALF + 1]) * 0.5f;
@@ -645,7 +647,25 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
       // Return the average value of all remaining probes.
       LOOP_S_LE_N(i, min_avg_idx, max_avg_idx)
         probes_z_sum += probes[i];
+    #endif
 
+    #if USE_MIDDLE_VALUE_PROBING > 0
+      // Take the center value (or average the two middle values) as the median // 取中间值,或者取中间值的平均值
+      static constexpr int PHALF = (TOTAL_PROBING - 1) / 2;
+      const float middle = probes[PHALF],
+                  median = ((TOTAL_PROBING) & 1) ? middle : (middle + probes[PHALF + 1]) * 0.5f;
+      // Remove values farthest from the median
+      uint8_t min_avg_idx = 0, max_avg_idx = TOTAL_PROBING - 1;
+      
+      #if defined(REDRESS_PROBING) && defined(PROBING_TOLERABLE_ERROR)
+        if(ABS(probes[max_avg_idx] - probes[min_avg_idx]) > PROBING_TOLERABLE_ERROR){
+          // PORT_REDIRECT(SERIAL_BOTH);
+          // SERIAL_ECHO_MSG("0:", probes[min_avg_idx], " 1:", probes[1], " 2:", probes[max_avg_idx]);
+          return NAN;
+        }
+      #endif
+      
+      return median;
     #endif
 
     const float measured_z = probes_z_sum * RECIPROCAL(MULTIPLE_PROBING);

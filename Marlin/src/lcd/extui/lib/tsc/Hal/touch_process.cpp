@@ -194,6 +194,7 @@ uint16_t KEY_GetValue(uint8_t total_rect,const GUI_RECT* menuRect)
   static uint32_t touchTime = 0;
 
   uint16_t key_return=IDLE_TOUCH;
+  if(key_lock) return key_return;
   if (isPress())
   {
     if(firstPress)
