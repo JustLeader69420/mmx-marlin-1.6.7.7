@@ -48,8 +48,8 @@ typedef struct { int16_t value, celsius; } temp_entry_t;
 //
 // Rt=R0*(1+a*T+b*T*T) [for T>0]
 // a=3.9083E-3, b=-5.775E-7
-#define PtA 3.9083E-3
-#define PtB -5.775E-7
+#define PtA 3.90802E-3 //3.9083E-3
+#define PtB -5.802E-7 //-5.775E-7
 #define PtRt(T,R0) ((R0) * (1.0 + (PtA) * (T) + (PtB) * (T) * (T)))
 #define PtAdVal(T,R0,Rup) (short)(1024 / (Rup / PtRt(T, R0) + 1))
 #define PtLine(T,R0,Rup) { OV(PtAdVal(T, R0, Rup)), T }

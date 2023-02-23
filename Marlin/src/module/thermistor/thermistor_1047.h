@@ -23,18 +23,20 @@
 
 #define REVERSE_TEMP_SENSOR_RANGE_1047 1
 
+#define Pt1000AdVal(T,R0,Rup) (short)(33000 / (Rup / PtRt(T, R0) + 1))
+#define Pt1000Line(T,R0,Rup)  { Pt1000AdVal(T, R0, Rup), T }
 // Pt1000 with 4k7 pullup
 const temp_entry_t temptable_1047[] PROGMEM = {
   // only a few values are needed as the curve is very flat
-  PtLine(  0, 1000, 4700),
-  PtLine( 50, 1000, 4700),
-  PtLine(100, 1000, 4700),
-  PtLine(150, 1000, 4700),
-  PtLine(200, 1000, 4700),
-  PtLine(250, 1000, 4700),
-  PtLine(300, 1000, 4700),
-  PtLine(350, 1000, 4700),
-  PtLine(400, 1000, 4700),
-  PtLine(450, 1000, 4700),
-  PtLine(500, 1000, 4700)
+  Pt1000Line(  0, 1000, 4700),
+  Pt1000Line( 50, 1000, 4700),
+  Pt1000Line(100, 1000, 4700),
+  Pt1000Line(150, 1000, 4700),
+  Pt1000Line(200, 1000, 4700),
+  Pt1000Line(250, 1000, 4700),
+  Pt1000Line(300, 1000, 4700),
+  Pt1000Line(350, 1000, 4700),
+  Pt1000Line(400, 1000, 4700),
+  Pt1000Line(450, 1000, 4700),
+  Pt1000Line(500, 1000, 4700)
 };
