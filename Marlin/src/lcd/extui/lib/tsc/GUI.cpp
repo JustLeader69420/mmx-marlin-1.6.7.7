@@ -610,19 +610,20 @@ void GUI_DispStringInRect_P(int16_t sx, int16_t sy, int16_t ex, int16_t ey, cons
     pi++;
   }
 
-  if(nline > height/BYTE_HEIGHT)
+  if(nline > height/BYTE_HEIGHT){
     nline = height/BYTE_HEIGHT;
+  }
 
   uint16_t x_offset, y_offset, x, y;
   uint8_t i=0,j=0;
 
   y_offset = (nline*BYTE_HEIGHT) >= height ? 0 : (( height - (nline*BYTE_HEIGHT) )>>1);
   y = sy + y_offset;
-  for(j=0; j<=pi; j++){
+  for(j=0; j<pi; j++){
     const uint8_t *pj = info[j];
     for(i=0; i<infolen[j]; i++)
     {  
-      x_offset = stringlen[j] >= width ? 0 : ( width-stringlen[j])>>1;
+      x_offset = stringlen[j] >= width ? 0 : (width-stringlen[j])>>1;
       x = sx + x_offset;
 
       pj = GUI_DispLenString(x, y, pj, width);

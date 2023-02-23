@@ -83,5 +83,10 @@ void menuPopup(void);
 void menuPopup_B(void);
 void menuPopup_ABL(void);
 void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_t *inf);
+void menuPopuCap(void);
+void menuPopuCap2(void);
+void setDialogInfo(BUTTON *btn, uint8_t *title, uint8_t *context, uint8_t *yes, uint8_t *no, void (*ok_action)(), void (*cancel_action)());
+void menuCallBackDialog(void);
+void menuDialog(void);
 
 #endif

@@ -46,10 +46,35 @@ LABEL_MAINMENU,
     #endif
   #endif
 };
-
+static void needGoHome(void){
+  char text[32]="Homing...\nPlease wait...";
+  char text2[32];
+  wait_for_user_response(5);
+  GUI_Clear(BLACK);
+  // GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, /*textSelect(LABEL_HOME)*/"homing...");
+  popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)text, NULL, NULL);
+  key_lock = true;
+  // memset(text, 0, 32);
+  gcode.process_subcommands_now("G28");
+  gcode.process_subcommands_now("M420 S1");
+  // ExtUI::delay_ms(10);
+  wait_for_user_response(5);
+  planner.synchronize();
+  sprintf_P(text2, "G0 X%d Y%d Z0 F%d", X_BED_SIZE/2, Y_BED_SIZE/2, HOMING_FEEDRATE_XY);
+  gcode.process_subcommands_now(text2);
+  planner.synchronize();
+  // sprintf_P(text2, "G0 Z0 F%d", HOMING_FEEDRATE_Z);
+  // gcode.process_subcommands_now(text);
+  // planner.synchronize();
+  key_lock = false;
+  // infoMenu.cur--;
+  infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+}
+static void noGoHome(void){
+  infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+}
 void menuCallBackMainPage() {
   KEY_VALUES key_num = menuKeyGetValue();
-  char text[32];
   switch(key_num)
   {
     #ifdef UNIFIED_MENU //if Unified menu is selected
@@ -127,17 +152,8 @@ void menuCallBackMainPage() {
           setLO_flag(true);
           infoMenu.menu[++infoMenu.cur] = menuSetLevelingValue;
         #else
-          GUI_Clear(BLACK);
-          GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_HOME));
-          key_lock = true;
-          sprintf_P(text, "G0 X%d Y%d Z0 F%d", X_BED_SIZE/2, Y_BED_SIZE/2, HOMING_FEEDRATE_XY);
-          gcode.process_subcommands_now("G28");
-          gcode.process_subcommands_now("M420 S1");
-          gcode.process_subcommands_now(text);
-          ExtUI::delay_ms(100);
-          planner.synchronize();
-          key_lock = false;
-          infoMenu.menu[++infoMenu.cur] = menuBabyStep;
+          setDialogInfo(bottomDoubleBtn, textSelect(LABEL_TIPS), (uint8_t*)"Do homing now?", (uint8_t*)"Yes", (uint8_t*)"No", needGoHome, noGoHome);
+          infoMenu.menu[++infoMenu.cur] = menuDialog;
         #endif
         break;
      #endif

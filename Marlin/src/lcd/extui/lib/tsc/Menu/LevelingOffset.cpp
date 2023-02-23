@@ -244,9 +244,9 @@ void moveToProbePos(uint8_t x,uint8_t y)
   xyz_pos_t npos = {Lx_min+LSridSpacing_x*x, Ly_min+LSridSpacing_y*y, 0};
   // mustStoreCmd("G0Z5\n");
   planner.synchronize();
-  do_blocking_move_to_z(5, 600);
+  do_blocking_move_to_z(5, 10);
   planner.synchronize();
-  do_blocking_move_to(npos, 3000);
+  do_blocking_move_to(npos, 80);
   planner.synchronize();
 }
 void setLO_flag(bool _flag){
@@ -295,6 +295,29 @@ void floatToString(float value, int num, char* string){
     else{
       sprintf(string, "-%d.%02d", (-temp)/magnification, (-temp)%magnification);
     }
+  }
+}
+static void needGoHomeBeforeZoffset(void){
+  char str[32] = "Homing...\nPlease wait...";
+  if (LO_flag) {
+    setLO_flag(false);
+    GUI_Clear(BLACK);
+    // GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, /*textSelect(LABEL_HOME)*/"homing...");
+    popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)str, NULL, NULL);
+    key_lock = true;
+    gcode.process_subcommands_now("G28");
+    gcode.process_subcommands_now("M420 S1");
+    // t=0;
+    // while(queue.length>0){
+    wait_for_user_response(10);
+    planner.synchronize();
+    //   if(t++>600){  // 60s
+    //     infoMenu.cur--;
+    //     return;
+    //   }
+    // }
+    // infoMenu.cur--;
+    key_lock = false;
   }
 }
 void menuCallBackSetLevelingValue()
@@ -639,29 +662,15 @@ void menuSetLevelingValue()
   }
   else{
     GUI_Clear(BLACK);
-    GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, (const uint8_t*)"No ABL");
-    ExtUI::delay_ms(1000);
-    setLO_flag(false);
-    infoMenu.cur--;
-  }
-  if (LO_flag) {
-    setLO_flag(false);
-    GUI_Clear(BLACK);
-    GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, textSelect(LABEL_HOME));
     key_lock = true;
-    gcode.process_subcommands_now("G28");
-    gcode.process_subcommands_now("M420 S1");
-    // t=0;
-    // while(queue.length>0){
-      ExtUI::delay_ms(100);
-      planner.synchronize();
-    //   if(t++>600){  // 60s
-    //     infoMenu.cur--;
-    //     return;
-    //   }
-    // }
+    GUI_DispStringInRect(0, 0, LCD_WIDTH_PIXEL, LCD_HEIGHT_PIXEL, (const uint8_t*)"No ABL");
+    wait_for_user_response(1000);
+    setLO_flag(false);
     key_lock = false;
+    infoMenu.cur--;
+    return;
   }
+  needGoHomeBeforeZoffset();
   x = 0xff; y = 0xff;
   x2 = 0xff; y2 = 0xff;
   GUI_Clear(BLACK);

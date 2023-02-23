@@ -39,11 +39,24 @@ WINDOW window = {
   {WHITE, GRAY,  POPUP_BOTTOM_HEIGHT},  //
 };
 
+struct DIALOG{
+  BUTTON  *btn;
+  uint8_t *title;
+  uint8_t *context;
+  uint8_t *yes;
+  uint8_t *no;
+  void (*action_ok)();
+  void (*action_cancel)();
+  GUI_RECT rect[3];
+  uint8_t total_rect;
+};
+
 static BUTTON *windowButton =  NULL;
 static uint16_t buttonNum = 0;
 static bool filament_runout_flag = false;   //no filament start
 static bool SF_popup = false;               // 是否为提示成功或失败的窗口
 static bool SOF = true;                     //success or failed,can change color
+static DIALOG dialog_info = {0};
 
 void windowReDrawButton(uint8_t positon, uint8_t pressed)
 {
@@ -388,3 +401,126 @@ void popupReminder(uint8_t* info, uint8_t* context)
  #endif
 }
 
+void menuCallBackPopup_cap(void){
+  uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
+  switch(key_num)
+  {
+    case KEY_POPUP_CONFIRM:
+      #if PIN_EXISTS(CAP_TOUCH)
+      #if PIN_EXISTS(LCD_BACKLIGHT)
+        WRITE(LCD_BACKLIGHT_PIN, LOW);
+      #endif
+      endstops.cap_state = 1;
+      key_lock = true;
+      #endif
+      infoMenu.cur--;
+      break;
+    case KEY_POPUP_CANCEL:
+      #if PIN_EXISTS(CAP_TOUCH)
+      endstops.cap_state = 0;
+      #endif
+      infoMenu.cur--;
+      break;
+    default:
+      break;
+  }
+}
+void menuPopuCap(void){
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_TIPS), (uint8_t *)"Lock screen?", textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+  menuSetFrontCallBack(menuCallBackPopup_cap);
+}
+
+void menuCallBackPopup_cap2(void){
+  uint16_t key_num = KEY_GetValue(2, doubleBtnRect);
+  switch(key_num)
+  {            
+    case KEY_POPUP_CONFIRM:
+      // #if PIN_EXISTS(LCD_BACKLIGHT)
+      //   WRITE(LCD_BACKLIGHT_PIN, LOW);
+      // #endif
+      // endstops.cap_state = 1;
+      // key_lock = true;
+      infoSettings.silent = 1;
+      infoMenu.cur--;
+      break;
+    case KEY_POPUP_CANCEL:
+      // endstops.cap_state = 0;
+      infoMenu.cur--;
+      break;
+    default:
+      break;
+  }
+}
+void menuPopuCap2(void){
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_TIPS), (uint8_t *)"noice?", textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+  menuSetFrontCallBack(menuCallBackPopup_cap2);
+}
+
+void setDialogInfo(BUTTON *btn, uint8_t *title, uint8_t *context, uint8_t *yes, uint8_t *no, void (*ok_action)(), void (*cancel_action)()){
+  memset((void*)&dialog_info, 0, sizeof(dialog_info));
+  dialog_info.btn = btn;
+  dialog_info.title = title;
+  dialog_info.context = context;
+  dialog_info.yes = yes;
+  dialog_info.no = no;
+  dialog_info.action_ok = ok_action;
+  dialog_info.action_cancel = cancel_action;
+}
+void showDialog(){
+  buttonNum = 0;
+  windowButton = dialog_info.btn;
+  if(dialog_info.yes)
+  {
+    windowButton[buttonNum++].context = dialog_info.yes;
+  } else{
+    dialog_info.action_ok = NULL;
+  }
+  if(dialog_info.no)
+  {
+    windowButton[buttonNum++].context = dialog_info.no;
+  } else{
+    dialog_info.action_cancel = NULL;
+  }
+  
+  TSC_ReDrawIcon = windowReDrawButton;
+  if(SF_popup){
+    SF_popup = false;
+    GUI_DrawWindow_SF(&window, dialog_info.title, dialog_info.context, SOF);
+  }
+  else{
+    GUI_DrawWindow(&window, dialog_info.title, dialog_info.context);
+  }
+  
+  dialog_info.total_rect = buttonNum;
+  // if(buttonNum == 1){ dialog_info.rect = &singleBtnRect; }
+  // else if(buttonNum == 2){ dialog_info.rect = doubleBtnRect; }
+  // else if(buttonNum == 3){ dialog_info.rect = threeBtnRect; }
+  for(uint8_t i = 0; i < buttonNum; i++){
+    dialog_info.rect[i] = windowButton[i].rect;
+    GUI_DrawButton(&windowButton[i], 0);
+  }
+}
+void menuCallBackDialog(void){
+  uint16_t key_num = KEY_GetValue(dialog_info.total_rect, dialog_info.rect);
+  switch(key_num)
+  {            
+    case KEY_POPUP_CONFIRM:
+      infoMenu.cur--;
+      if(dialog_info.action_ok != NULL){
+        dialog_info.action_ok();
+      }
+      break;
+    case KEY_POPUP_CANCEL:
+      infoMenu.cur--;
+      if(dialog_info.action_cancel != NULL){
+        dialog_info.action_cancel();
+      }
+      break;
+    default:
+      break;
+  }
+}
+void menuDialog(void){
+  showDialog();
+  menuSetFrontCallBack(menuCallBackDialog);
+}
