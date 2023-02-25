@@ -418,6 +418,12 @@
   #else
     #define ROBOT_NAME ""
   #endif
+
+  #if ENABLED(USE_TI_CHOKE)
+    #define MATERIALS_NAME "-Ti"
+  #else
+    #define MATERIALS_NAME ""
+  #endif
 #endif
 
 #define DEFAULT_MACHINE_NAME "HP STM32F407VE"
