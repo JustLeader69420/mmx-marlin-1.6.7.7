@@ -350,7 +350,8 @@ void menuCallBackSetLevelingValue()
           // // sprintf_P((char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], "%f", old_z_values);
           z_values[x][y] += SET_LEVELING_VALUE;
           //the_babystep += SET_LEVELING_VALUE;
-          setBabyStepZAxisIncMM(SET_LEVELING_VALUE);
+          // setBabyStepZAxisIncMM(SET_LEVELING_VALUE);
+          babystep.add_mm(WHO_AXIS, SET_LEVELING_VALUE);
           floatToString(z_values[x][y], 2, (char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x]);
           menuDrawCubeItem_check(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
         }
@@ -382,7 +383,8 @@ void menuCallBackSetLevelingValue()
           // }
           z_values[x][y] -= SET_LEVELING_VALUE;
           //the_babystep -= SET_LEVELING_VALUE;
-          setBabyStepZAxisIncMM(-SET_LEVELING_VALUE);
+          // setBabyStepZAxisIncMM(-SET_LEVELING_VALUE);
+          babystep.add_mm(WHO_AXIS, -SET_LEVELING_VALUE);
           floatToString(z_values[x][y], 2, (char*)levelingSetCubeItems[y*GRID_MAX_POINTS_X+x]);
           menuDrawCubeItem_check(levelingSetCubeItems[y*GRID_MAX_POINTS_X+x], y*GRID_MAX_POINTS_X+4+x);
         }
@@ -600,7 +602,9 @@ void menuCallBackSetLevelingValue()
     if(1 == isClick){
       isClick = 0;
       // if(x<GRID_MAX_POINTS_X && y<GRID_MAX_POINTS_Y)
-      setBabyStepZAxisIncMM(-the_babystep);
+      // setBabyStepZAxisIncMM(-the_babystep);
+      babystep.add_mm(WHO_AXIS, -the_babystep);
+
       // delay(50);
       while(babystep.has_steps()){idle();}  // 等待babystep走完
       // Click uncheck a second time
