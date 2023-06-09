@@ -5,7 +5,7 @@
 #include "../../../../../gcode/gcode.h"
 #include "../../../../../lcd_show_addr.h"
 // #include "../../../../../inc/MarlinConfigPre.h"
-
+#include "../../../../../module/endstops.h"
 
 #define BUTTON_NUM 1
 
@@ -221,6 +221,8 @@ void menuCallBackPopup_B(void)
   }
 }
 
+static float oldTemp_e = 0, oldTemp_bed = 0;
+// the ABL Popup
 void menuCallBackPopup_ABL(void)
 {
   static uint16_t delay_ms_count = 0;
@@ -231,93 +233,114 @@ void menuCallBackPopup_ABL(void)
   uint16_t key_num = KEY_GetValue(BUTTON_NUM, &singleBtnRect);
 
   switch(key_num)
-  {            
-    case 0: 
+  {
+    case 0:
+    {
       if(ABL_STATUS != ABL_LEVELING)
       {
-        setTargetTemp_celsius(0,ExtUI::E0);
-        setTargetTemp_celsius(0,ExtUI::BED);
+        setTargetTemp_celsius(oldTemp_e,ExtUI::E0);
+        setTargetTemp_celsius(oldTemp_bed,ExtUI::BED);
         ABL_STATUS = ABL_STANDBY;
         infoMenu.cur--; 
       }
-      break;
+    }break;
     
     default:
+    {
       switch(ABL_STATUS)
       {
-        case ABL_INIT    :  sprintf_P(context, "%s:%3d/150   %s:%3d/50\n%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::E0),
-                                                                              GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), (uint8_t)getActualTemp_celsius(ExtUI::BED),
-                                                                              GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
-                            popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
+        case ABL_INIT:
+        {
+          sprintf_P(context, "%s:%3d/150   %s:%3d/50\n%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), (uint8_t)ExtUI::getActualTemp_celsius(ExtUI::E0),
+                                                              GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), (uint8_t)ExtUI::getActualTemp_celsius(ExtUI::BED),
+                                                              GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+          popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CANNEL), NULL);
 
-                            setTargetTemp_celsius(155,ExtUI::E0);
-                            setTargetTemp_celsius(50,ExtUI::BED);
-                            ABL_STATUS = ABL_HEATING;
-                            break;
+          oldTemp_e = ExtUI::getTargetTemp_celsius(ExtUI::E0);
+          oldTemp_bed = ExtUI::getTargetTemp_celsius(ExtUI::BED);
+          if(oldTemp_e<150)
+          {
+            ExtUI::setTargetTemp_celsius(155,ExtUI::E0);
+          }
+          if(oldTemp_bed<50)
+          {
+            ExtUI::setTargetTemp_celsius(50,ExtUI::BED);
+          }
+          ABL_STATUS = ABL_HEATING;
+        }break;
 
-        case ABL_HEATING :  ExtUI::delay_ms(1);
-                            delay_ms_count ++;
-                            if(delay_ms_count >= 1000)
-                            {
-                              delay_ms_count = 0;
-                              sprintf_P(context, "%s:%3d/150   %s:%3d/50\n%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), E0_temp,
-                                                                                  GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), BED_temp,
-                                                                                  GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
-                              
-                              GUI_DrawWindow_ABL(&window, textSelect(LABEL_TIPS), (uint8_t *)context);
+        case ABL_HEATING:
+        {
+          ExtUI::delay_ms(1);
+          delay_ms_count ++;
+          if(delay_ms_count >= 1000)
+          {
+            delay_ms_count = 0;
+            sprintf_P(context, "%s:%3d/150   %s:%3d/50\n%s %s", GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM), E0_temp,
+                                                                GET_TEXT(MSG_UBL_BED_TEMP_CUSTOM), BED_temp,
+                                                                GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+            
+            GUI_DrawWindow_ABL(&window, textSelect(LABEL_TIPS), (uint8_t *)context);
 
+            if(E0_temp >= 150 && BED_temp >= 50) ABL_STATUS = ABL_START;
+          }
+        }break;
 
-                              if(E0_temp >= 150 && BED_temp >= 50) ABL_STATUS = ABL_START;
-                            }
-                            break;
+        case ABL_START:
+        {
+          if(queue.length>0){break;}
+          key_lock = true;    // 触摸锁打开
+          storeCmd("G28");    // home 
+          storeCmd("G29");    // start ABL
+          storeCmd("M500");   // save ABL info
+          storeCmd("G28");    // home
 
-        case ABL_START :    if(queue.length>0){break;}
-                            key_lock = true;    // 触摸锁打开
-                            storeCmd("G28");    // home 
-                            storeCmd("G29");    // start ABL
-                            storeCmd("M500");   // save ABL info
-                            storeCmd("G28");    // home
+          sprintf_P(context, "%s %s\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+          popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)context, NULL, NULL);
 
-                            sprintf_P(context, "%s %s\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_FILAMENT_CHANGE_LOAD), GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
-                            popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)context, NULL, NULL);
+          ABL_STATUS = ABL_LEVELING;
+        }break;
 
-                            ABL_STATUS = ABL_LEVELING;
-                            break;
+        case ABL_DONE:
+        {
+          sprintf_P(context, "%s %s!\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_BUTTON_DONE), GET_TEXT(MSG_USERWAIT));
+          key_lock = false;
+          popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
+          ExtUI::setTargetTemp_celsius(oldTemp_e,ExtUI::E0);
+          ExtUI::setTargetTemp_celsius(oldTemp_bed,ExtUI::BED);
+          // infoSettings.silent = temp_silent;
+          ABL_STATUS = ABL_CLOSE_WINDOW;
+        }break;
 
-        case ABL_DONE :     sprintf_P(context, "%s %s!\n%s", GET_TEXT(MSG_BILINEAR_LEVELING), GET_TEXT(MSG_BUTTON_DONE), GET_TEXT(MSG_USERWAIT));
-                            key_lock = false;
-                            popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
-                            setTargetTemp_celsius(0,ExtUI::E0);
-                            setTargetTemp_celsius(0,ExtUI::BED);
-                            // infoSettings.silent = temp_silent;
-                            ABL_STATUS = ABL_CLOSE_WINDOW;
-                            break;
+        case ABL_ERROR:
+        {
+          sprintf_P(context, "%s!\n%s", GET_TEXT(MSG_LCD_PROBING_FAILED), GET_TEXT(MSG_USERWAIT));
+          key_lock = false;
+          changeSOF(false);
+          popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
+          // setTargetTemp_celsius(0,ExtUI::E0);
+          // setTargetTemp_celsius(0,ExtUI::BED);
+          // infoSettings.silent = temp_silent;
+          ABL_STATUS = ABL_BLANK;
+        }break;
 
-        case ABL_ERROR:     sprintf_P(context, "%s!\n%s", GET_TEXT(MSG_LCD_PROBING_FAILED), GET_TEXT(MSG_USERWAIT));
-                            key_lock = false;
-                            changeSOF(false);
-                            popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)context, textSelect(LABEL_CONFIRM), NULL);
-                            // setTargetTemp_celsius(0,ExtUI::E0);
-                            // setTargetTemp_celsius(0,ExtUI::BED);
-                            // infoSettings.silent = temp_silent;
-                            ABL_STATUS = ABL_BLANK;
-                            break;
+        case ABL_CLOSE_WINDOW:
+        {
+          ExtUI::delay_ms(1);
+          delay_ms_count ++;
+          if(delay_ms_count >= 10000)
+          {
+            delay_ms_count = 0;
+            ABL_STATUS = ABL_STANDBY;
+            infoMenu.cur--;  
+          }
+        }break;
 
-        case ABL_CLOSE_WINDOW : ExtUI::delay_ms(1);
-                                delay_ms_count ++;
-                                if(delay_ms_count >= 10000)
-                                {
-                                  delay_ms_count = 0;
-                                  ABL_STATUS = ABL_STANDBY;
-                                  infoMenu.cur--;  
-                                }
-                                break;
         default:break;
       }
-      break;
+    }break;
   }
 }
-
 void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_t *inf)//这个函数只更新窗口内容
 {
   const uint16_t titleHeight = window->title.height;
@@ -340,6 +363,129 @@ void GUI_DrawWindow_ABL(const WINDOW *window, const uint8_t *title, const uint8_
   GUI_SetColor(nowFontColor);
   GUI_SetTextMode(nowTextMode); 
 }
+void menuPopup_ABL(void)
+{
+  ABL_STATUS = ABL_INIT;
+  menuSetFrontCallBack(menuCallBackPopup_ABL);
+}
+
+// the Load or Unload popup
+static uint8_t unload_state = UNLOAD_IDLE;
+static uint8_t load_or_unload = UNLOAD_IDLE;
+static ExtUI::extruder_t the_active_e = ExtUI::E0;
+static float UnloadPopup_oldFanPercent = 0;
+void setUnloadState(uint8_t state, uint8_t e)
+{
+  load_or_unload = state;
+  the_active_e = (ExtUI::extruder_t)e;
+  UnloadPopup_oldFanPercent = ExtUI::getTargetFan_percent((ExtUI::fan_t)e);
+  oldTemp_e = ExtUI::getTargetTemp_celsius(the_active_e);
+}
+void menuCallBackPopup_Unload(void)
+{
+  static uint32_t theUnloadPopup_lastTime = 0;
+  char str[64];
+  uint16_t key_num = KEY_GetValue(BUTTON_NUM, &singleBtnRect);
+  uint32_t now_time = millis();
+  float E_temp = ExtUI::getActualTemp_celsius(the_active_e);
+  
+  switch(key_num){
+    case KEY_POPUP_CONFIRM:
+    {
+      ExtUI::setTargetTemp_celsius(oldTemp_e, the_active_e);
+      ExtUI::setTargetFan_percent(UnloadPopup_oldFanPercent, (ExtUI::fan_t)the_active_e);
+      unload_state = UNLOAD_IDLE;
+      load_or_unload = UNLOAD_END;
+      infoMenu.cur--; 
+    }break;
+
+    default:
+    {
+      switch(unload_state)
+      {
+        case UNLOAD_IDLE:
+        {
+          if(ExtUI::getTargetTemp_celsius(the_active_e) < 240)
+          {
+            ExtUI::setTargetTemp_celsius(245, the_active_e);
+          }
+          sprintf_P(str, "%s\n%s:%3d\n%s", GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM),
+                                           (uint8_t)E_temp, GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+          popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)str, textSelect(LABEL_CANNEL), NULL);
+          
+          unload_state = UNLOAD_WAIT_HEATING;
+        }break;
+        
+        case UNLOAD_WAIT_HEATING:
+        {
+          if(theUnloadPopup_lastTime<now_time)
+          {
+            theUnloadPopup_lastTime = now_time+500;
+            sprintf_P(str, "%s\n%s:%3d\n%s", GET_TEXT(MSG_FILAMENT_CHANGE_HEATING), GET_TEXT(MSG_UBL_HOTEND_TEMP_CUSTOM),
+                                           (uint8_t)E_temp, GET_TEXT(MSG_FILAMENT_CHANGE_INIT));
+            GUI_DrawWindow_ABL(&window, textSelect(LABEL_TIPS), (uint8_t *)str);
+            if(E_temp>=240)
+            {
+              unload_state = load_or_unload;
+            }
+          }
+        }break;
+        
+        case UNLOAD_LOAD:
+        {
+          key_lock = true;    // 触摸锁打开
+          unload_state = UNLOAD_WAIT_RUN;
+          popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)GET_TEXT(MSG_FILAMENTLOAD), NULL, NULL);
+          planner.synchronize();  // waiting for the last action to complete
+          ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(the_active_e) + 75, the_active_e, EXTRUDE_SLOW_SPEED);
+          planner.synchronize();  // waiting for the last action to complete
+          unload_state = UNLOAD_END;
+          key_lock = false;    // 触摸锁关闭
+        }break;
+        
+        case UNLOAD_UNLOAD:
+        {
+          key_lock = true;    // 触摸锁打开
+          unload_state = UNLOAD_WAIT_RUN;
+          ExtUI::setTargetFan_percent(100, (ExtUI::fan_t)the_active_e);
+          popupDrawPage(NULL , textSelect(LABEL_TIPS), (uint8_t *)GET_TEXT(MSG_FILAMENTUNLOAD), NULL, NULL);
+          planner.synchronize();  // waiting for the last action to complete
+          ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(the_active_e) + 20, the_active_e, EXTRUDE_NORMAL_SPEED);
+          planner.synchronize();  // waiting for the last action to complete
+          ExtUI::setAxisPosition_mm(ExtUI::getAxisPosition_mm(the_active_e) - 70, the_active_e, EXTRUDE_NORMAL_SPEED);
+          planner.synchronize();  // waiting for the last action to complete
+          ExtUI::setTargetFan_percent(0, (ExtUI::fan_t)the_active_e);
+          unload_state = UNLOAD_END;
+          key_lock = false;    // 触摸锁关闭
+        }break;
+
+        case UNLOAD_END:
+        {
+          ExtUI::setTargetTemp_celsius(oldTemp_e, the_active_e);
+          ExtUI::setTargetFan_percent(UnloadPopup_oldFanPercent, (ExtUI::fan_t)the_active_e);
+          theUnloadPopup_lastTime = now_time+5000; // wait 5s
+          popupDrawPage(&bottomSingleBtn , textSelect(LABEL_TIPS), (uint8_t *)"finish", textSelect(LABEL_CANNEL), NULL);
+          unload_state = UNLOAD_AUTO_CLOSE;
+        }break;
+
+        case UNLOAD_AUTO_CLOSE:
+        {
+          if(theUnloadPopup_lastTime < now_time)
+          {
+            unload_state = UNLOAD_IDLE;
+            infoMenu.cur--;
+          }
+        }break;
+
+        default:break;
+      }
+    }break;
+  }
+}
+void menuPopup_Unload(void)
+{
+  menuSetFrontCallBack(menuCallBackPopup_Unload);
+}
 
 void menuPopup(void)
 {
@@ -351,11 +497,6 @@ void menuPopup_B(void)
   menuSetFrontCallBack(menuCallBackPopup_B);
 }
 
-void menuPopup_ABL(void)
-{
-  ABL_STATUS = ABL_INIT;
-  menuSetFrontCallBack(menuCallBackPopup_ABL);
-}
 
 void popupReminder_p(uint8_t* info, uint8_t* context)
 {
@@ -390,6 +531,9 @@ void popupReminder_SF(uint8_t* info, uint8_t* context, bool _SOF)
   }
  #endif
 }
+// 弹窗提示,按钮一个"confirm"
+// #param info: 弹窗顶部标题
+// #param context: 弹窗内部信息
 void popupReminder(uint8_t* info, uint8_t* context)
 {
   popupDrawPage(&bottomSingleBtn , info, context, textSelect(LABEL_CONFIRM), NULL);

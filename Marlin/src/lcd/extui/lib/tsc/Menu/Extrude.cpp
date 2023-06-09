@@ -48,9 +48,10 @@ const ITEM itemSpeed[ITEM_SPEED_NUM] = {
   {ICON_NORMAL_SPEED,         LABEL_NORMAL_SPEED},
   {ICON_FAST_SPEED,           LABEL_FAST_SPEED},
 };
-const ITEM itemStop[2] = {
+const ITEM itemStop[3] = {
   {ICON_EM_STOP,              LABEL_STOP},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  {ICON_UNLOAD,               LABEL_UNLOAD}, 
 };
 const  uint32_t item_speed[ITEM_SPEED_NUM] = {EXTRUDE_SLOW_SPEED, EXTRUDE_NORMAL_SPEED, EXTRUDE_FAST_SPEED};
 static uint8_t  item_speed_i = 1;
@@ -150,10 +151,15 @@ void menuCallBackExtrude(void)
     //     e_add_mm -= item_len[item_len_i];   // 点击了退料按钮，数值减小
     //   break;
     case KEY_ICON_0:
+      #if 0
       if(!pause_extrude_flag){
         stop_home = true;
         quickstop_stepper();
       }
+      #else
+      setUnloadState(UNLOAD_UNLOAD, item_extruder_i);
+      infoMenu.menu[++infoMenu.cur] = menuPopup_Unload;
+      #endif
       break;
     
     case KEY_ICON_3:
@@ -264,11 +270,15 @@ void menuExtrude()
   e_add_mm = top_info_ai = top_info_bi = top_info_ci = 0;   // 防止上一次界面的干扰
   statusMsg.actHotend = -1;
   statusMsg.tagHotend = -1;
+  #if 0
   if(!pause_extrude_flag){
     extrudeItems.items[0] = itemStop[0];
   }else{
     extrudeItems.items[0] = itemStop[1];
   }
+  #else
+  extrudeItems.items[0] = itemStop[2];
+  #endif
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
   menuSetFrontCallBack(menuCallBackExtrude);

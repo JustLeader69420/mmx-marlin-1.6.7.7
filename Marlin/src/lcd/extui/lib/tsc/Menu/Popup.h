@@ -43,6 +43,15 @@ enum ABL_MODE{
   ABL_ERROR,
   ABL_CLOSE_WINDOW,
 };
+enum Unload_State:uint8_t{
+  UNLOAD_IDLE = 0,
+  UNLOAD_WAIT_HEATING,
+  UNLOAD_LOAD,
+  UNLOAD_UNLOAD,
+  UNLOAD_WAIT_RUN,
+  UNLOAD_END,
+  UNLOAD_AUTO_CLOSE,
+};
 #else
 #define ABL_STANDBY         1
 #define ABL_INIT            2
@@ -88,5 +97,7 @@ void menuPopuCap2(void);
 void setDialogInfo(BUTTON *btn, uint8_t *title, uint8_t *context, uint8_t *yes, uint8_t *no, void (*ok_action)(), void (*cancel_action)());
 void menuCallBackDialog(void);
 void menuDialog(void);
+void menuPopup_Unload(void);
+void setUnloadState(uint8_t state, uint8_t e);
 
 #endif
